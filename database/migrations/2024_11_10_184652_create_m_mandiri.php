@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('m_mandiri', function (Blueprint $table) {
-            $table->id();
+            $table->id('mandiri_id');
+            $table->unsignedBigInteger('jenis_id')->index;  //fk
+            $table->string('nama',100);
             $table->timestamps();
+
+            // fk
+            $table->foreign('jenis_id')->references('jenis_id')->on('m_jenis_sertifikasi');
         });
     }
 

@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('m_level_pelatihan', function (Blueprint $table) {
-            $table->id();
+            $table->id('level_pelatihan_id');
+            $table->string('level_pelatihan_nama',100)->unique();
             $table->timestamps();
         });
     }

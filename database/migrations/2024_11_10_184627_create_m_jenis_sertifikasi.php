@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('m_jenis_sertifikasi', function (Blueprint $table) {
-            $table->id('');
-            $table->string('vendor_nama',100)->unique();
+            $table->id('jenis_id');
+            $table->string('jenis_nama',100)->unique();
             $table->timestamps();
         });
     }
