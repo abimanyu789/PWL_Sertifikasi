@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {{-- <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -137,6 +138,9 @@
    --}}
 
    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+=======
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -148,9 +152,12 @@
       <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>
       </li>
+<<<<<<< HEAD
       <li class="nav-item d-none d-sm-inline-block">
         <a href="{{ url('/profile') }}" class="nav-link">Profile</a>
       </li>
+=======
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
     </ul>
 
     <!-- Right navbar links -->
@@ -176,6 +183,10 @@
           </form>
         </div>
       </li>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
       <!-- Messages Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">

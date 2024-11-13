@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ config('app.name', 'PWL Laravel Starter Code') }}</title>
 
+<<<<<<< HEAD
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
+=======
+  <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- untuk mengirimkan token laravel CSRF pada setiap request ajax -->
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -16,6 +20,7 @@
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+<<<<<<< HEAD
 
   <!-- SweetAlert2 -->
 <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
@@ -24,16 +29,29 @@
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
 
   @stack('css') <!-- Digunakan untuk menanggali custom css dari perintah push('css') pada masing-masing view -->
+=======
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
+
+  @stack('css') <!-- digunakan untuk memanggil custom css dari perintah push('css') pada masing-masing view -->
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
 </head>
 <body class="hold-transition sidebar-mini">
 <!-- Site wrapper -->
 <div class="wrapper">
   <!-- Navbar -->
   @include('layouts.header')
+<<<<<<< HEAD
+=======
+  <!-- /.navbar -->
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
 
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
+<<<<<<< HEAD
     <a href="{{ url('/') }}" class="brand-link">
       <img src="{{ asset('adminlte/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">PWL - Starter Code</span>
@@ -42,6 +60,19 @@
     <!-- Sidebar -->
     @include('layouts.sidebar')
     <!-- /.sidebar -->
+=======
+    <a href="{{ url('/') }}" class="brand-link" style="padding: 0; background-color: #1F4C97 !important; display: flex; align-items: center;">
+        <div class="d-flex align-items-center justify-content-start w-100 px-3 py-3">
+            <i class="fas fa-graduation-cap text-white mr-2" style="font-size: 1.5rem;"></i>
+            <div>
+                <span class="brand-text font-weight-bold text-white" style="font-size: 1rem;">JTI Polinema</span><br>
+                <span class="text-white-50" style="font-size: 0.8rem;">Sistem Pendataan Sertifikasi</span>
+            </div>
+        </div>
+    </a>
+    <!-- Sidebar -->
+    @include('layouts.sidebar')
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
@@ -51,14 +82,21 @@
 
     <!-- Main content -->
     <section class="content">
+<<<<<<< HEAD
       @yield('content')
+=======
+    @yield('content')
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
     </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
   @include('layouts.footer')
+<<<<<<< HEAD
 
+=======
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
 </div>
 <!-- ./wrapper -->
 
@@ -80,7 +118,11 @@
 <script src="{{ asset('adminlte/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
 <script src="{{ asset('adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
 
+<<<<<<< HEAD
 <!-- jQuery-validation -->
+=======
+<!-- Jquery-validation -->
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
 <script src="{{ asset('adminlte/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('adminlte/plugins/jquery-validation/additional-methods.min.js') }}"></script>
 
@@ -89,6 +131,7 @@
 
 <!-- AdminLTE App -->
 <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
+<<<<<<< HEAD
 
 <script>
   // untuk mengirimkan token Laravel CSRF pada setiap request ajax
@@ -165,3 +208,12 @@
 </body>
 </html>
  --}}
+=======
+<script>
+  // untuk mengirimkan token laravel CSRF pada setiap request ajax
+  $.ajaxSetup({headers: {'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')}});
+</script>
+@stack('js') <!-- digunakan untuk memanggil custom js dari perintah push('js') pada masing-masing view -->
+</body>
+</html>
+>>>>>>> 36f4efc281f5e42587aed3203a0bb4c0346bab32
