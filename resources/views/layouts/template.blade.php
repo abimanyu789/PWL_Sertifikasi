@@ -36,15 +36,17 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="{{ url('/') }}" class="brand-link">
-                <img src="{{ asset('adminlte/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
-                    class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">Abim - POS</span>
+            <a href="{{ url('/') }}" class="brand-link" style="padding: 0; background-color: #1F4C97 !important; display: flex; align-items: center; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;">
+                <div class="d-flex align-items-center justify-content-start w-100 px-3 py-3">
+                    <i class="fas fa-graduation-cap text-white mr-2" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <span class="brand-text font-weight-bold text-white" style="font-size: 1rem;">JTI Polinema</span><br>
+                        <span class="text-white-50" style="font-size: 0.8rem;">Sistem Pendataan Sertifikasi JTI</span>
+                    </div>
+                </div>
             </a>
-
             <!-- Sidebar -->
-            @include('layouts.siderbar')
-            <!-- /.sidebar -->
+            @include('layouts.sidebar')
         </aside>
 
         <!-- Content Wrapper. Contains page content -->
