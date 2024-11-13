@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('m_jenis_sertifikasi', function (Blueprint $table) {
             $table->id('jenis_id');
-            $table->string('jenis_nama',100)->unique();
+            $table->string('jenis_kode',10)->unique();
+            $table->string('jenis_nama',100);
             $table->timestamps();
         });
     }
