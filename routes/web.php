@@ -25,11 +25,10 @@ use Illuminate\Support\Facades\Route;
 Route::pattern('id', '[0-9]+');
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
-Route::get('logout', [AuthController::class, 'logout']);
+Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [WelcomeController::class, 'index']);
-
+    
     // Route::group(['prefix' => 'user'], function () {
     Route::group(['prefix' => 'user', 'middleware'=> 'authorize:ADM'], function(){
         Route::get('/', [UserController::class, 'index']);          
