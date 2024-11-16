@@ -16,12 +16,12 @@ class UserSeeder extends Seeder
     {
         $data = [
             [
-                'user_id' => 1,
-                'level_id' => 1,  // Sesuaikan dengan data level yang ada
-                'nip' => '1234567890', // Contoh NIP
-                'nama' => 'Admin',
-                'username' => 'admin',  // Username sesuai dengan yang diinginkan
-                'email' => 'admin@example.com',  // Email sesuai dengan yang diinginkan
+                'user_id' => 2,
+                'level_id' => 2,  // Sesuaikan dengan data level yang ada
+                'nip' => '0987654321', // Contoh NIP
+                'nama' => 'Dosen',
+                'username' => 'dosen',  // Username sesuai dengan yang diinginkan
+                'email' => 'dosen@example.com',  // Email sesuai dengan yang diinginkan
                 'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
             ]
         ];

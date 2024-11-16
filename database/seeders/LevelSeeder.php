@@ -15,9 +15,9 @@ class LevelSeeder extends Seeder
     {
         $data = [
             [
-                'level_id'=> 1,
-                'level_kode' => 'ADM', // Contoh kode level untuk administrator
-                'level_nama' => 'Administrator',
+                'level_id'=> 2,
+                'level_kode' => 'DSN', // Contoh kode level untuk administrator
+                'level_nama' => 'Dosen',
             ]
         ];
 

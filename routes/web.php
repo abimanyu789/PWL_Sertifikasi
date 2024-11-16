@@ -28,6 +28,7 @@ Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/', [WelcomeController::class, 'index']); //halaman awal
     
     // Route::group(['prefix' => 'user'], function () {
     Route::group(['prefix' => 'user', 'middleware'=> 'authorize:ADM'], function(){
