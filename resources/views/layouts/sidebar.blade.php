@@ -159,21 +159,47 @@
     right: 10px; /* Posisi ikon di sebelah kanan */
     color: #c0c0c0; /* Warna ikon abu-abu */
     pointer-events: none; /* Mencegah ikon bisa di-klik */
+}  
+
+/* Styling container */
+.user-panel {
+    display: flex;
+    flex-direction: column; /* Atur vertikal */
+    align-items: center; /* Pusatkan horizontal */
+    justify-content: center; /* Pusatkan vertikal */
 }
+
+.user-panel .profile-img {
+    width: 80px; /* Penuhi kontainer */
+    height: 80px; /* Penuhi kontainer */
+    object-fit: cover; /* Gambar menyesuaikan */
+    border-radius: 80px; /* Membuat gambar berbentuk lingkaran */
+    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
+}
+
+/* Styling nama pengguna */
+.user-panel .info {
+    margin-top: 10px; /* Jarak antara foto dan nama */
+    font-size: 16px; /* Ukuran teks */
+    font-weight: bold; /* Tebalkan teks */
+    text-align: center; /* Teks rata tengah */
+}
+
 </style>
 
 <div class="sidebar">
-    {{-- <!-- User Panel -->
-    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <!-- User Panel -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex flex-column align-items-center">
         <div class="image">
-            <img src="{{ auth()->user()->profile_image ? asset('storage/photos/' . auth()->user()->profile_image) : asset('/public/img/pp.png') }}"
-                 class="img-circle elevation-2" 
-                 alt="User Image">
+            <img src="{{ auth()->user()->profile_image ? asset('storage/photos/' . auth()->user()->profile_image) : asset('img/pp.jpg') }}" 
+                class="profile-img img-circle elevation-2" 
+                alt="User Image">
         </div>
-        <div class="info">
-            <a href="{{ url('/profile') }}" class="d-block text-white">{{ auth()->user()->username ?? 'Nama Pengguna' }}</a>
+        <div class="info mt-2">
+            <a href="{{ url('/profile') }}" class="d-block text-white text-center">{{ auth()->user()->username }}</a>
         </div>
-    </div> --}}
+    </div>    
 
     <!-- Sidebar Search Form -->
     <div class="sidebar-search">
