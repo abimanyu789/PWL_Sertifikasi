@@ -19,6 +19,7 @@
     html, body {
         height: 100%;
         margin: 0;
+        overflow: hidden; /* Mencegah scroll */
     }
 
     body {
@@ -31,6 +32,7 @@
         align-items: center;
         height: 100vh;
         position: relative; /* Untuk elemen pseudo */
+        
     }
 
     .login-box {
@@ -119,7 +121,7 @@
     /* Responsif untuk layar kecil */
     @media (max-width: 768px) {
         .login-box {
-            width: 80%;
+            width: 200px;
         
         }
 

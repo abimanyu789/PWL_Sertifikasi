@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nama',100);
             $table->string('email',100);
             $table->string('password');
-            $table->string('avatar');
+            $table->string('profile_image');
             $table->timestamps();
 
             $table->foreign('level_id')->references('level_id')->on('m_level');
