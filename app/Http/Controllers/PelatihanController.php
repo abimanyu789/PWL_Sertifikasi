@@ -269,29 +269,12 @@ class PelatihanController extends Controller
 
     public function export_pdf()
     {
-        // Mengambil semua data pelatihan beserta relasinya
-        $pelatihan = PelatihanModel::select(
-            'pelatihan_id',
-            'nama_pelatihan',
-            'deskripsi',
-            'tanggal',
-            'bidang_id',
-            'level_pelatihan_id',
-            'vendor_id'
-        )
-        ->with(['bidang', 'levelPelatihan', 'vendor']) // Load relasi dengan bidang, level pelatihan, dan vendor
-        ->orderBy('level_pelatihan_id') // Urutkan berdasarkan level pelatihan
-        ->get();
-
-        // Generate PDF dengan data pelatihan
+        $pelatihan = PelatihanModel::all();
         $pdf = Pdf::loadView('data_pelatihan.pelatihan.export_pdf', ['pelatihan' => $pelatihan]);
-
-        // Set ukuran dan orientasi kertas
         $pdf->setPaper('a4', 'portrait');
-        $pdf->render();
-
-        // Stream PDF ke browser
+        $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
         return $pdf->stream('Data Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
-    }
 
+    }
+    
 }

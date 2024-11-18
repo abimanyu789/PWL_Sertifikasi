@@ -39,11 +39,6 @@
                         <th>Nama Level Pelatihan</th>
                         <td>{{ $level_pelatihan->level_pelatihan_nama }}</td>
                     </tr>
-                    <tr>
-                        <th>Nama User</th>
-                        <td>{{ $level_pelatihan->user->nama ?? 'Tidak Ada' }}</td>
-                    </tr>
-                    
                 </table>
             </div>
             <div class="modal-footer">

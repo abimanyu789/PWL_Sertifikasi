@@ -45,7 +45,6 @@ class LevelPelatihanController extends Controller
             ->make(true);
     }
 
-    // Menampilkan halaman detail user
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -203,9 +202,9 @@ class LevelPelatihanController extends Controller
 
         $pdf = Pdf::loadView('data_pelatihan.level_pelatihan.export_pdf', ['level_pelatihan' => $level_pelatihan]);
         $pdf->setPaper('a4', 'portrait');
-        $pdf->render();
-
+        $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
         return $pdf->stream('Data Level Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
+
     }
 
 }
