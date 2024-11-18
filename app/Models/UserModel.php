@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class UserModel extends Authenticatable
+class UserModel extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
@@ -21,6 +22,7 @@ class UserModel extends Authenticatable
         'username',
         'email', 
         'password',
+        'profile_image',
         'created_at',
         'updated_at'
     ];
@@ -65,4 +67,5 @@ class UserModel extends Authenticatable
         // Mengembalikan klaim tambahan untuk token JWT (bisa dikosongkan jika tidak diperlukan)
         return [];
     }
+
 }
