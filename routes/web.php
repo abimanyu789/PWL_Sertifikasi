@@ -114,8 +114,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{id}/update_ajax', [PelatihanController::class, 'update_ajax']);
         Route::get('/{id}/delete_ajax', [PelatihanController::class, 'confirm_ajax']);
         Route::delete('/{id}/delete_ajax', [PelatihanController::class, 'delete_ajax']);
-        Route::get('/import', [PelatihanController::class, 'import']);                      // ajax form upload excel
-        Route::post('/import_ajax', [PelatihanController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/import', [PelatihanController::class, 'import']); // Form import
+        Route::post('/import_ajax', [PelatihanController::class, 'import_ajax']); // Proses import
         Route::get('/export_excel', [PelatihanController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [PelatihanController::class, 'export_pdf']); 
     });

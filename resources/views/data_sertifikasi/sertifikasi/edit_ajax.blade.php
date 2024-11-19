@@ -1,60 +1,68 @@
-@empty($penjualan)
+@empty($sertifikasi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-                <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang anda cari tidak ditemukan
+                    Data yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/penjualan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/sertifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/penjualan/' . $penjualan->penjualan_id . '/update_ajax') }}" method="POST" id="form-edit">
+    <form action="{{ url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/update_ajax') }}" method="POST" id="form-edit">
         @csrf
         @method('PUT')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Penjualan</h5>
-                    <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Sertifikasi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Level Pengguna</label>
-                        <select name="user_id" id="user_id" class="form-control" required>
-                            <option value="">- Pilih User -</option>
-                            @foreach ($user as $l)
-                                <option {{ $l->user_id == $penjualan->user_id ? 'selected' : '' }}
-                                    value="{{ $l->user_id }}">{{ $l->nama }}</option>
+                        <label>Nama Sertifikasi</label>
+                        <input value="{{ $sertifikasi->nama_sertifikasi }}" type="text" name="nama_sertifikasi" id="nama_sertifikasi" class="form-control" required>
+                        <small id="error-nama_sertifikasi" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Sertifikasi</label>
+                        <input value="{{ $sertifikasi->tanggal }}" type="date" name="tanggal" id="tanggal" class="form-control" required>
+                        <small id="error-tanggal" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Bidang</label>
+                        <select name="bidang_id" id="bidang_id" class="form-control" required>
+                            <option value="">- Pilih Bidang -</option>
+                            @foreach ($bidang as $b)
+                                <option {{ $b->bidang_id == $sertifikasi->bidang_id ? 'selected' : '' }} value="{{ $b->bidang_id }}">{{ $b->nama_bidang }}</option>
                             @endforeach
                         </select>
-                        <small id="error-level_id" class="error-text form-text textdanger"></small>
+                        <small id="error-bidang_id" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Pembeli</label>
-                        <input value="{{ $penjualan->pembeli }}" type="text" name="pembeli" id="pembeli"
-                            class="form-control" required>
-                        <small id="error-pembeli" class="error-text form-text text-danger"></small>
+                        <label>Jenis Sertifikasi</label>
+                        <select name="jenis_id" id="jenis_id" class="form-control" required>
+                            <option value="">- Pilih Jenis Sertifikasi -</option>
+                            @foreach ($jenis as $j)
+                                <option {{ $j->jenis_id == $sertifikasi->jenis_id ? 'selected' : '' }} value="{{ $j->jenis_id }}">{{ $j->jenis_nama }}</option>
+                            @endforeach
+                        </select>
+                        <small id="error-jenis_id" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Kode Penjualan</label>
-                        <input value="{{ $penjualan->penjualan_kode }}" type="text" name="penjualan_kode"
-                            id="penjualan_kode" class="form-control" required>
-                        <small id="error-penjualan_kode" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Tanggal Penjualan</label>
-                        <input value="{{ $penjualan->penjualan_tanggal }}" type="datetime-local" name="penjualan_tanggal" id="penjualan_tanggal"
-                            class="form-control">
-                        <small id="error-penjualan_tanggal" class="error-text form-text text-danger"></small>
+                        <label>Tanggal Berlaku</label>
+                        <input value="{{ $sertifikasi->tanggal_berlaku }}" type="date" name="tanggal_berlaku" id="tanggal_berlaku" class="form-control" required>
+                        <small id="error-tanggal_berlaku" class="error-text form-text text-danger"></small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -68,21 +76,24 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-                    user_id: {
+                    nama_sertifikasi: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 100
+                    },
+                    tanggal: {
+                        required: true,
+                        date: true
+                    },
+                    bidang_id: {
                         required: true,
                         number: true
                     },
-                    pembeli: {
+                    jenis_id: {
                         required: true,
-                        minlength: 3,
-                        maxlength: 50
+                        number: true
                     },
-                    penjualan_kode: {
-                        required: true,
-                        minlength: 3,
-                        maxlength: 20
-                    },
-                    penjualan_tanggal: {
+                    tanggal_berlaku: {
                         required: true,
                         date: true
                     }
@@ -100,32 +111,17 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataPenjualan.ajax.reload();
+                                dataSertifikasi.ajax.reload();
                             } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Terjadi Kesalahan',
+                                    title: 'Kesalahan',
                                     text: response.message
                                 });
                             }
                         }
                     });
                     return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
                 }
             });
         });

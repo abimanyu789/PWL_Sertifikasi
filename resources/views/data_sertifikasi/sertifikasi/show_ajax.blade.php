@@ -1,4 +1,4 @@
-@empty($penjualan)
+@empty($sertifikasi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/penjualan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/sertifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Rekap Penjualan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Sertifikasi</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -29,23 +29,27 @@
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
                         <th>ID</th>
-                        <td>{{ $penjualan->penjualan_id }}</td>
+                        <td>{{ $sertifikasi->sertifikasi_id }}</td>
                     </tr>
                     <tr>
-                        <th>Nama User</th>
-                        <td>{{ $penjualan->user->nama }}</td>
+                        <th>Nama Sertifikasi</th>
+                        <td>{{ $sertifikasi->nama_sertifikasi }}</td>
                     </tr>
                     <tr>
-                        <th>Pembeli</th>
-                        <td>{{ $penjualan->pembeli }}</td>
+                        <th>Tanggal</th>
+                        <td>{{ $sertifikasi->tanggal }}</td>
                     </tr>
                     <tr>
-                        <th>Kode Penjualan</th>
-                        <td>{{ $penjualan->penjualan_kode }}</td>
+                        <th>Tanggal Berlaku</th>
+                        <td>{{ $sertifikasi->tanggal_berlaku }}</td>
                     </tr>
                     <tr>
-                        <th>Tanggal Penjualan</th>
-                        <td>{{ $penjualan->penjualan_tanggal }}</td>
+                        <th>Bidang</th>
+                        <td>{{ $sertifikasi->bidang->nama_bidang }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jenis Sertifikasi</th>
+                        <td>{{ $sertifikasi->jenis->nama_jenis }}</td>
                     </tr>
                 </table>
             </div>

@@ -58,12 +58,39 @@
 
 @push('js')
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     function modalAction(url = '') {
         $('#myModal').load(url,function() {
             $('#myModal').modal('show');
         });
     }
 
+    function handleImport(formData) {
+        $.ajax({
+            url: "{{ url('pelatihan/import_ajax') }}",
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if(response.status) {
+                    alert(response.message);
+                    $('#myModal').modal('hide');
+                    dataLevel_pelatihan.ajax.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    }
     var dataPelatihan;
 
     $(document).ready(function() {
@@ -120,8 +147,11 @@
             ]
         });
 
-        $('#level_pelatihan_id').on('change', function() {
-            dataPelatihan.ajax.reload();
+        // Event handler untuk form import
+        $('#formImport').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            handleImport(formData);
         });
     });
 </script>

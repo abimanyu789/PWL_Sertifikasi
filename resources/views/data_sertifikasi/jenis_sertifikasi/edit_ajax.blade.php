@@ -1,60 +1,45 @@
-@empty($penjualan)
+@empty($jenis_sertifikasi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-                <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" arialabel="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/penjualan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/jenis_sertifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/penjualan/' . $penjualan->penjualan_id . '/update_ajax') }}" method="POST" id="form-edit">
+    <form action="{{ url('/jenis_sertifikasi/' . $jenis_sertifikasi->jenis_id . '/update_ajax') }}" method="POST" id="form-edit">
         @csrf
         @method('PUT')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Penjualan</h5>
-                    <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Jenis Sertifikasi</h5>
+                    <button type="button" class="close" data-dismiss="modal" arialabel="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Level Pengguna</label>
-                        <select name="user_id" id="user_id" class="form-control" required>
-                            <option value="">- Pilih User -</option>
-                            @foreach ($user as $l)
-                                <option {{ $l->user_id == $penjualan->user_id ? 'selected' : '' }}
-                                    value="{{ $l->user_id }}">{{ $l->nama }}</option>
-                            @endforeach
-                        </select>
-                        <small id="error-level_id" class="error-text form-text textdanger"></small>
+                        <label>Kode Jenis</label>
+                        <input value="{{ $jenis_sertifikasi->jenis_kode }}" type="text" name="jenis_kode" 
+                            id="jenis_kode" class="form-control" required>
+                        <small id="error-jenis_kode" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Pembeli</label>
-                        <input value="{{ $penjualan->pembeli }}" type="text" name="pembeli" id="pembeli"
-                            class="form-control" required>
-                        <small id="error-pembeli" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Kode Penjualan</label>
-                        <input value="{{ $penjualan->penjualan_kode }}" type="text" name="penjualan_kode"
-                            id="penjualan_kode" class="form-control" required>
-                        <small id="error-penjualan_kode" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Tanggal Penjualan</label>
-                        <input value="{{ $penjualan->penjualan_tanggal }}" type="datetime-local" name="penjualan_tanggal" id="penjualan_tanggal"
-                            class="form-control">
-                        <small id="error-penjualan_tanggal" class="error-text form-text text-danger"></small>
+                        <label>Nama Jenis</label>
+                        <input value="{{ $jenis_sertifikasi->jenis_nama }}" type="text" name="jenis_nama" 
+                            id="jenis_nama" class="form-control" required>
+                        <small id="error-jenis_nama" class="error-text form-text text-danger"></small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -68,23 +53,15 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-                    user_id: {
+                    jenis_kode: {
                         required: true,
-                        number: true
+                        minlength: 2,
+                        maxlength: 20
                     },
-                    pembeli: {
+                    jenis_nama: {
                         required: true,
                         minlength: 3,
                         maxlength: 50
-                    },
-                    penjualan_kode: {
-                        required: true,
-                        minlength: 3,
-                        maxlength: 20
-                    },
-                    penjualan_tanggal: {
-                        required: true,
-                        date: true
                     }
                 },
                 submitHandler: function(form) {
@@ -100,7 +77,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataPenjualan.ajax.reload();
+                                dataJenisSertifikasi.ajax.reload();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

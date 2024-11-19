@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\JenisSertifikasiModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class JenisSertifikasiController extends Controller
 {
@@ -19,7 +23,7 @@ class JenisSertifikasiController extends Controller
         ];
         $activeMenu = 'jenis_sertifikasi'; // set menu yang sedang aktif
         $jenis_sertifikasi = JenisSertifikasiModel::all();
-        return view('jenis_sertifikasi.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'jenis_sertifikasi' => $jenis_sertifikasi, 'activeMenu' => $activeMenu]);
+        return view('data_sertifikasi.jenis_sertifikasi.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'jenis_sertifikasi' => $jenis_sertifikasi, 'activeMenu' => $activeMenu]);
     }
 
     public function list(Request $request)
@@ -39,5 +43,167 @@ class JenisSertifikasiController extends Controller
             })
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
+    }
+
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'jenis_kode' => 'required|string|min:3|unique:m_jenis_sertifikasi,jenis_kode',
+                'jenis_nama' => 'required|string|max:100',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            JenisSertifikasiModel::create($request->all());
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data level pelatihan berhasil disimpan'
+            ]);
+        }
+
+        return redirect('/');
+    }
+
+    // Menampilkan halaman form edit level ajax
+    public function edit_ajax(string $id)
+    {
+        $jenis_sertifikasi = JenisSertifikasiModel::find($id);
+        return view('data_sertifikasi.jenis_sertifikasi.edit_ajax', ['jenis_sertifikasi' => $jenis_sertifikasi]);
+    }
+
+    public function update_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'jenis_kode' => 'required|string|min:3|unique:m_jenis_sertifikasi,jenis_kode',
+                'jenis_nama' => 'required|string|max:100'
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal.',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $check = JenisSertifikasiModel::find($id);
+            if ($check) {
+                $check->update($request->all());
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diupdate'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function confirm_ajax(string $id)
+    {
+        $jenis_sertifikasi = JenisSertifikasiModel::find($id);
+        return view('data_sertifikasi.jenis_sertifikasi.confirm_ajax', ['jenis_sertifikasi' => $jenis_sertifikasi]);
+    }
+
+    public function delete_ajax(Request $request, $id)
+    {
+        // cek apakah request dari ajax
+        if ($request->ajax() || $request->wantsJson()) {
+            $jenis_sertifikasi = JenisSertifikasiModel::find($id);
+            if ($jenis_sertifikasi) {
+                $jenis_sertifikasi->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+        return redirect('/');
+    }
+
+    public function show_ajax(string $id){
+        $jenis_sertifikasi = JenisSertifikasiModel::find($id);
+
+        return view('data_sertifikasi.jenis_sertifikasi.show_ajax', ['jenis_sertifikasi' => $jenis_sertifikasi]);
+    }
+
+    public function export_excel(){
+        // Ambil data Level yang akan di export
+        $jenis_sertifikasi = JenisSertifikasiModel::select('jenis_kode', 'jenis_nama')->get();
+        
+        // load library excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet(); // ambil sheet yang aktif
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Jenis Kode');
+        $sheet->setCellValue('C1', 'Jenis Nama');
+
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true); // bold Header
+
+        $no = 1;    // nomor data dimulai dari 1
+        $baris = 2; // baris data dimulai dari baris ke 2
+        foreach($jenis_sertifikasi as $key => $value){
+            $sheet->setCellValue('A'.$baris, $no);
+            $sheet->setCellValue('B'.$baris, $value->jenis_kode);
+            $sheet->setCellValue('C'.$baris, $value->jenis_nama);
+            $baris++;
+            $no++;
+        }
+
+        foreach(range('A','C') as $columnID){
+            $sheet->getColumnDimension($columnID)->setAutoSize(true); // set auto size untuk kolom
+        }
+
+        $sheet->setTitle('Data Level Pelatihan'); // set title sheet
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data Level Pelatihan'.date('Y-m-d H:i:s').'.xlsx';
+
+        header('Content-Type: appplication/vdn.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'.$filename.'"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+
+        $writer->save('php://output');
+        exit;
+    } // end function export_excelD
+
+    public function export_pdf()
+    {
+        $jenis_sertifikasi = JenisSertifikasiModel::select('jenis_kode', 'jenis_nama')->orderBy('level_pelatihan_kode')->get();
+
+        $pdf = Pdf::loadView('data_sertifikasi.jenis_sertifikasi.export_pdf', ['jenis_sertifikasi' => $jenis_sertifikasi]);
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
+        return $pdf->stream('Data Level Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
+
     }
 }

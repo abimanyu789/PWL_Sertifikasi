@@ -78,10 +78,11 @@ MALANG</span>
         <thead> 
                 <tr>
                     <th>No</th>
-                    <th>Pegawai</th>
-                    <th>Pembeli</th>
-                    <th>Kode Penjualan</th>
-                    <th>Tanggal Penjualan</th>
+                    <th>Nama Sertifikasi</th>
+                    <th>Tanggal</th>
+                    <th>Bidang</th>
+                    <th>Jenis Sertifikasi</th>
+                    <th>Tanggal Berlaku</th>
                 </tr>
                 <tbody> 
                     @foreach($penjualan as $p) 
@@ -91,6 +92,7 @@ MALANG</span>
                         <td> {{ $p->pembeli }}</td>
                         <td> {{ $p->penjualan_kode }}</td>  
                         <td> {{ $p->penjualan_tanggal }}</td> 
+                        <td> {{ $s->tanggal_berlaku }}</td>
                     </tr>
                     @endforeach 
         </tbody> 

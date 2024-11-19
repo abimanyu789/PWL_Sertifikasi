@@ -1,50 +1,56 @@
-@empty($penjualan)
+@empty($sertifikasi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang anda cari tidak ditemukan
+                    Data yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/penjualan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/sertifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/penjualan/' . $penjualan->penjualan_id . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Lavel</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Sertifikasi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning">
-                        <h5><i class="icon fas fa-ban"></i> Konfirmasi !!!</h5>
-                        Apakah Anda ingin menghapus data seperti di bawah ini?
+                        <h5><i class="icon fas fa-exclamation-circle"></i> Konfirmasi !!!</h5>
+                        Apakah Anda yakin ingin menghapus data berikut?
                     </div>
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
-                            <th class="text-right col-3">Kode Penjualan:</th>
-                            <td class="col-9">{{ $penjualan->penjualan_kode }}</td>
+                            <th class="text-right col-3">Nama Sertifikasi:</th>
+                            <td class="col-9">{{ $sertifikasi->nama_sertifikasi }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Nama Penjualan:</th>
-                            <td class="col-9">{{ $penjualan->penjualan_nama }}</td>
+                            <th class="text-right col-3">Tanggal Sertifikasi:</th>
+                            <td class="col-9">{{ $sertifikasi->tanggal }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Jenis Sertifikasi:</th>
+                            <td class="col-9">{{ $sertifikasi->jenis->jenis_nama }}</td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
+                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
                 </div>
             </div>
         </div>
@@ -52,7 +58,6 @@
     <script>
         $(document).ready(function() {
             $("#form-delete").validate({
-                rules: {},
                 submitHandler: function(form) {
                     $.ajax({
                         url: form.action,
@@ -66,32 +71,17 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataPenjualan.ajax.reload();
+                                dataSertifikasi.ajax.reload();
                             } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Terjadi Kesalahan',
+                                    title: 'Kesalahan',
                                     text: response.message
                                 });
                             }
                         }
                     });
                     return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
                 }
             });
         });

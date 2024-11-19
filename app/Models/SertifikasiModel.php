@@ -10,8 +10,8 @@ class SertifikasiModel extends Model
     protected $fillable = [
         'nama_sertifikasi',
         'tanggal',
+        'tanggal_berlaku',
         'bidang_id',
-        'jenis_id',
-        'tanggal_berlaku'
+        'jenis_id'
     ];
 }

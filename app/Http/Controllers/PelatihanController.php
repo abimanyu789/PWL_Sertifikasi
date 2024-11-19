@@ -168,6 +168,10 @@ class PelatihanController extends Controller
         return view('data_pelatihan.pelatihan.show_ajax', ['pelatihan' => $pelatihan]);
     }
 
+    public function import()
+    {
+        return view('data_pelatihan.pelatihan.import');
+    }
     public function import_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -266,6 +270,7 @@ class PelatihanController extends Controller
         header("Content-Disposition: attachment; filename=$filename");
         $writer->save("php://output");
     }
+
 
     public function export_pdf()
     {
