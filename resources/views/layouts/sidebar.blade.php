@@ -2,7 +2,7 @@
     .sidebar {
     background-color: #1F4C97 !important; /* Warna biru sesuai desain */
     color: white;
-    min-height: 88vh; /* Mengatur agar sidebar menggunakan seluruh tinggi layar */
+    min-height: 88vh !important; /* Mengatur agar sidebar menggunakan seluruh tinggi layar */
 }
 
 .nav-link {

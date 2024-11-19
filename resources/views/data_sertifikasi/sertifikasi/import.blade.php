@@ -10,13 +10,13 @@
             </div>
 
             <div class="modal-body">
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Download Template</label>
                     <a href="{{ asset('template_sertifikasi.xlsx') }}" class="btn btn-info btn-sm" download>
                         <i class="fa fa-file-excel"></i> Download
                     </a>
                     <small id="error-file_sertifikasi" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
 
                 <div class="form-group">
                     <label>Pilih File</label>

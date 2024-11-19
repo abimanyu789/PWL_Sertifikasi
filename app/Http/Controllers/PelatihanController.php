@@ -10,6 +10,7 @@ use App\Models\VendorModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory; // import excel
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf; // import pdf
 
 class PelatihanController extends Controller
@@ -24,26 +25,35 @@ class PelatihanController extends Controller
             'title' => 'Daftar pelatihan yang terdaftar dalam sistem',
         ];
         $activeMenu = 'pelatihan'; // set menu yang sedang aktif
-        $pelatihan = PelatihanModel::all(); // ambil data pelatihan untuk filter pelatihan
-        return view('data_pelatihan.pelatihan.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'pelatihan' => $pelatihan, 'activeMenu' => $activeMenu]);
+        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_id', 'level_pelatihan_nama')->get(); // Ambil level pelatihan untuk filter
+        return view('data_pelatihan.pelatihan.index', [
+            'breadcrumb' => $breadcrumb,
+            'page' => $page,
+            'level_pelatihan' => $level_pelatihan, // Ubah ke $levels
+            'activeMenu' => $activeMenu
+        ]);
     }
 
     // Ambil data user dalam bentuk json untuk datatables 
     public function list(Request $request) 
     { 
-        $users = PelatihanModel::select('pelatihan_id', 'nama_pelatihan', 'deskripsi','tanggal', 'bidang_id', 'level_pelatihan_id', 'vendor_id') 
+
+        $pelatihan = PelatihanModel::query();
+        if ($request->has('level_pelatihan_id') && $request->level_pelatihan_id != '') {
+            $pelatihan->where('level_pelatihan_id', $request->level_pelatihan_id);
+        }
+
+        $pelatihan = PelatihanModel::select('pelatihan_id', 'nama_pelatihan', 'deskripsi','tanggal', 'bidang_id', 'level_pelatihan_id', 'vendor_id') 
                     ->with('level'); 
     
-        return DataTables::of($users) 
+        return DataTables::of($pelatihan) 
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
             ->addIndexColumn()  
-            ->addColumn('aksi', function ($user) {  // menambahkan kolom aksi 
-                $btn  = '<a href="'.url('/pelatihan/' . $user->user_id).'" class="btn btn-info btn-sm">Detail</a> '; 
-                $btn .= '<a href="'.url('/pelatihan/' . $user->user_id . '/edit').'" class="btn btn-warning btn-sm">Edit</a> '; 
-                $btn .= '<form class="d-inline-block" method="POST" action="'. url('/pelatihan/'.$user->user_id).'">' 
-                        . csrf_field() . method_field('DELETE') .  
-                        '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakit menghapus data ini?\');">Hapus</button></form>';      
-                return $btn; 
+            ->addColumn('aksi', function ($pelatihan) {  // menambahkan kolom aksi 
+                $btn = '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                return $btn;
             }) 
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
             ->make(true); 
@@ -51,7 +61,14 @@ class PelatihanController extends Controller
 
     public function create_ajax()
     {
-        return view('data_pelatihan.pelatihan.create_ajax');
+        
+        $data = [
+            'bidang' => BidangModel::all(),
+            'level' => LevelPelatihanModel::all(),
+            'vendor' => VendorModel::all(),
+        ];
+            
+        return view('data_pelatihan.pelatihan.create_ajax', $data);
     }
 
     public function store_ajax(Request $request)

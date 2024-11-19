@@ -14,4 +14,14 @@ class SertifikasiModel extends Model
         'bidang_id',
         'jenis_id'
     ];
+
+    public function bidang()
+    {
+        return $this->belongsTo(BidangModel::class, 'bidang_id', 'bidang_id');
+    }
+    
+    public function jenis_sertifikasi()
+    {
+        return $this->belongsTo(JenisSertifikasiModel::class, 'jenis_id', 'jenis_id');
+    }
 }

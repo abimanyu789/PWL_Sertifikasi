@@ -5,7 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-              <button onclick="modalAction('{{ url('/pelatihan/import_ajax') }}')" class="btn btn-info">Import</button>
+              <button onclick="modalAction('{{ url('/pelatihan/import') }}')" class="btn btn-info">Import</button>
               <a href="{{ url('/pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Excel</a>
               <a href="{{ url('/pelatihan/export_pdf') }}" class="btn btn-danger"><i class="fa fa-file-pdf"></i> Export PDF</a>
             {{-- <a href="{{ url('/level/create') }}" class="btn btn-warning"> Tambah Level</a> --}}
@@ -24,12 +24,12 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            <select class="form-control" id="level_pelatihan_id" name="level_pelatihan_id" required>
+                            <select class="form-control" id="level_pelatihan_id" name="level_pelatihan_id">
                                 <option value="">- Semua -</option>
-                                @foreach($pelatihan as $item)
-                                <option value="{{ $item->level_pelatihan_id }}">{{ $item->level_pelatihan_nama }}</option>
+                                @foreach ($level_pelatihan as $item)
+                                    <option value="{{ $item->level_pelatihan_id }}">{{ $item->level_pelatihan_nama }}</option>
                                 @endforeach
-                            </select>
+                            </select>                            
                             <small class="form-text text-muted">Level Pelatihan</small>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                 },
                 {
                     // mengambil data level hasil dari ORM berelasi
-                    data: "bidang.nama_bidang",
+                    data: "bidang.bidang_nama",
                     className: "",
                     orderable: false,
                     searchable: false

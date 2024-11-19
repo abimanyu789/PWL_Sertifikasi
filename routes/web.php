@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\SertifikasiController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\VendorController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -134,6 +135,22 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [SertifikasiController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [SertifikasiController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [SertifikasiController::class, 'export_pdf']); 
+    });
+
+    Route::group(['prefix' => 'vendor', 'middleware'=> 'authorize:ADM'], function(){
+        Route::get('/', [VendorController::class, 'index']);
+        Route::post('/list', [VendorController::class, 'list']);
+        Route::get('/create_ajax', [VendorController::class, 'create_ajax']);
+        Route::post('/ajax', [VendorController::class, 'store_ajax']);
+        Route::get('/{id}/show_ajax', [VendorController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [VendorController::class, 'edit_ajax']);
+        Route::put('/{id}/update_ajax', [VendorController::class, 'update_ajax']);
+        Route::get('/{id}/delete_ajax',[VendorController::class, 'confirm_ajax']);
+        Route::delete('/{id}/delete_ajax', [VendorController::class, 'delete_ajax']);
+        Route::get('/import', [VendorController::class, 'import']);                      // ajax form upload excel
+        Route::post('/import_ajax', [VendorController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/export_excel', [VendorController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [VendorController::class, 'export_pdf']); 
     });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');

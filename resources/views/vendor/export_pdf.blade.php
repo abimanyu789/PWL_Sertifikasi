@@ -71,28 +71,26 @@
         </tr> 
     </table> 
  
-    <h3 class="text-center">LAPORAN DATA PELATIHAN</h4> 
+    <h3 class="text-center">LAPORAN DATA VENDOR</h4> 
     <table class="border-all"> 
         <thead> 
                 <tr>
                     <th>No</th>
-                    <th>Nama Pelatihan</th>
-                    <th>Deskripsi</th>
-                    <th>Tanggal</th>
-                    <th>Bidang</th>
-                    <th>Level Pelatihan</th>
-                    <th>Vendor</th>
+                    <th>Nama Vendor</th>
+                    <th>Alamat</th>
+                    <th>Kota</th>
+                    <th>No. Telepon</th>
+                    <th>Website</th>
                 </tr>
                 <tbody> 
-                    @foreach($pelatihan as $p) 
+                    @foreach($vendor as $v) 
                     <tr> 
                         <td class="text-center">{{ $loop->iteration }}</td>
-                        <td>{{ $p->nama_pelatihan }}</td>
-                        <td>{{ $p->deskripsi }}</td>
-                        <td>{{ $p->tanggal }}</td>
-                        <td>{{ $p->bidang->nama_bidang }}</td>
-                        <td>{{ $p->level_pelatihan->level_pelatihan_nama }}</td>
-                        <td>{{ $p->vendor->nama_vendor }}</td>
+                        <td> {{ $v->vendor_nama }}</td>
+                        <td> {{ $v->alamat }}</td>
+                        <td> {{ $v->kota }}</td>
+                        <td> {{ $v->no_telp }}</td>  
+                        <td> {{ $v->alamat_web }}</td> 
                     </tr>
                     @endforeach 
         </tbody> 

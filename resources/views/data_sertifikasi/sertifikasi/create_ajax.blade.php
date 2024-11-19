@@ -1,4 +1,4 @@
-<form action="{{ url('/sertifikasi/store_ajax') }}" method="POST" id="form-tambah">
+<form action="{{ url('/sertifikasi/ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -24,7 +24,7 @@
                     <select name="bidang_id" class="form-control" required>
                         <option value="">- Pilih Bidang -</option>
                         @foreach ($bidang as $item)
-                            <option value="{{ $item->bidang_id }}">{{ $item->nama_bidang }}</option>
+                            <option value="{{ $item->bidang_id }}">{{ $item->bidang_nama }}</option>
                         @endforeach
                     </select>
                     <small class="error-text text-danger"></small>

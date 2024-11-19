@@ -23,11 +23,11 @@ class SertifikasiController extends Controller
             'title' => 'Daftar sertifikasi yang terdaftar dalam sistem',
         ];
         $activeMenu = 'sertifikasi';
-        $sertifikasi = SertifikasiModel::all(); // Ambil data jenis sertifikasi untuk dropdown filter
+        $jenisSertifikasi = JenisSertifikasiModel::select('jenis_id', 'jenis_nama')->get(); // Ambil data jenis sertifikasi untuk dropdown filter
         return view('data_sertifikasi.sertifikasi.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
-            'sertifikasi' => $sertifikasi,
+            'jenisSertifikasi' => $jenisSertifikasi,
             'activeMenu' => $activeMenu
         ]);
     }
@@ -36,25 +36,27 @@ class SertifikasiController extends Controller
     public function list(Request $request) 
     { 
         $sertifikasi = SertifikasiModel::select('sertifikasi_id', 'nama_sertifikasi', 'tanggal', 'tanggal_berlaku', 'bidang_id', 'jenis_id')
-                    ->with(['bidang', 'jenis']); // Mengambil relasi bidang dan jenis
-    
+                    ->with(['bidang', 'jenis_sertifikasi']);  // Gunakan nama relasi yang benar
+        
         return DataTables::of($sertifikasi)
             ->addIndexColumn()
             ->addColumn('aksi', function ($sertifikasi) {  
-                $btn  = '<a href="'.url('/sertifikasi/' . $sertifikasi->sertifikasi_id).'" class="btn btn-info btn-sm">Detail</a> '; 
-                $btn .= '<a href="'.url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/edit').'" class="btn btn-warning btn-sm">Edit</a> '; 
-                $btn .= '<form class="d-inline-block" method="POST" action="'. url('/sertifikasi/'.$sertifikasi->sertifikasi_id).'">' 
-                        . csrf_field() . method_field('DELETE') .  
-                        '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';      
-                return $btn; 
+                $btn  = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
-    } 
+    }    
 
     public function create_ajax()
     {
-        return view('data_sertifikasi.sertifikat.create_ajax');
+        $data = [
+            'bidang' => BidangModel::all(),
+            'jenis' => JenisSertifikasiModel::all()
+        ];
+        return view('data_sertifikasi.sertifikasi.create_ajax', $data);
     }
 
     public function store_ajax(Request $request)
@@ -91,10 +93,13 @@ class SertifikasiController extends Controller
 
     public function edit_ajax(string $id)
     {
-        $sertifikasi = SertifikasiModel::find($id);
-        return view('data_sertifikasi.sertifikat.edit_ajax', ['sertifikasi' => $sertifikasi]);
-    }
+        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis_sertifikasi'])->findOrFail($id);
+        $bidang = BidangModel::select('bidang_id', 'bidang_nama')->get();
+        $jenis = JenisSertifikasiModel::select('jenis_id', 'jenis_nama')->get();
 
+        return view('data_sertifikasi.sertifikasi.edit_ajax', compact('sertifikasi', 'bidang', 'jenis'));
+    }
+    
     public function update_ajax(Request $request, string $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -135,11 +140,11 @@ class SertifikasiController extends Controller
         return redirect('/');
     }
 
-    public function confirm_ajax(string $id)
-    {
+    public function confirm_ajax(string $id){
         $sertifikasi = SertifikasiModel::find($id);
-        return view('data_sertifikasi.sertifikat.confirm_ajax', ['sertifikasi' => $sertifikasi]);
+        return view('data_sertifikasi.sertifikasi.confirm_ajax', ['sertifikasi' => $sertifikasi]);
     }
+    
 
     public function delete_ajax(Request $request, string $id)
     {
@@ -163,10 +168,16 @@ class SertifikasiController extends Controller
         return redirect('/');
     }
 
-    public function show_ajax(string $id)
-    {
+    public function show_ajax(string $id){
         $sertifikasi = SertifikasiModel::find($id);
-        return view('data_sertifikasi.sertifikat.show_ajax', ['sertifikasi' => $sertifikasi]);
+    
+        return view('data_sertifikasi.sertifikasi.show_ajax', ['sertifikasi' => $sertifikasi]);
+    }
+    
+
+    public function import()
+    {
+        return view('data_sertifikasi.sertifikasi.import');
     }
 
     public function import_ajax(Request $request)
@@ -225,11 +236,12 @@ class SertifikasiController extends Controller
 
     public function export_excel()
     {
-        $sertifikasi = SertifikasiModel::all();
+        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis_sertifikasi'])->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        // Header kolom
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'Nama Sertifikasi');
         $sheet->setCellValue('C1', 'Tanggal');
@@ -239,25 +251,28 @@ class SertifikasiController extends Controller
 
         $sheet->getStyle('A1:F1')->getFont()->setBold(true);
 
+        // Isi data
         $row = 2;
         $no = 1;
 
-        foreach ($sertifikasi as $p) {
+        foreach ($sertifikasi as $s) {
             $sheet->setCellValue('A' . $row, $no);
-            $sheet->setCellValue('B' . $row, $p->nama_sertifikasi);
-            $sheet->setCellValue('C' . $row, $p->tanggal);
-            $sheet->setCellValue('D' . $row, $p->tanggal_berlaku);
-            $sheet->setCellValue('E' . $row, $item->bidang->nama_bidang ?? '-'); // Nama Bidang
-            $sheet->setCellValue('F' . $row, $item->jenis->jenis_nama ?? '-'); // Nama Jenis Sertifikasi
-
+            $sheet->setCellValue('B' . $row, $s->nama_sertifikasi);
+            $sheet->setCellValue('C' . $row, $s->tanggal);
+            $sheet->setCellValue('D' . $row, $s->tanggal_berlaku);
+            $sheet->setCellValue('E' . $row, $s->bidang->nama_bidang);
+            $sheet->setCellValue('F' . $row, $s->jenis_sertifikasi->jenis_nama);
+        
             $row++;
             $no++;
-        }
+        }        
 
+        // Atur ukuran kolom agar otomatis
         foreach (range('A', 'F') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
+        // Simpan file Excel
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $filename = 'Data Sertifikasi.xlsx';
 
@@ -269,7 +284,7 @@ class SertifikasiController extends Controller
     public function export_pdf()
     {
         $sertifikasi = SertifikasiModel::all();
-        $pdf = Pdf::loadView('data_sertifikasi.sertifikat.export_pdf', ['sertifikasi' => $sertifikasi]);
+        $pdf = Pdf::loadView('data_sertifikasi.sertifikasi.export_pdf', ['sertifikasi' => $sertifikasi]);
         $pdf->setPaper('a4', 'portrait');
         $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
         return $pdf->stream('Data sertifikasi ' . date('Y-m-d H:i:s') . '.pdf');

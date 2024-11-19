@@ -1,4 +1,4 @@
-@empty($sertifikasi)
+@empty($vendor)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,18 +12,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/sertifikasi') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/vendor') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/vendor/' . $vendor->vendor_id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Sertifikasi</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Vendor</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -35,24 +35,24 @@
                     </div>
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
-                            <th class="text-right col-3">Nama Sertifikasi:</th>
-                            <td class="col-9">{{ $sertifikasi->nama_sertifikasi }}</td>
+                            <th class="text-right col-3">Nama Vendor:</th>
+                            <td class="col-9">{{ $vendor->vendor_nama }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Tanggal Sertifikasi:</th>
-                            <td class="col-9">{{ $sertifikasi->tanggal }}</td>
+                            <th class="text-right col-3">Alamat:</th>
+                            <td class="col-9">{{ $vendor->alamat}}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Tanggal Berlaku:</th>
-                            <td class="col-9">{{ $sertifikasi->tanggal_berlaku }}</td>
+                            <th class="text-right col-3">Kota:</th>
+                            <td class="col-9">{{ $vendor->kota }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Bidang:</th>
-                            <td class="col-9">{{ $sertifikasi->bidang->bidang_nama }}</td>
+                            <th class="text-right col-3">No. Telepon:</th>
+                            <td class="col-9">{{ $vendor->no_telp }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Jenis Sertifikasi:</th>
-                            <td class="col-9">{{ $sertifikasi->jenis->jenis_nama }}</td>
+                            <th class="text-right col-3">Website:</th>
+                            <td class="col-9">{{ $vendor->alamat_web }}</td>
                         </tr>
                     </table>
                 </div>
@@ -79,7 +79,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataSertifikasi.ajax.reload();
+                                dataVendor.ajax.reload();
                             } else {
                                 Swal.fire({
                                     icon: 'error',

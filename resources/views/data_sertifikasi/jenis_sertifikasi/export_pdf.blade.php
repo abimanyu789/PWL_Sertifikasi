@@ -80,7 +80,7 @@
                     <th>Nama Jenis</th>
                 </tr>
                 <tbody> 
-                    @foreach($penjualan as $p) 
+                    @foreach($jenis_sertifikasi as $js) 
                     <tr> 
                         <td class="text-center">{{ $loop->iteration }}</td> 
                         <td>{{ $js->jenis_kode }}</td>

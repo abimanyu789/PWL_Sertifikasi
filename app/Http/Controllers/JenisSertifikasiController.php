@@ -198,7 +198,7 @@ class JenisSertifikasiController extends Controller
 
     public function export_pdf()
     {
-        $jenis_sertifikasi = JenisSertifikasiModel::select('jenis_kode', 'jenis_nama')->orderBy('level_pelatihan_kode')->get();
+        $jenis_sertifikasi = JenisSertifikasiModel::select('jenis_kode', 'jenis_nama')->orderBy('jenis_kode')->get();
 
         $pdf = Pdf::loadView('data_sertifikasi.jenis_sertifikasi.export_pdf', ['jenis_sertifikasi' => $jenis_sertifikasi]);
         $pdf->setPaper('a4', 'portrait');

@@ -1,4 +1,4 @@
-@empty($sertifikasi)
+@empty($vendor)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/sertifikasi') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/vendor') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Sertifikasi</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail vendor</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -28,28 +28,28 @@
             <div class="modal-body">
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
-                        <th>ID Sertifikasi</th>
-                        <td>{{ $sertifikasi->sertifikasi_id }}</td>
+                        <th>ID Vendor</th>
+                        <td>{{ $vendor->vendor_id }}</td>
                     </tr>
                     <tr>
-                        <th>Nama Sertifikasi</th>
-                        <td>{{ $sertifikasi->nama_sertifikasi }}</td>
+                        <th>Nama Vendor</th>
+                        <td>{{ $vendor->vendor_nama }}</td>
                     </tr>
                     <tr>
-                        <th>Tanggal</th>
-                        <td>{{ $sertifikasi->tanggal }}</td>
+                        <th>Alamat</th>
+                        <td>{{ $vendor->alamat }}</td>
                     </tr>
                     <tr>
-                        <th>Tanggal Berlaku</th>
-                        <td>{{ $sertifikasi->tanggal_berlaku }}</td>
+                        <th>Kota</th>
+                        <td>{{ $vendor->kota }}</td>
                     </tr>
                     <tr>
-                        <th>Bidang</th>
-                        <td>{{ $sertifikasi->bidang->bidang_nama ?? 'Tidak Ada' }}</td>
+                        <th>No. Telepon</th>
+                        <td>{{ $vendor->no_telp }}</td>
                     </tr>
                     <tr>
-                        <th>Jenis Sertifikasi</th>
-                        <td>{{ $sertifikasi->jenis_sertifikasi->jenis_nama ?? 'Tidak Ada' }}</td>
+                        <th>Website</th>
+                        <td>{{ $vendor->alamat_web }}</td>
                     </tr>
                 </table>
             </div>
