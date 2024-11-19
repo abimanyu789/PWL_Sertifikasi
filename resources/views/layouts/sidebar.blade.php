@@ -170,15 +170,26 @@
                 </ul>
             </li>
 
-            <!-- Data Vendor Section -->
-            <li class="nav-item">
-                <a href="{{ url('/vendor') }}"
-                   class="nav-link {{ $activeMenu == 'vendor' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
-                    <i class="fas fa-building nav-icon"></i>
-                    <p>Data Vendor</p>
-                </a>
-            </li>
-
+          <!-- Data Vendor Section -->
+<li class="nav-item {{ in_array($activeMenu, ['vendor']) ? 'menu-open' : '' }}">
+    <a href="{{ url('/vendor') }}"
+       class="nav-link {{ in_array($activeMenu, ['vendor']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+        <i class="fas fa-building nav-icon"></i>
+        <p>
+            Data Vendor
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ url('/vendor') }}"
+               class="nav-link {{ $activeMenu == 'vendor' ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Vendor</p>
+            </a>
+        </li>
+    </ul>
+</li>
             <!-- Kuota Kegiatan Section -->
             <li class="nav-item">
                 <a href="{{ url('/quota') }}"
