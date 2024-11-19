@@ -38,10 +38,6 @@ class JenisSertifikasiController extends Controller
             ->addColumn('aksi', function ($jenis_sertifikasi) { // menambahkan kolom aksi
                 $btn = '<button onclick="modalAction(\'' . url('/jenis_sertifikasi/' . $jenis_sertifikasi->jenis_sertifikasi_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/jenis_sertifikasi/' . $jenis_sertifikasi->jenis_sertifikasi_id .
-                    '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/jenis_sertifikasi/' . $jenis_sertifikasi->jenis_sertifikasi_id .
-                    '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
