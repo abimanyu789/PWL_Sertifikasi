@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_level', function (Blueprint $table) {
-            $table->id('level_id');
-            $table->string('level_kode',10)->unique();
-            $table->string('level_nama',100);
+        Schema::create('m_quota', function (Blueprint $table) {
+            $table->id('quota_id');
+            $table->unsignedBigInteger('pelatihan_id')->index;
+            $table->integer('quota_jumlah');
             $table->timestamps();
+
+            $table->foreign('pelatihan_id')->references('pelatihan_id')->on('m_pelatihan');
         });
     }
 
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_level');
+        Schema::dropIfExists('m_quota');
     }
 };

@@ -17,6 +17,7 @@ class LevelPelatihanSeeder extends Seeder
             ['level_pelatihan_kode' => 'NAS', 'level_pelatihan_nama' => 'Nasional'],
             ['level_pelatihan_kode' => 'INT', 'level_pelatihan_nama' => 'Internasional'],
         ];
+
         DB::table('m_level_pelatihan')->insert($data);
     }
 }

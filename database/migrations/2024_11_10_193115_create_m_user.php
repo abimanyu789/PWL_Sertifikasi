@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('level_id')->index; //indexing untuk FK
             $table->string('nip',20)->unique(); //unique untuk memastikan tidak ada nip yg sama
             $table->string('nama',100);
+            $table->string('username',20)->unique(); //unique untuk memastikan tidak ada username yg sama
             $table->string('email',100);
             $table->string('password');
             $table->string('profile_image');

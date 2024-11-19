@@ -31,10 +31,23 @@ class BidangSeeder extends Seeder
             ['bidang_kode' => 'UIUX', 'bidang_nama' => 'UI/UX Design'],
             ['bidang_kode' => 'QA', 'bidang_nama' => 'Quality Assurance'],
             ['bidang_kode' => 'ITS', 'bidang_nama' => 'IT Support'],
+            ['bidang_kode' => 'ROB', 'bidang_nama' => 'Robotics'],
             ['bidang_kode' => 'SWE', 'bidang_nama' => 'Software Engineering'],
+            ['bidang_kode' => 'DVO', 'bidang_nama' => 'DevOps'],
             ['bidang_kode' => 'AI', 'bidang_nama' => 'Artificial Intelligence'],
             ['bidang_kode' => 'ML', 'bidang_nama' => 'Machine Learning'],
+            ['bidang_kode' => 'DBA', 'bidang_nama' => 'Database Administration'],
+            ['bidang_kode' => 'NA', 'bidang_nama' => 'Network Administration'],
+            ['bidang_kode' => 'ITPM', 'bidang_nama' => 'IT Project Management'],
+            ['bidang_kode' => 'BC', 'bidang_nama' => 'Blockchain'],
+            ['bidang_kode' => 'CRYPTO', 'bidang_nama' => 'Cryptocurrency'],
+            ['bidang_kode' => 'AR', 'bidang_nama' => 'Augmented Reality'],
+            ['bidang_kode' => 'VR', 'bidang_nama' => 'Virtual Reality'],
+            ['bidang_kode' => 'ERP', 'bidang_nama' => 'Enterprise Resource Planning Systems'],
+            ['bidang_kode' => 'ITET', 'bidang_nama' => 'IT Education & Training'],
         ];
+
         DB::table('m_bidang')->insert($data);
+
     }
 }

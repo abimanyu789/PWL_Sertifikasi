@@ -4,10 +4,10 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/bidang/import') }}')" class="btn btn-info">Import Bidang</button>
-                <a href="{{ url('/bidang/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Excel</a>
-                <a href="{{ url('/bidang/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export PDF</a>
-                <button onclick="modalAction('{{ url('/bidang/create_ajax') }}')" class="btn btn-success">Tambah Data</button>
+                <button onclick="modalAction('{{ url('/level_pelatihan/import') }}')" class="btn btn-info">Import Excel</button>
+                <a href="{{ url('/level_pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Excel</a>
+                <a href="{{ url('/level_pelatihan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export PDF</a>
+                <button onclick="modalAction('{{ url('/level_pelatihan/create_ajax') }}')" class="btn btn-success">Tambah Data</button>
             </div>
         </div>
         <div class="card-body">
@@ -17,12 +17,12 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_bidang">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_level_pelatihan">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Kode Bidang</th>
-                        <th>Nama Bidang</th>
+                        <th>Kode Level Pelatihan</th>
+                        <th>Nama Level Pelatihan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -43,17 +43,17 @@
                 $('#myModal').modal('show');
             });
         }
-        var dataBidang;
+        var dataLevel_pelatihan;
         $(document).ready(function() {
-            dataBidang = $('#table_bidang').DataTable({
+            dataLevel_pelatihan = $('#table_level_pelatihan').DataTable({
                 // serverSide: true, jika ingin menggunakan server side processing
                 serverSide: true,
                 ajax: {
-                    "url": "{{ url('bidang/list') }}",
+                    "url": "{{ url('level_pelatihan/list') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": function(d) {
-                        d.bidang_id = $('#bidang_id').val();
+                        d.level_pelatihan_id = $('#level_pelatihan_id').val();
                     }
                 },
                 columns: [{
@@ -63,14 +63,14 @@
                     orderable: false,
                     searchable: false
                 }, {
-                    data: "bidang_kode",
+                    data: "level_pelatihan_kode",
                     className: "",
                     // orderable: true, jika ingin kolom ini bisa diurutkan
                     orderable: true,
                     // searchable: true, jika ingin kolom ini bisa dicari
                     searchable: true
                 }, {
-                    data: "bidang_nama",
+                    data: "level_pelatihan_nama",
                     className: "",
                     orderable: true,
                     searchable: true
