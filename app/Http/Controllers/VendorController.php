@@ -64,7 +64,7 @@ class VendorController extends Controller
             'alamat' => 'required|string|max:255',
             'kota' => 'required|string|max:100',
             'no_telp' => 'required|string|max:20',
-            'alamat_web' => 'required|url|max:100'
+            'alamat_web' => 'required|string|max:100'
         ]);
 
         if ($validator->fails()) {
