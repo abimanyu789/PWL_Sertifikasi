@@ -43,31 +43,6 @@ public function index()
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
     }
-    // Menampilkan halaman form tambah level_pelatihan
-    // Menampilkan detail level_pelatihan
-    public function show(string $id)
-    {
-        // Mengambil data level_pelatihan berdasarkan id dan relasi level_pelatihan
-        $level_pelatihan = LevelPelatihanModel::find($id);
-        // Breadcrumb untuk navigasi
-        $breadcrumb = (object) [
-            'title' => 'Detail Level Pelatihan',
-            'list' => ['Home', 'Level Pelatihan', 'Detail']
-        ];
-        // Informasi halaman
-        $page = (object) [
-            'title' => 'Detail level pelatihan'
-        ];
-        // Menetapkan menu yang sedang aktif
-        $activeMenu = 'level_pelatihan';
-        // Menampilkan view 'level_pelatihan.show' dengan data yang sudah diambil
-        return view('level_pelatihan.show', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'level_pelatihan' => $level_pelatihan,
-            'activeMenu' => $activeMenu
-        ]);
-    }
     public function confirm_ajax(string $id)
     {
         $level_pelatihan = LevelPelatihanModel::find($id);
