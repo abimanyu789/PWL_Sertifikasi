@@ -32,7 +32,7 @@
             rules: {
                 bidang_kode: {
                     required: true,
-                    minlength: 3
+                    minlength: 2
                 },
                 bidang_nama: {
                     required: true,
