@@ -1,4 +1,4 @@
-@empty($level)
+@empty($bidang)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,18 +11,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/level') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/bidang') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/level/' . $level->level_id . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/bidang/' . $bidang->bidang_id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Level</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Bidang</h5>
                     <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
@@ -34,11 +34,11 @@
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
                             <th class="text-right col-3">Kode :</th>
-                            <td class="col-9">{{ $level->level_kode }}</td>
+                            <td class="col-9">{{ $bidang->bidang_kode }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Nama :</th>
-                            <td class="col-9">{{ $level->level_nama }}</td>
+                            <td class="col-9">{{ $bidang->bidang_nama }}</td>
                         </tr>
                     </table>
                 </div>
@@ -66,7 +66,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataLevel.ajax.reload();
+                                dataBidang.ajax.reload();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {
