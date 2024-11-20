@@ -122,7 +122,14 @@
                         <a href="{{ url('/user') }}" 
                             class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Dosen & Pimpinan</p>
+                            <p>Pimpinan</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/user') }}" 
+                            class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Dosen</p>
                         </a>
                     </li>
                     <li class="nav-item">

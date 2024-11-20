@@ -31,7 +31,7 @@
                 </div>
                 <div class="form-group">
                     <label>Alamat Web</label>
-                    <input type="url" name="alamat_web" id="alamat_web" class="form-control" required>
+                    <input type="text" name="alamat_web" id="alamat_web" class="form-control" required>
                     <small id="error-alamat_web" class="error-text form-text text-danger"></small>
                 </div>
             </div>
@@ -68,7 +68,6 @@
                 },
                 alamat_web: {
                     required: true,
-                    url: true,
                     maxlength: 100
                 }
             },
