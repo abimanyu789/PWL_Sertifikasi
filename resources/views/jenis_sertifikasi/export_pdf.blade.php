@@ -75,21 +75,21 @@
             </td>
         </tr>
     </table>
-    <h3 class="text-center">LAPORAN DATA LEVEL</h4>
+    <h3 class="text-center">LAPORAN DATA JENIS SERTIFIKASI</h4>
         <table class="border-all">
             <thead>
                 <tr>
                     <th class="text-center">No</th>
-                    <th>Kode Level</th>
-                    <th>Nama Level</th>
+                    <th>Kode</th>
+                    <th>Nama</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($level as $l)
+                @foreach ($jenis_sertifikasi as $j)
                     <tr>
                         <td class="text-center">{{ $loop->iteration }}</td>
-                        <td>{{ $l->level_kode }}</td>
-                        <td>{{ $l->level_nama }}</td>
+                        <td>{{ $j->jenis_kode }}</td>
+                        <td>{{ $j->jenis_nama }}</td>
                     </tr>
                 @endforeach
             </tbody>
