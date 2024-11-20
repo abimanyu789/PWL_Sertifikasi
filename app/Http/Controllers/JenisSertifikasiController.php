@@ -43,30 +43,6 @@ class JenisSertifikasiController extends Controller
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
     }
-    // Menampilkan detail jenis_sertifikasi
-    public function show(string $id)
-    {
-        // Mengambil data jenis_sertifikasi berdasarkan id dan relasi jenis_sertifikasi
-        $jenis_sertifikasi = JenisSertifikasiModel::find($id);
-        // Breadcrumb untuk navigasi
-        $breadcrumb = (object) [
-            'title' => 'Detail Jenis Sertifikasi',
-            'list' => ['Home', 'Jenis Sertifikasi', 'Detail']
-        ];
-        // Informasi halaman
-        $page = (object) [
-            'title' => 'Detail jenis sertifikasi'
-        ];
-        // Menetapkan menu yang sedang aktif
-        $activeMenu = 'jenis_sertifikasi';
-        // Menampilkan view 'jenis_sertifikasi.show' dengan data yang sudah diambil
-        return view('jenis_sertifikasi.show', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'jenis_sertifikasi' => $jenis_sertifikasi,
-            'activeMenu' => $activeMenu
-        ]);
-    }
     public function confirm_ajax(string $id)
     {
         $jenis_sertifikasi = JenisSertifikasiModel::find($id);
