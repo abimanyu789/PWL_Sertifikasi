@@ -5,7 +5,8 @@ use App\Http\Controllers\JenisSertifikasiController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\LevelPelatihanController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\PimpinanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\SertifikasiController;
@@ -39,21 +40,37 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/profile/update/{id}', [ProfileController::class, 'update'])->name('profile.update');
     }); 
 
-    // Route::group(['prefix' => 'user'], function () {
-    Route::group(['prefix' => 'user', 'middleware'=> 'authorize:ADM'], function(){
-        Route::get('/', [UserController::class, 'index']);          
-        Route::post('list', [UserController::class, 'list']);
-        Route::get('/create_ajax', [UserController::class, 'create_ajax']);    
-        Route::post('/ajax', [UserController::class, 'store_ajax']);
-        Route::get('/{id}/show_ajax', [UserController::class, 'show_ajax']);
-        Route::get('/{id}/edit_ajax', [UserController::class, 'edit_ajax']);    
-        Route::put('/{id}/update_ajax', [UserController::class, 'update_ajax']); 
-        Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']);   
-        Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']);
-        Route::get('/import', [UserController::class, 'import']);                      // ajax form upload excel
-        Route::post('/import_ajax', [UserController::class, 'import_ajax']);           // ajax import excel
-        Route::get('/export_excel', [UserController::class, 'export_excel']);          // ajax import excel
-        Route::get('/export_pdf', [UserController::class, 'export_pdf']); 
+    // Route::group(['prefix' => 'Dosen'], function () {
+    Route::group(['prefix' => 'dosen', 'middleware'=> 'authorize:ADM'], function(){
+        Route::get('/', [DosenController::class, 'index']);          
+        Route::post('list', [DosenController::class, 'list']);
+        Route::get('/create_ajax', [DosenController::class, 'create_ajax']);    
+        Route::post('/ajax', [DosenController::class, 'store_ajax']);
+        Route::get('/{id}/show_ajax', [DosenController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [DosenController::class, 'edit_ajax']);    
+        Route::put('/{id}/update_ajax', [DosenController::class, 'update_ajax']); 
+        Route::get('/{id}/delete_ajax', [DosenController::class, 'confirm_ajax']);   
+        Route::delete('/{id}/delete_ajax', [DosenController::class, 'delete_ajax']);
+        Route::get('/import', [DosenController::class, 'import']);                      // ajax form upload excel
+        Route::post('/import_ajax', [DosenController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/export_excel', [DosenController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [DosenController::class, 'export_pdf']); 
+    });
+
+    Route::group(['prefix' => 'pimpinan', 'middleware'=> 'authorize:ADM'], function(){
+        Route::get('/', [PimpinanController::class, 'index']);          
+        Route::post('list', [PimpinanController::class, 'list']);
+        Route::get('/create_ajax', [PimpinanController::class, 'create_ajax']);    
+        Route::post('/ajax', [PimpinanController::class, 'store_ajax']);
+        Route::get('/{id}/show_ajax', [PimpinanController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [PimpinanController::class, 'edit_ajax']);    
+        Route::put('/{id}/update_ajax', [PimpinanController::class, 'update_ajax']); 
+        Route::get('/{id}/delete_ajax', [PimpinanController::class, 'confirm_ajax']);   
+        Route::delete('/{id}/delete_ajax', [PimpinanController::class, 'delete_ajax']);
+        Route::get('/import', [PimpinanController::class, 'import']);                      // ajax form upload excel
+        Route::post('/import_ajax', [PimpinanController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/export_excel', [PimpinanController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [PimpinanController::class, 'export_pdf']); 
     });
 
     Route::group(['prefix' => 'level', 'middleware'=> 'authorize:ADM'], function(){

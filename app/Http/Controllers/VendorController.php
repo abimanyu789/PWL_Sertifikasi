@@ -68,17 +68,16 @@ class VendorController extends Controller
                 'alamat' => 'required|string|max:255',
                 'kota' => 'required|string|max:100',
                 'no_telp' => 'required|string|max:20',
-                'alamat_web' => 'required|url|max:100'
+                'alamat_web' => 'required|string|max:100'
             ]);
     
             if ($validator->fails()) {
-                Log::error('Validation Errors: ', $validator->errors()->toArray());
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validasi gagal.',
+                    'message' => 'Validasi gagal',
                     'errors' => $validator->errors()
                 ]);
-            }            
+            }
     
             VendorModel::create([
                 'vendor_nama' => $request->vendor_nama,
@@ -116,7 +115,7 @@ class VendorController extends Controller
                 'alamat' => 'nullable|string|max:255',
                 'kota' => 'nullable|string|max:100',
                 'no_telp' => 'nullable|string|max:15',
-                'alamat_web' => 'nullable|url|max:255',
+                'alamat_web' => 'nullable|string|max:255',
             ];
 
             $validator = Validator::make($request->all(), $rules);

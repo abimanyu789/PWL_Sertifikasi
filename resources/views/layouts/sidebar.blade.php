@@ -109,8 +109,8 @@
             </li>
 
             <!-- Data Pengguna Section -->
-            <li class="nav-item has-treeview {{ in_array($activeMenu, ['user', 'level', 'bidang']) ? 'menu-open' : '' }}">
-                <a href="#" class="nav-link {{ in_array($activeMenu, ['user', 'level', 'bidang']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+            <li class="nav-item has-treeview {{ in_array($activeMenu, ['pimpinan', 'dosen','level', 'bidang']) ? 'menu-open' : '' }}">
+                <a href="#" class="nav-link {{ in_array($activeMenu, ['pimpinan', 'dosen', 'level', 'bidang']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                     <i class="nav-icon fas fa-users"></i>
                     <p>
                         Data Pengguna
@@ -119,10 +119,17 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{ url('/user') }}" 
+                        <a href="{{ url('/pimpinan') }}" 
                             class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Dosen & Pimpinan</p>
+                            <p>Pimpinan</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/dosen') }}" 
+                            class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Dosen</p>
                         </a>
                     </li>
                     <li class="nav-item">

@@ -8,32 +8,34 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-class UserController extends Controller
+class DosenController extends Controller
 {
     public function index() 
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar User',
-            'list'  => ['Home', 'User']
+            'title' => 'Daftar Dosen',
+            'list'  => ['Home', 'Dosen']
         ];
 
         $page = (object) [
-            'title' => 'Daftar user yang terdaftar dalam sistem'
+            'title' => 'Daftar dosen yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'user'; 
+        $activeMenu = 'dosen'; 
 
         $level = LevelModel::all(); // ambil data level untuk filter level
 
-        return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
+        return view('user.dosen.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
     }
 
-    // Ambil data user dalam bentuk json untuk datatables
+    // Ambil data dosen dalam bentuk json untuk datatables
     public function list(Request $request)
     {
-        $users = UserModel::select('user_id', 'nip', 'nama', 'email', 'level_id') ->with('level');
+        $users = UserModel::where('level_id', 2) // level_id 2 untuk Pimpinan
+            ->select('user_id', 'nip', 'nama', 'username', 'email', 'level_id')
+            ->with('level');
         
-        // Filter data user berdasarkan level_id
+        // Filter data dosen berdasarkan level_id
         if ($request->level_id) {
             $users->where('level_id', $request->level_id);
         }
@@ -43,9 +45,9 @@ class UserController extends Controller
             ->addIndexColumn() 
             ->addColumn('aksi', function ($user) { // menambahkan kolom aksi
 
-                $btn  = '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> '; 
-                $btn .= '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> '; 
-                $btn .= '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/delete_ajax').'\')"  class="btn btn-danger btn-sm">Hapus</button> '; 
+                $btn  = '<button onclick="modalAction(\''.url('/dosen/' . $user->user_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> '; 
+                $btn .= '<button onclick="modalAction(\''.url('/dosen/' . $user->user_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> '; 
+                $btn .= '<button onclick="modalAction(\''.url('/dosen/' . $user->user_id . '/delete_ajax').'\')"  class="btn btn-danger btn-sm">Hapus</button> '; 
 
                 return $btn; 
             })
@@ -57,7 +59,7 @@ class UserController extends Controller
     {
         $level = LevelModel::select('level_id', 'level_nama')->get();
 
-        return view('user.create_ajax')->with('level', $level);
+        return view('user.dosen.create_ajax')->with('level', $level);
     }
 
     public function store_ajax(Request $request) 
@@ -68,6 +70,7 @@ class UserController extends Controller
                 'level_id'  => 'required|integer',
                 'nip'       => 'required|string|min:3|max:10|unique:m_user,nip',
                 'nama'      => 'required|string|max:100',
+                'username' => 'required|string|min:3|unique:m_user,username',
                 'email'     => 'required|email|unique:m_user,email',
                 'password'  => 'required|min:6'
             ];
@@ -83,7 +86,15 @@ class UserController extends Controller
                 ]);
             }
 
-            UserModel::create($request->all());
+            UserModel::create([
+                'level_id' => 2, // Set level_id untuk Pimpinan
+                'nip' => $request->nip,
+                'nama' => $request->nama,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data user berhasil disimpan'
@@ -91,4 +102,6 @@ class UserController extends Controller
         }
         redirect('/');
     }
+
+
 }
