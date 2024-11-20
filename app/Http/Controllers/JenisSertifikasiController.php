@@ -77,59 +77,6 @@ class JenisSertifikasiController extends Controller
         $jenis_sertifikasi = JenisSertifikasiModel::find($id);
         return view('jenis_sertifikasi.show_ajax', ['jenis_sertifikasi' => $jenis_sertifikasi]);
     }
-    public function import()
-    {
-        return view('jenis_sertifikasi.import');
-    }
-    public function import_ajax(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                // validasi file harus xls atau xlsx, max 1MB
-                'file_jenis_sertifikasi' => ['required', 'mimes:xlsx', 'max:1024']
-            ];
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-            $file = $request->file('file_jenis_sertifikasi'); // ambil file dari request
-            $reader = IOFactory::createReader('Xlsx'); // load reader file excel
-            $reader->setReadDataOnly(true); // hanya membaca data
-            $spreadsheet = $reader->load($file->getRealPath()); // load file excel
-            $sheet = $spreadsheet->getActiveSheet(); // ambil sheet yang aktif
-            $data = $sheet->toArray(null, false, true, true); // ambil data excel
-            $insert = [];
-            if (count($data) > 1) { // jika data lebih dari 1 baris
-                foreach ($data as $baris => $value) {
-                    if ($baris > 1) { // baris ke 1 adalah header, maka lewati
-                        $insert[] = [
-                            'jenis_sertifikasi_kode' => $value['A'],
-                            'jenis_sertifikasi_nama' => $value['B'],
-                            'created_at' => now(),
-                        ];
-                    }
-                }
-                if (count($insert) > 0) {
-                    // insert data ke database, jika data sudah ada, maka diabaikan
-                    JenisSertifikasiModel::insertOrIgnore($insert);
-                }
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diimport'
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tidak ada data yang diimport'
-                ]);
-            }
-        }
-        return redirect('/');
-    }
     public function export_excel()
     {
         // ambil data jenis_sertifikasi yang akan di export
@@ -155,7 +102,7 @@ class JenisSertifikasiController extends Controller
         foreach (range('A', 'C') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);   // set auto size untuk kolom
         }
-        $sheet->setTitle('Data jenis_sertifikasi'); // set title sheet
+        $sheet->setTitle('Data Jenis Sertifikasi'); // set title sheet
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $filename = 'Data jenis_sertifikasi ' . date('Y-m-d H:i:s') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
