@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\SertifikasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,6 @@ use App\Http\Controllers\Api\LoginController;
 //     return $request->user();
 // });
 // Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+
+Route::get("sertifikasi", [SertifikasiController::class, "index"]);
+Route::get("sertifikasi/{id}", [SertifikasiController::class, "show"]);
