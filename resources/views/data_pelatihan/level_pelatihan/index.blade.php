@@ -4,10 +4,8 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                {{-- <button onclick="modalAction('{{ url('/llevel_pelatihan/import') }}')" class="btn btn-sm btn-info mt-1">Import User</button> --}}
-                <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/level_pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export User</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/level_pelatihan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export User</a>
-                {{-- <button onclick="modalAction('{{ url('level_pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button> --}}
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/level_pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/level_pelatihan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             </div>
         </div>
         <div class="card-body">
@@ -23,7 +21,6 @@
                         <th>ID</th>
                         <th>Kode Level Pelatihan</th>
                         <th>Nama Level Pelatihan</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
@@ -72,11 +69,6 @@
                     className: "",
                     orderable: true,
                     searchable: true
-                }, {
-                    data: "aksi",
-                    className: "",
-                    orderable: false,
-                    searchable: false
                 }]
             });
         });

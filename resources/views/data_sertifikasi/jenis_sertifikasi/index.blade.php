@@ -1,13 +1,11 @@
 @extends('layouts.template')
 @section('content')
-    <div class="card card-outline card-primary">
+    <div class="card">
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/jenis_sertifikasi/import') }}')" class="btn btn-info">Import Jenis</button>
-                <a href="{{ url('/jenis_sertifikasi/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Excel</a>
-                <a href="{{ url('/jenis_sertifikasi/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export PDF</a>
-                <button onclick="modalAction('{{ url('/jenis_sertifikasi/create_ajax') }}')" class="btn btn-success">Tambah Data </button>
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/jenis_sertifikasi/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/jenis_sertifikasi/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             </div>
         </div>
         <div class="card-body">
@@ -23,7 +21,6 @@
                         <th>ID</th>
                         <th>Kode Jenis Sertifikasi</th>
                         <th>Nama Jenis Sertifikasi</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
             </table>
@@ -32,10 +29,8 @@
     <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" databackdrop="static"
         data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
-
 @push('css')
 @endpush
-
 @push('js')
     <script>
         function modalAction(url = '') {
@@ -74,11 +69,6 @@
                     className: "",
                     orderable: true,
                     searchable: true
-                }, {
-                    data: "aksi",
-                    className: "",
-                    orderable: false,
-                    searchable: false
                 }]
             });
         });

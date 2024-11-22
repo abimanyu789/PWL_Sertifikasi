@@ -2,7 +2,7 @@
     .sidebar {
     background-color: #1F4C97 !important; /* Warna biru sesuai desain */
     color: white;
-    min-height: 100vh; /* Mengatur agar sidebar menggunakan seluruh tinggi layar */
+    min-height: 88vh !important; /* Mengatur agar sidebar menggunakan seluruh tinggi layar */
 }
 
 .nav-link {
@@ -96,7 +96,7 @@
                         <a href="{{ url('/user') }}"
                            class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Dosen & Pimpinan</p>
+                            <p>Pimpinan & Dosen</p>
                         </a>
                     </li>
                     <li class="nav-item">

@@ -10,36 +10,11 @@
             </div>
 
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Download Template</label>
-                    <a href="{{ asset('template_vendor.xlsx') }}" class="btn btn-info btn-sm" download>
-                        <i class="fa fa-file-excel"></i>Download
-                    </a>
-                    <small id="error-file_vendor" class="error-text form-text text-danger"></small>
-                </div>
 
                 <div class="form-group">
                     <label>Pilih File</label>
                     <input type="file" name="file_vendor" id="file_vendor" class="form-control" required>
                     <small id="error-file_vendor" class="error-text form-text text-danger"></small>
-                </div>
-
-                <div class="alert alert-info">
-                    <h5><i class="icon fas fa-info"></i> Informasi!</h5>
-                    <p>Format file yang diizinkan:</p>
-                    <ul>
-                        <li>File Excel (.xlsx)</li>
-                        <li>Ukuran maksimal 1MB</li>
-                        <li>Data harus sesuai dengan template yang disediakan</li>
-                    </ul>
-                    <p>Struktur kolom pada file Excel:</p>
-                    <ul>
-                        <li>Kolom A: Nama Vendor</li>
-                        <li>Kolom B: Alamat</li>
-                        <li>Kolom C: Kota</li>
-                        <li>Kolom D: No. Telepon</li>
-                        <li>Kolom E: Alamat Web</li>
-                    </ul>
                 </div>
             </div>
 
@@ -58,32 +33,26 @@
                 file_vendor: {
                     required: true,
                     extension: "xlsx"
-                },
-            },
-            messages: {
-                file_vendor: {
-                    required: "File harus dipilih",
-                    extension: "File harus berformat .xlsx"
                 }
             },
             submitHandler: function(form) {
-                var formData = new FormData(form);
+                var formData = new FormData(form); // Jadikan form ke FormData untuk menghandle file
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: formData,
-                    processData: false,
+                    data: formData, // Data yang dikirim berupa FormData
+                    processData: false, // setting processData dan contentType ke false, untuk menghandle file
                     contentType: false,
                     success: function(response) {
-                        if (response.status) {
+                        if (response.status) { // jika sukses
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataVendor.ajax.reload();
-                        } else {
+                            tableVendor.ajax.reload(); // reload datatable
+                        } else { // jika error
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
@@ -94,13 +63,6 @@
                                 text: response.message
                             });
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: 'Gagal mengunggah file. Silakan coba lagi.'
-                        });
                     }
                 });
                 return false;

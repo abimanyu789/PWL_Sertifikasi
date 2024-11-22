@@ -26,12 +26,12 @@
                 </div>
                 <div class="form-group">
                     <label>Bidang</label>
-                    <select name="bidang_id" id="bidang_id" class="form-control" required>
+                    <select name="bidang_id" id="bidang_id" class="form-control">
                         <option value="">- Pilih Bidang -</option>
-                        @foreach ($bidang as $b)
-                            <option value="{{ $b->bidang_id }}">{{ $b->nama_bidang }}</option>
+                        @foreach ($bidang as $item)
+                            <option value="{{ $item->bidang_id }}">{{ $item->bidang_nama }}</option>
                         @endforeach
-                    </select>
+                    </select>                    
                     <small id="error-bidang_id" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">

@@ -1,27 +1,27 @@
-<form action="{{ url('/penjualan/import_ajax') }}" method="POST" id="form-import-penjualan" enctype="multipart/form-data">
+<form action="{{ url('/sertifikasi/import_ajax') }}" method="POST" id="form-import-sertifikasi" enctype="multipart/form-data">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Import Data Penjualan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Import Data Sertifikasi</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
             <div class="modal-body">
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Download Template</label>
-                    <a href="{{ asset('template_penjualan.xlsx') }}" class="btn btn-info btn-sm" download>
-                        <i class="fa fa-file-excel"></i>Download
+                    <a href="{{ asset('template_sertifikasi.xlsx') }}" class="btn btn-info btn-sm" download>
+                        <i class="fa fa-file-excel"></i> Download
                     </a>
-                    <small id="error-file_penjualan" class="error-text form-text text-danger"></small>
-                </div>
+                    <small id="error-file_sertifikasi" class="error-text form-text text-danger"></small>
+                </div> --}}
 
                 <div class="form-group">
                     <label>Pilih File</label>
-                    <input type="file" name="file_penjualan" id="file_penjualan" class="form-control" required>
-                    <small id="error-file_penjualan" class="error-text form-text text-danger"></small>
+                    <input type="file" name="file_sertifikasi" id="file_sertifikasi" class="form-control" required>
+                    <small id="error-file_sertifikasi" class="error-text form-text text-danger"></small>
                 </div>
             </div>
 
@@ -35,12 +35,12 @@
 
 <script>
     $(document).ready(function() {
-        $("#form-import-penjualan").validate({
+        $("#form-import-sertifikasi").validate({
             rules: {
-                file_penjualan: {
+                file_sertifikasi: {
                     required: true,
                     extension: "xlsx"
-                },
+                }
             },
             submitHandler: function(form) {
                 var formData = new FormData(form); // Jadikan form ke FormData untuk menghandle file
@@ -58,7 +58,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            tablePenjualan.ajax.reload(); // reload datatable
+                            tableSertifikasi.ajax.reload(); // reload datatable
                         } else { // jika error
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

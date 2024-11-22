@@ -58,39 +58,39 @@
 <body> 
     <table class="border-bottom-header"> 
         <tr> 
-            <td width="15%" class="text-center"><img src="{{ asset('logo polinema.png') }}"></td> 
-            <td width="85%"> 
-                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN 
-PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span> 
-                <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI 
-MALANG</span> 
-                <span class="text-center d-block font-10">Jl. Soekarno-Hatta No. 9 Malang 
-65141</span> 
-                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101
-105, 0341-404420, Fax. (0341) 404420</span> 
-                <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span> 
-            </td> 
+            <td width="15%" class="text-center">
+                <img src="{{ asset('logo_polinema.png') }}" alt="Logo Polinema" width="80" height="80"/>
+            </td>
+            <td width="85%">
+                <span class="text-center d-block font-11 font-bold mb-1">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</span>
+                <span class="text-center d-block font-13 font-bold mb-1">POLITEKNIK NEGERI MALANG</span>
+                <span class="text-center d-block font-10">Jl. Soekarno-Hatta No. 9 Malang 65141</span>
+                <span class="text-center d-block font-10">Telepon (0341) 404424 Pes. 101-105, 0341-404420, Fax. (0341) 404420</span>
+                <span class="text-center d-block font-10">Laman: www.polinema.ac.id</span>
+            </td>
         </tr> 
     </table> 
  
-    <h3 class="text-center">LAPORAN DATA PENJUALAN</h4> 
+    <h3 class="text-center">LAPORAN DATA SERTIFIKASI</h4> 
     <table class="border-all"> 
         <thead> 
                 <tr>
                     <th>No</th>
-                    <th>Pegawai</th>
-                    <th>Pembeli</th>
-                    <th>Kode Penjualan</th>
-                    <th>Tanggal Penjualan</th>
+                    <th>Nama Sertifikasi</th>
+                    <th>Tanggal</th>
+                    <th>Tanggal Berlaku</th>
+                    <th>Bidang</th>
+                    <th>Jenis Sertifikasi</th>
                 </tr>
                 <tbody> 
-                    @foreach($penjualan as $p) 
+                    @foreach($sertifikasi as $s) 
                     <tr> 
-                        <td class="text-center">{{ $loop->iteration }}</td> 
-                        <td> {{ $p->user->nama }}</td>
-                        <td> {{ $p->pembeli }}</td>
-                        <td> {{ $p->penjualan_kode }}</td>  
-                        <td> {{ $p->penjualan_tanggal }}</td> 
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td> {{ $s->nama_sertifikasi }}</td>
+                        <td> {{ $s->tanggal }}</td>
+                        <td> {{ $s->tanggal_berlaku }}</td>
+                        <td> {{ $s->bidang->bidang_nama }}</td>  
+                        <td> {{ $s->jenis_sertifikasi->jenis_nama }}</td> 
                     </tr>
                     @endforeach 
         </tbody> 
