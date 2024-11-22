@@ -16,7 +16,7 @@
                 </div>
                 <div class="form-group">
                     <label>Alamat</label>
-                    <textarea name="alamat" id="alamat" class="form-control" required></textarea>
+                    <input type="text" name="alamat" id="alamat" class="form-control" required>
                     <small id="error-alamat" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">

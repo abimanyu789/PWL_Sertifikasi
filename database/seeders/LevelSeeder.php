@@ -15,10 +15,22 @@ class LevelSeeder extends Seeder
     {
         $data = [
             [
+                'level_id'=> 1,
+                'level_kode' => 'ADM', // Contoh kode level untuk administrator
+                'level_nama' => 'Admin',
+            ],
+
+            [
                 'level_id'=> 2,
+                'level_kode' => 'PMN', // Contoh kode level untuk administrator
+                'level_nama' => 'Pimpinan ',
+            ],
+            [
+                'level_id'=> 3,
                 'level_kode' => 'DSN', // Contoh kode level untuk administrator
                 'level_nama' => 'Dosen',
             ]
+
         ];
 
         DB::table('m_level')->insert($data);

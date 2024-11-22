@@ -3,6 +3,7 @@
 use App\Http\Controllers\BidangController;
 use App\Http\Controllers\JenisSertifikasiController;
 use App\Http\Controllers\LevelPelatihanController;
+use App\Http\Controllers\LevelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -150,6 +151,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [VendorController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [VendorController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [VendorController::class, 'export_pdf']); 
+        Route::get('/create_ajax', [VendorController::class, 'createAjax']);
+    Route::get('/export_pdf', [VendorController::class, 'exportPdf']);
+
     });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
