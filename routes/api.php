@@ -18,6 +18,25 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
+// Route::post('/login', [LoginController::class, 'login'])->name('login');
+
+// Route::middleware('auth:api')->group(function () {
+//     // User profile routes
+//     Route::get('/user', [UserController::class, 'profile']);
+//     Route::post('/user/update', [UserController::class, 'update']);
+    
+//     // Bidang routes
+//     Route::get('/bidang', [BidangController::class, 'index']);
+//     Route::post('/bidang', [BidangController::class, 'store']);
+
+//     // Vendor routes
+//     Route::get('/vendor', [VendorController::class, 'index']);
+//     Route::post('/vendor', [VendorController::class, 'store']);
+
+//     // Sertifikasi routes
+//     Route::post('/uploads', [SertifikasiController::class, 'store']);
+// });
+
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -38,6 +57,12 @@ Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('lo
  Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'profile']);
 });
+
+Route::middleware('auth:api')->group(function () {
+    // Update method menjadi PUT/POST
+    Route::post('/user/update', [UserController::class, 'update']);
+});
+
 // Authenticated User Route
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return response()->json([
