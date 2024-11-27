@@ -19,12 +19,13 @@ return new class extends Migration
             $table->dateTime('tanggal_pelaksanaan');
             $table->dateTime('tanggal_berlaku');
             $table->unsignedBigInteger('bidang_id')->index;
-            $table->string('nama_vendor',100);
+            $table->unsignedBigInteger('vendor_id')->index;
             $table->string('image');
             $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('m_user');
             $table->foreign('bidang_id')->references('bidang_id')->on('m_bidang');
+            $table->foreign('vendor_id')->references('vendor_id')->on('m_vendor');
         });
     }
 

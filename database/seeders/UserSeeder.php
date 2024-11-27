@@ -16,12 +16,48 @@ class UserSeeder extends Seeder
     {
         $data = [
             [
+                'user_id' => 1,
+                'level_id' => 1,  // Sesuaikan dengan data level yang ada
+                'nip' => '12345678', // Contoh NIP
+                'nama' => 'Administrator',
+                'username' => 'admin',  // Username sesuai dengan yang diinginkan
+                'email' => 'admin@example.com',  // Email sesuai dengan yang diinginkan
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
+            ],
+            [
                 'user_id' => 2,
-                'level_id' => 2,  // Sesuaikan dengan data level yang ada
+                'level_id' => 3,  // Sesuaikan dengan data level yang ada
                 'nip' => '0987654321', // Contoh NIP
                 'nama' => 'Dosen',
                 'username' => 'dosen',  // Username sesuai dengan yang diinginkan
                 'email' => 'dosen@example.com',  // Email sesuai dengan yang diinginkan
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
+            ],
+            [
+                'user_id' => 3,
+                'level_id' => 3,  // Sesuaikan dengan data level yang ada
+                'nip' => '0122356788', // Contoh NIP
+                'nama' => 'DosenSatu',
+                'username' => 'dosen1',  // Username sesuai dengan yang diinginkan
+                'email' => 'dosen@example.com',  // Email sesuai dengan yang diinginkan
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
+            ],
+            [
+                'user_id' => 4,
+                'level_id' => 2,  // Sesuaikan dengan data level yang ada
+                'nip' => '18767610897386', // Contoh NIP
+                'nama' => 'Pimpinan',
+                'username' => 'pimpinan',  // Username sesuai dengan yang diinginkan
+                'email' => 'pimpinan@example.com',  // Email sesuai dengan yang diinginkan
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
+            ],
+            [
+                'user_id' => 5,
+                'level_id' => 2,  // Sesuaikan dengan data level yang ada
+                'nip' => '897565621089713', // Contoh NIP
+                'nama' => 'PimpinanSatu',
+                'username' => 'pimpinan1',  // Username sesuai dengan yang diinginkan
+                'email' => 'pimpinan1@example.com',  // Email sesuai dengan yang diinginkan
                 'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
             ]
         ];

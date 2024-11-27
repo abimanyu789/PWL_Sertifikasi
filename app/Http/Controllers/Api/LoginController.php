@@ -5,39 +5,58 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\UserModel;
 
 class LoginController extends Controller
 {
     public function __invoke(Request $request)
     {
-        // Set validation
+        // set validation
         $validator = Validator::make($request->all(), [
             'username' => 'required',
-            'password' => 'required',
+            'password' => 'required'
         ]);
-    
-        // If validation fails
+
+        // if validation fails
         if ($validator->fails()) {
-            return response()->json([$validator->errors()], 422);
-        }
-    
-        // Get credentials from request
-        $credentials = $request->only('username', 'password');
-    
-        // If auth failed
-        if (!$token = auth()->guard('api')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Username atau Password Anda salah',
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // get credentials from request
+        $credentials = $request->only('username', 'password');
+
+        // attempt to create a token
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Username atau Password salah'
             ], 401);
         }
-    
-        // If auth success
+
+        // get authenticated user with level relation
+        $user = UserModel::with('level')->find(auth()->user()->user_id);
+
+        // if auth success
         return response()->json([
             'success' => true,
-            'user' => auth()->guard('api')->user(),
-            'token' => $token, // JWT token dihasilkan di sini
+            'message' => 'Login berhasil',
+            'user' => [
+                'user_id' => $user->user_id,
+                'username' => $user->username,
+                'nama' => $user->nama,
+                'level' => [
+                    'id' => $user->level->level_id,
+                    'nama' => $user->level->level_nama,
+                    'kode' => $user->level->level_kode
+                ]
+            ],
+            'token' => $token,
+            'token_type' => 'bearer'
         ], 200);
     }
-    
 }
