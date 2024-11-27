@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\SertifikasiController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\StatistikController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -53,7 +55,9 @@ Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('lo
 
  // Sertifikasi routes
  Route::post('/uploads', [SertifikasiController::class, 'store']);
- 
+
+Route::get('/statistics', [StatistikController::class, 'getStatistics']);
+
  Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'profile']);
 });
