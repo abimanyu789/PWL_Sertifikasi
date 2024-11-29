@@ -73,11 +73,11 @@
                     },
                     alamat: {
                         required: true,
-                        date: true
+                        maxlength: 255
                     },
                     kota: {
                         required: true,
-                        number: true
+                        maxlength: 255
                     },
                     no_telp: {
                         required: true,
@@ -85,7 +85,7 @@
                     },
                     alamat_web: {
                         required: true,
-                        date: true
+                        maxlength: 255
                     }
                 },
                 submitHandler: function(form) {

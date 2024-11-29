@@ -151,8 +151,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [VendorController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [VendorController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [VendorController::class, 'export_pdf']); 
-        Route::get('/create_ajax', [VendorController::class, 'createAjax']);
-    Route::get('/export_pdf', [VendorController::class, 'exportPdf']);
+        Route::get('/create_ajax', [VendorController::class, 'create_ajax']);
+    Route::get('/export_pdf', [VendorController::class, 'export_pdf']);
+    Route::get('/export_template', [VendorController::class, 'exportTemplate']);
 
     });
 

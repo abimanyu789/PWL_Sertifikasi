@@ -43,11 +43,20 @@
 
 @push('js')
 <script>
-    function modalAction(url = '') {
-        $('#myModal').load(url, function() {
-            $('#myModal').modal('show');
-        });
-    }
+ function modalAction(url = '') {
+    $('#myModal').load(url, function() {
+        $('#myModal').modal('show');
+    });
+}
+
+$(document).ready(function() {
+    // Kode lainnya
+    
+    $('button[onclick^="modalAction"]').click(function() {
+        var url = $(this).attr('onclick').split("'")[1];
+        modalAction(url);
+    });
+});
 
     var dataVendor;
 
