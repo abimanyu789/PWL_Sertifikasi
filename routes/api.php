@@ -37,6 +37,8 @@ use App\Http\Controllers\Api\StatistikController;
 
 //     // Sertifikasi routes
 //     Route::post('/uploads', [SertifikasiController::class, 'store']);
+
+// Route::get('/statistics', [StatistikController::class, 'getStatistics']);
 // });
 
 Route::post('/login', LoginController::class)->name('login');
