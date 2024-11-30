@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [UserController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [UserController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [UserController::class, 'export_pdf']); 
+        Route::get('/export_template', [UserController::class, 'exportTemplate']);
     });
 
     Route::group(['prefix' => 'level', 'middleware'=> 'authorize:ADM'], function(){
