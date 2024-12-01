@@ -21,13 +21,13 @@ class LevelSeeder extends Seeder
             ],
             [
                 'level_id'=> 2,
-                'level_kode' => 'DOS', // Contoh kode level untuk administrator
-                'level_nama' => 'Dosen',
+                'level_kode' => 'PMP', // Contoh kode level untuk administrator
+                'level_nama' => 'Pimpinan',
             ],
             [
                 'level_id'=> 3,
-                'level_kode' => 'PMP', // Contoh kode level untuk administrator
-                'level_nama' => 'Pimpinan',
+                'level_kode' => 'DOS', // Contoh kode level untuk administrator
+                'level_nama' => 'Dosen',
             ]
         ];
 
