@@ -44,7 +44,7 @@ class PelatihanController extends Controller
         }
 
         $pelatihan = PelatihanModel::select('pelatihan_id', 'nama_pelatihan', 'deskripsi','tanggal', 'bidang_id', 'level_pelatihan_id', 'vendor_id') 
-                    ->with('level'); 
+                    ->with('level_pelatihan', 'bidang'); 
     
         return DataTables::of($pelatihan) 
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 

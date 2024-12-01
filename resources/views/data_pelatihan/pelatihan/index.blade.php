@@ -133,7 +133,7 @@
                     searchable: false
                 },
                 {
-                    data: "level.level_nama", // menampilkan nama level pelatihan jika ada relasi
+                    data: "level_pelatihan.level_pelatihan_nama", // menampilkan nama level pelatihan jika ada relasi
                     className: "",
                     orderable: true,
                     searchable: true
