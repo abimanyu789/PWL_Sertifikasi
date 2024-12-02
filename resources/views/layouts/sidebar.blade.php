@@ -145,14 +145,6 @@
         </div>
     </div>    
 
-    <!-- Sidebar Search Form -->
-    <div class="sidebar-search">
-        <div class="input-group">
-            <input type="text" class="form-control search-input" placeholder="Search">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-    </div>
-
     <!-- Sidebar Menu -->
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
