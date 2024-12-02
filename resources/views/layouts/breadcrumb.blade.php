@@ -7,11 +7,11 @@
       <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
           @foreach ($breadcrumb->list as $key => $value)
-            @if ($key == count($breadcrumb->list) - 1)
-              <li class="breadcrumb-item active">{{ $value }}</li>
-            @else
-              <li class="breadcrumb-item">{{ $value }}</li>
-            @endif
+          @if (is_array($value))
+              <li class="breadcrumb-item">{{ htmlspecialchars($value['name']) }}</li>
+          @else
+              <li class="breadcrumb-item">{{ htmlspecialchars($value) }}</li>
+          @endif
           @endforeach
         </ol>
       </div>
