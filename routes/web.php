@@ -34,7 +34,7 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [WelcomeController::class, 'index']); //halaman awal
     
-    Route::group(['middleware' => 'authorize:ADM'], function () {
+    Route::group(['middleware' => 'authorize:ADM,PMN,DSN'], function () {
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
         Route::patch('/profile/update/{id}', [ProfileController::class, 'update'])->name('profile.update');
     }); 
