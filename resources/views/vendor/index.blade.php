@@ -19,15 +19,15 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_vendor">
+            <table class="table table-bordered table-striped table-hover table-sm nowrap" id="table_pelatihan" style="width:100%">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nama Vendor</th>
-                        <th>Alamat</th>
-                        <th>Kota</th>
-                        <th>No. Telepon</th>
-                        <th>Website</th>
+                        <th>Nama Pelatihan</th>
+                        <th>Tanggal</th>
+                        <th>Bidang</th>
+                        <th>Level Pelatihan</th>
+                        <th>Vendor</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>

@@ -18,8 +18,8 @@
 
                     <!-- Bagian Profile Picture, Nama, dan Role -->
                     <div class="text-center">
-                        @if($user->profile_image)
-                            <img src="{{ asset('storage/photos/'.$user->profile_image) }}" class="img-fluid rounded-circle shadow" style="width: 250px; height: 250px;">
+                        @if($user->avatar)
+                            <img src="{{ asset('storage/photos/'.$user->avatar) }}" class="img-fluid rounded-circle shadow" style="width: 250px; height: 250px;">
                         @else
                             <img src="{{ asset('/public/img/pp.png') }}" class="img-fluid rounded-circle shadow" style="width: 100px; height: 100px;">
                         @endif
@@ -88,9 +88,9 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="profile_image" class="col-md-4 col-form-label text-md-end">{{ __('Ganti Foto Profil') }}</label>
+                            <label for="avatar" class="col-md-4 col-form-label text-md-end">{{ __('Ganti Foto Profil') }}</label>
                             <div class="col-md-8">
-                                <input id="profile_image" type="file" class="form-control shadow-sm" name="profile_image">
+                                <input id="avatar" type="file" class="form-control shadow-sm" name="avatar">
                             </div>
                         </div>
 

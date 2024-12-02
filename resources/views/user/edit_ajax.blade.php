@@ -75,7 +75,10 @@
             </div>
         </div>
     </form>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
     <script>
         $(document).ready(function() {
             $("#form-edit").validate({

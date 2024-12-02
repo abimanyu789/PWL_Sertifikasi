@@ -17,6 +17,7 @@ class LevelSeeder extends Seeder
             [
                 'level_id'=> 1,
                 'level_kode' => 'ADM', // Contoh kode level untuk administrator
+<<<<<<< HEAD
                 'level_nama' => 'Admin',
             ],
 
@@ -28,6 +29,18 @@ class LevelSeeder extends Seeder
             [
                 'level_id'=> 3,
                 'level_kode' => 'DSN', // Contoh kode level untuk administrator
+=======
+                'level_nama' => 'Administrator',
+            ],
+            [
+                'level_id'=> 2,
+                'level_kode' => 'PMP', // Contoh kode level untuk administrator
+                'level_nama' => 'Pimpinan',
+            ],
+            [
+                'level_id'=> 3,
+                'level_kode' => 'DOS', // Contoh kode level untuk administrator
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
                 'level_nama' => 'Dosen',
             ]
 

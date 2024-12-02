@@ -33,6 +33,7 @@
         @include('layouts.header')
         <!-- /.navbar -->
 
+<<<<<<< HEAD
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
@@ -61,6 +62,23 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
+=======
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    {{-- <!-- Brand Logo -->
+    <a href="{{ url('/') }}" class="brand-link" style="padding: 0; background-color: #1F4C97 !important; display: flex; align-items: center;">
+        <div class="d-flex align-items-center justify-content-start w-100 px-3 py-3">
+            <i class="fas fa-graduation-cap text-white mr-2" style="font-size: 1.5rem;"></i>
+            <div>
+                <span class="brand-text font-weight-bold text-white" style="font-size: 1rem;">JTI Polinema</span><br>
+                <span class="text-white-50" style="font-size: 0.8rem;">Sistem Pendataan Sertifikasi</span>
+            </div>
+        </div>
+    </a> --}}
+    <!-- Sidebar -->
+    @include('layouts.sidebar')
+  </aside>
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
 
         @include('layouts.footer')
     </div>

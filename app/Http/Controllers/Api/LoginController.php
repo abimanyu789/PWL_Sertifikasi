@@ -132,4 +132,8 @@ class LoginController extends Controller
             'token_type' => 'bearer'
         ], 200);
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121

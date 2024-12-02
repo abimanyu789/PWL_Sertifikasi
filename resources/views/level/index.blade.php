@@ -5,8 +5,13 @@
         <div class="card-header">  
             <h3 class="card-title">{{ $page->title }}</h3>  
             <div class="card-tools">  
+<<<<<<< HEAD
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('/level/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a> 
                 <a class="btn btn-sm btn-warning mt-1" href="{{ url('/level/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a> 
+=======
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('/level/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Level</a> 
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/level/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Level</a> 
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
             </div>  
         </div>  
         <div class="card-body">  

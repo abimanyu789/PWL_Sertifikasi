@@ -7,7 +7,11 @@ use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\SertifikasiController;
 use App\Http\Controllers\Api\UserController;
+<<<<<<< HEAD
 use App\Http\Controllers\Api\StatistikController;
+=======
+// use App\Http\Controllers\Api\StatistikController;
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +24,7 @@ use App\Http\Controllers\Api\StatistikController;
 |
 */
 
+<<<<<<< HEAD
 // Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 // Route::middleware('auth:api')->group(function () {
@@ -41,6 +46,8 @@ use App\Http\Controllers\Api\StatistikController;
 // Route::get('/statistics', [StatistikController::class, 'getStatistics']);
 // });
 
+=======
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -58,7 +65,11 @@ Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('lo
  // Sertifikasi routes
  Route::post('/uploads', [SertifikasiController::class, 'store']);
 
+<<<<<<< HEAD
 Route::get('/statistics', [StatistikController::class, 'getStatistics']);
+=======
+// Route::get('/statistics', [StatistikController::class, 'getStatistics']);
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
 
  Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'profile']);
@@ -77,4 +88,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     ]);
 });
 
+<<<<<<< HEAD
 // Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+=======
+// Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121

@@ -2,9 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
+<<<<<<< HEAD
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+=======
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
 
 class BidangController extends Controller
 {

@@ -10,7 +10,12 @@
             </div>
 
             <div class="modal-body">
-
+                <div class="form-group">
+                    <label>Download Template</label>
+                    <a href="{{ url('/vendor/export_template') }}" class="btn btn-info btn-sm" download>
+                        <i class="fa fa-file-excel"></i> Download Template
+                    </a>
+                </div>
                 <div class="form-group">
                     <label>Pilih File</label>
                     <input type="file" name="file_vendor" id="file_vendor" class="form-control" required>

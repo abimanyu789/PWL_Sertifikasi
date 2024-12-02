@@ -61,9 +61,13 @@
             </td>
         </tr>
     </table>
+<<<<<<< HEAD
 
     <h3 class="text-center">LAPORAN DATA USER</h3>
 
+=======
+    <h3 class="text-center">LAPORAN DATA USER</h3>
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
     <table class="border-all">
         <thead>
             <tr>

@@ -7,7 +7,7 @@
         <div class="col-md-3">
             <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <h6 class="card-title">Total Sertifikat Sertifikasi</h6>
+                    <h6 class="card-title">Total Sertifikasi</h6>
                     <h2 class="display-4"></h2>
                 </div>
             </div>
@@ -15,7 +15,7 @@
         <div class="col-md-3">
             <div class="card bg-secondary">
                 <div class="card-body">
-                    <h6 class="card-title">Total Sertifikat Pelatihan</h6>
+                    <h6 class="card-title">Total Pelatihan</h6>
                     <h2 class="display-4"></h2>
                 </div>
             </div>

@@ -106,6 +106,7 @@
                 line-height: 1.2;
                 margin-top: 4px; /* Memberikan jarak antara title dan subtitle */
             }
+<<<<<<< HEAD
         </style>
     {{-- <!-- User Panel -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -113,6 +114,41 @@
             <img src="{{ auth()->user()->profile_image ? asset('storage/photos/' . auth()->user()->profile_image) : asset('/public/img/pp.png') }}"
                  class="img-circle elevation-2"
                  alt="User Image">
+=======
+
+            .user-panel {
+                display: flex;
+                flex-direction: column; /* Atur vertikal */
+                align-items: center; /* Pusatkan horizontal */
+                justify-content: center; /* Pusatkan vertikal */
+            }
+
+            .user-panel .profile-img {
+                width: 80px; /* Penuhi kontainer */
+                height: 80px; /* Penuhi kontainer */
+                object-fit: cover; /* Gambar menyesuaikan */
+                border-radius: 80px; /* Membuat gambar berbentuk lingkaran */
+                
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
+            }
+
+            /* Styling nama pengguna */
+            .user-panel .info {
+                margin-top: 10px; /* Jarak antara foto dan nama */
+                font-size: 16px; /* Ukuran teks */
+                font-weight: bold; /* Tebalkan teks */
+                text-align: center; /* Teks rata tengah */
+            }
+        </style>
+
+<div class="sidebar-profile">
+    <!-- User Panel -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex flex-column align-items-center">
+        <div class="image">
+            <img src="{{ auth()->user()->avatar ? asset('storage/photos/' . auth()->user()->avatar) : asset('img/pp.jpg') }}" 
+                class="profile-img img-circle elevation-2" 
+                alt="User Image">
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
         </div>
         <div class="info">
             <a href="{{ url('/profile') }}" class="d-block text-white">{{ auth()->user()->username ?? 'Nama Pengguna' }}</a>
@@ -210,6 +246,38 @@
                         </li>
                     </ul>
                 </li>
+<<<<<<< HEAD
+
+                <!-- Data Vendor Section -->
+                <li class="nav-item {{ in_array($activeMenu, ['vendor']) ? 'menu-open' : '' }}">
+                    <a href="{{ url('/vendor') }}" class="nav-link {{ in_array($activeMenu, ['vendor']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="fas fa-building nav-icon"></i>
+                        <p>Data Vendor<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ url('/vendor') }}" class="nav-link {{ $activeMenu == 'vendor' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Vendor</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Kuota Kegiatan Section -->
+                <li class="nav-item">
+                    <a href="{{ url('/quota') }}" class="nav-link {{ $activeMenu == 'quota' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="fas fa-users nav-icon"></i>
+                        <p>Kuota Kegiatan</p>
+                    </a>
+                </li>
+
+                <!-- Laporan Section -->
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="fas fa-file-alt nav-icon"></i>
+                        <p>Laporan<i class="right fas fa-angle-left"></i></p>
+=======
 
                 <!-- Data Vendor Section -->
                 <li class="nav-item {{ in_array($activeMenu, ['vendor']) ? 'menu-open' : '' }}">
@@ -243,6 +311,93 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="{{ url('/laporan_sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Sertifikasi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/laporan_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Pelatihan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/list_dosen') }}" class="nav-link {{ $activeMenu == 'list_dosen' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>List Dosen</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+            @elseif(auth()->user()->level_id == 2)
+                <!-- Menu Pimpinan -->
+                <li class="nav-item">
+                    <a href="{{ url('/view_dosen') }}" class="nav-link {{ $activeMenu == 'view_dosen' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Daftar Dosen</p>
+                    </a>
+                </li>
+
+                <!-- Data Pelatihan Section -->
+                <li class="nav-item">
+                    <a href="{{ url('/pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Daftar Pelatihan</p>
+                    </a>
+                </li>
+
+                <!-- Data Sertifikasi Section -->
+                <li class="nav-item">
+                    <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-certificate"></i>
+                            <p>Sertifikasi</p>
+                        </a>
+                    </li>
+                </li>
+
+            @elseif(auth()->user()->level_id == 3)
+                <!-- Menu Dosen -->
+                <!-- Data Pelatihan Section -->
+                <li class="nav-item">
+                    <a href="{{ url('/pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Data Pelatihan</p>
+                    </a>
+                </li>
+
+                <!-- Data Sertifikasi Section -->
+                <li class="nav-item">
+                    <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-certificate"></i>
+                            <p>Sertifikasi</p>
+                        </a>
+                    </li>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="{{ url('/sertifikasi-saya') }}" class="nav-link {{ $activeMenu == 'sertifikasi_saya' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="fas fa-certificate nav-icon"></i>
+                        <p>Sertifikasi Saya</p>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="{{ url('/pelatihan-saya') }}" class="nav-link {{ $activeMenu == 'pelatihan_saya' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="fas fa-book nav-icon"></i>
+                        <p>Pelatihan Saya</p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                        <i class="fas fa-file-alt nav-icon"></i>
+                        <p>Form Upload<i class="right fas fa-angle-left"></i></p>
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
                             <a href="{{ url('/upload_sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sertifikasi</p>
@@ -256,6 +411,7 @@
                         </li>
                     </ul>
                 </li>
+<<<<<<< HEAD
 
             @elseif(auth()->user()->level_id == 2)
                 <!-- Menu Pimpinan -->
@@ -295,6 +451,8 @@
                         <p>Pelatihan Saya</p>
                     </a>
                 </li>
+=======
+>>>>>>> 0f1a0778deebd95e558bae16a8bfcb49bb799121
             @endif
 
             <!-- Logout Button -->
