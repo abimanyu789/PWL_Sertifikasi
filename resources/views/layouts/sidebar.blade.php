@@ -106,8 +106,8 @@
                 line-height: 1.2;
                 margin-top: 4px; /* Memberikan jarak antara title dan subtitle */
             }
-        </style>
-    {{-- <!-- User Panel -->
+        
+            {{-- <!-- User Panel -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
             <img src="{{ auth()->user()->profile_image ? asset('storage/photos/' . auth()->user()->profile_image) : asset('/public/img/pp.png') }}"
@@ -118,6 +118,44 @@
             <a href="{{ url('/profile') }}" class="d-block text-white">{{ auth()->user()->username ?? 'Nama Pengguna' }}</a>
         </div>
     </div> --}}
+
+    .user-panel {
+        display: flex;
+        flex-direction: column; /* Atur vertikal */
+        align-items: center; /* Pusatkan horizontal */
+        justify-content: center; /* Pusatkan vertikal */
+    }
+
+    .user-panel .profile-img {
+        width: 80px; /* Penuhi kontainer */
+        height: 80px; /* Penuhi kontainer */
+        object-fit: cover; /* Gambar menyesuaikan */
+        border-radius: 80px; /* Membuat gambar berbentuk lingkaran */
+        
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
+    }
+
+    /* Styling nama pengguna */
+    .user-panel .info {
+        margin-top: 10px; /* Jarak antara foto dan nama */
+        font-size: 16px; /* Ukuran teks */
+        font-weight: bold; /* Tebalkan teks */
+        text-align: center; /* Teks rata tengah */
+    }
+</style>
+
+<div class="sidebar-profile">
+<!-- User Panel -->
+<div class="user-panel mt-3 pb-3 mb-3 d-flex flex-column align-items-center">
+<div class="image">
+    <img src="{{ auth()->user()->avatar ? asset('storage/photos/' . auth()->user()->avatar) : asset('img/pp.jpg') }}" 
+        class="profile-img img-circle elevation-2" 
+        alt="User Image">
+</div>
+<div class="info mt-2">
+    <a href="{{ url('/profile') }}" class="d-block text-white text-center">{{ auth()->user()->username }}</a>
+</div>
+</div> 
     <!-- Sidebar Search Form -->
     <div class="sidebar-search">
         <div class="input-group">
