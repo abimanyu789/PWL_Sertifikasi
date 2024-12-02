@@ -35,30 +35,13 @@ public function index()
         return DataTables::of($level_pelatihans)
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addIndexColumn()
-            ->addColumn('aksi', function ($level_pelatihan) { // menambahkan kolom aksi
-                $btn = '<button onclick="modalAction(\'' . url('/level_pelatihan/' . $level_pelatihan->level_pelatihan_id .
-                    '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                return $btn;
-            })
-            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
     }
-    public function confirm_ajax(string $id)
-    {
-        $level_pelatihan = LevelPelatihanModel::find($id);
-        return view('level_pelatihan.confirm_ajax', ['level_pelatihan' => $level_pelatihan]);
-    }
-    public function show_ajax(string $id)
-    {
-        $level_pelatihan = LevelPelatihanModel::find($id);
-        return view('level_pelatihan.show_ajax', ['level_pelatihan' => $level_pelatihan]);
-    }
-    public function export_excel()
-    {
-        // ambil data level_pelatihan yang akan di export
-        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_id', 'level_pelatihan_kode', 'level_pelatihan_nama')
-            ->orderBy('level_pelatihan_id')
-            ->get();
+
+    public function export_excel(){
+        // Ambil data Level yang akan di export
+        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_kode', 'level_pelatihan_nama')->get();
+
         // load library excel
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();    // ambil sheet yang aktif
@@ -94,16 +77,13 @@ public function index()
     }
     public function export_pdf()
     {
-        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_id', 'level_pelatihan_kode', 'level_pelatihan_nama')
-            ->orderBy('level_pelatihan_id')
-            ->orderBy('level_pelatihan_kode')
-            ->get();
-        // use Barryvdh\DomPDF\Facade\Pdf;
-        $pdf = Pdf::loadView('level_pelatihan.export_pdf', ['level_pelatihan' => $level_pelatihan]);
-        $pdf->setPaper('a4', 'portrait'); // Set ukuran kertas dan orientasi
-        $pdf->setOption('isRemoteEnabled', true); // Set true jika ada gambar dari URL
-        $pdf->render();
-        return $pdf->stream('Data level_pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
+        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_kode', 'level_pelatihan_nama')->orderBy('level_pelatihan_kode')->get();
+
+        $pdf = Pdf::loadView('data_pelatihan.level_pelatihan.export_pdf', ['level_pelatihan' => $level_pelatihan]);
+        $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
+        return $pdf->stream('Data Level Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
+
     }
 
 }
