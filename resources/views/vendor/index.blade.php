@@ -7,7 +7,7 @@
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/vendor/import') }}')" class="btn btn-sm btn-info mt-1">Import</button>
                 <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/vendor/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/vendor/export_pd') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/vendor/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
                 <button onclick="modalAction('{{ url('/vendor/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
@@ -43,11 +43,20 @@
 
 @push('js')
 <script>
-    function modalAction(url = '') {
-        $('#myModal').load(url, function() {
-            $('#myModal').modal('show');
-        });
-    }
+ function modalAction(url = '') {
+    $('#myModal').load(url, function() {
+        $('#myModal').modal('show');
+    });
+}
+
+$(document).ready(function() {
+    // Kode lainnya
+    
+    $('button[onclick^="modalAction"]').click(function() {
+        var url = $(this).attr('onclick').split("'")[1];
+        modalAction(url);
+    });
+});
 
     var dataVendor;
 

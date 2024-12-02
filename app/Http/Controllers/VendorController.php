@@ -281,6 +281,28 @@ class VendorController extends Controller
         $writer->save("php://output");
     }
 
+    public function exportTemplate()
+{
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Set judul kolom
+    $sheet->setCellValue('A1', 'Nama Vendor');
+    $sheet->setCellValue('B1', 'Alamat');
+    $sheet->setCellValue('C1', 'Kota');
+    $sheet->setCellValue('D1', 'No. Telepon');
+    $sheet->setCellValue('E1', 'Website');
+
+    $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+
+    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $filename = 'Template_Vendor.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header("Content-Disposition: attachment; filename=$filename");
+    $writer->save("php://output");
+    exit;
+}
 
     public function export_pdf()
     {

@@ -30,8 +30,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning">
-                        <h5><i class="icon fas fa-exclamation-circle"></i> Konfirmasi !!!</h5>
-                        Apakah Anda yakin ingin menghapus data berikut?
+                        <h5><i class="icon fas fa-ban"></i> Konfirmasi !!!</h5>
+                        Apakah Anda yakin ingin menghapus data seperti di bawah ini?
                     </div>
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
@@ -40,7 +40,7 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Alamat:</th>
-                            <td class="col-9">{{ $vendor->alamat}}</td>
+                            <td class="col-9">{{ $vendor->alamat }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Kota:</th>
@@ -51,14 +51,22 @@
                             <td class="col-9">{{ $vendor->no_telp }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Website:</th>
+                            <th class="text-right col-3">Alamat Web:</th>
                             <td class="col-9">{{ $vendor->alamat_web }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Tanggal Dibuat:</th>
+                            <td class="col-9">{{ $vendor->created_at }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Terakhir Diperbarui:</th>
+                            <td class="col-9">{{ $vendor->updated_at }}</td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
                 </div>
             </div>
         </div>
@@ -66,6 +74,7 @@
     <script>
         $(document).ready(function() {
             $("#form-delete").validate({
+                rules: {},
                 submitHandler: function(form) {
                     $.ajax({
                         url: form.action,
@@ -83,7 +92,7 @@
                             } else {
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Kesalahan',
+                                    title: 'Terjadi Kesalahan',
                                     text: response.message
                                 });
                             }
