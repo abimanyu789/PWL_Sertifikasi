@@ -3,11 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\BidangController;
-use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\SertifikasiController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\BidangController;
+use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\StatistikController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -78,3 +80,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+
+Route::get("sertifikasi", [SertifikasiController::class, "index"]);
+Route::get("sertifikasi/{id}", [SertifikasiController::class, "show"]);

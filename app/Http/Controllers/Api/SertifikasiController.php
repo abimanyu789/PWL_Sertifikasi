@@ -3,60 +3,55 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\SertifikasiModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class SertifikasiController extends Controller
 {
-    public function store(Request $request)
+    public function index()
     {
-        try {
-            $request->validate([
-                'user_id' => 'required',
-                'no_sertif' => 'required|string',
-                'nama_sertif' => 'required|string',
-                'tanggal_pelaksanaan' => 'required|date',
-                'tanggal_berlaku' => 'required|date',
-                'bidang_id' => 'required|exists:bidang,bidang_id',
-                'vendor_id' => 'nullable|exists:vendor,vendor_id',
-                'file_sertif' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
-            ]);
+        // Gunakan eager loading untuk mengambil data bidang dan jenis sekaligus
+        $data = SertifikasiModel::with(['bidang', 'jenis_sertifikasi'])
+            ->get()
+            ->map(function ($sertifikasi) {
+                return [
+                    'sertifikasi_id' => $sertifikasi->sertifikasi_id,
+                    'nama_sertifikasi' => $sertifikasi->nama_sertifikasi,
+                    'tanggal' => $sertifikasi->tanggal,
+                    'tanggal_berlaku' => $sertifikasi->tanggal_berlaku,
+                    'bidang_id' => $sertifikasi->bidang_id,
+                    'bidang_nama' => $sertifikasi->bidang ? $sertifikasi->bidang->bidang_nama : null,
+                    'jenis_id' => $sertifikasi->jenis_id,
+                    'jenis_nama' => $sertifikasi->jenis_sertifikasi ? $sertifikasi->jenis_sertifikasi->jenis_nama : null,
+                ];
+            });
 
-            // Handle file upload
-            if ($request->hasFile('file_sertif')) {
-                $file = $request->file('file_sertif');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('sertifikat', $fileName, 'public');
-            }
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ]);
+    }
 
-            // Insert data sertifikasi
-            $sertifikasiId = DB::table('sertifikasi')->insertGetId([
-                'user_id' => $request->user_id,
-                'no_sertif' => $request->no_sertif,
-                'nama_sertif' => $request->nama_sertif,
-                'tanggal_pelaksanaan' => $request->tanggal_pelaksanaan,
-                'tanggal_berlaku' => $request->tanggal_berlaku,
-                'bidang_id' => $request->bidang_id,
-                'vendor_id' => $request->vendor_id,
-                'file_path' => $filePath ?? null,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+    public function show($id)
+    {
+        // Gunakan eager loading untuk detail sertifikasi
+        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis_sertifikasi'])
+            ->findOrFail($id);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Sertifikasi berhasil ditambahkan',
-                'data' => [
-                    'sertifikasi_id' => $sertifikasiId,
-                    'file_path' => $filePath ?? null
-                ]
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal menambahkan sertifikasi: ' . $e->getMessage()
-            ], 500);
-        }
+        $data = [
+            'sertifikasi_id' => $sertifikasi->sertifikasi_id,
+            'nama_sertifikasi' => $sertifikasi->nama_sertifikasi,
+            'tanggal' => $sertifikasi->tanggal,
+            'tanggal_berlaku' => $sertifikasi->tanggal_berlaku,
+            'bidang_id' => $sertifikasi->bidang_id,
+            'bidang_nama' => $sertifikasi->bidang ? $sertifikasi->bidang->bidang_nama : null,
+            'jenis_id' => $sertifikasi->jenis_id,
+            'jenis_nama' => $sertifikasi->jenis_sertifikasi ? $sertifikasi->jenis_sertifikasi->jenis_nama : null,
+        ];
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ]);
     }
 }

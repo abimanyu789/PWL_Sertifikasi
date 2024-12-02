@@ -42,7 +42,7 @@ class ProfileController extends Controller
             'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id', 
             'nama'     => 'required|string|max:100',
             'old_password' => 'nullable|string',
-            'password' => 'nullable|min:5',
+            'password' => 'nullable|min:6',
         ]);
 
         $user = UserModel::find($id);
