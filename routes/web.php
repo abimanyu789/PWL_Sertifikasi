@@ -75,6 +75,15 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['prefix' => 'bidang', 'middleware'=> 'authorize:ADM'], function(){
         Route::get('/', [BidangController::class, 'index']);      
         Route::post('/list', [BidangController::class, 'list']);   
+        Route::get('/{id}/show_ajax', [BidangController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [BidangController::class, 'edit_ajax']);
+        Route::put('/{id}/update_ajax', [BidangController::class, 'update_ajax']);
+        Route::get('/{id}/delete_ajax', [BidangController::class, 'confirm_ajax']);
+        Route::delete('/{id}/delete_ajax', [BidangController::class, 'delete_ajax']);  
+        Route::get('/import', [BidangController::class, 'import']);                      // ajax form upload excel
+        Route::post('/import_ajax', [BidangController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/export_excel', [BidangController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [BidangController::class, 'export_pdf']);     
     });
     // Route::group(['prefix' => 'jenis_sertifikasi'], function () {
     Route::group(['prefix' => 'jenis_sertifikasi', 'middleware'=> 'authorize:ADM'], function(){
