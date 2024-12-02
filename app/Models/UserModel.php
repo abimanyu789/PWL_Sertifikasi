@@ -22,8 +22,7 @@ class UserModel extends Authenticatable implements JWTSubject
         'username',
         'email', 
         'password',
-        'profile_image',
-        'created_at',
+        'avatar',
         'updated_at'
     ];
 

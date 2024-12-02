@@ -27,12 +27,14 @@ class SertifikasiController extends Controller
                 'vendor_id' => 'nullable|exists:vendor,vendor_id',
                 'file_sertif' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
             ]);
+
             // Handle file upload
             if ($request->hasFile('file_sertif')) {
                 $file = $request->file('file_sertif');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('sertifikat', $fileName, 'public');
             }
+
             // Insert data sertifikasi
             $sertifikasiId = DB::table('sertifikasi')->insertGetId([
                 'user_id' => $request->user_id,
@@ -46,6 +48,7 @@ class SertifikasiController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sertifikasi berhasil ditambahkan',

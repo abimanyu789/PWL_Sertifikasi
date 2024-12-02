@@ -22,6 +22,7 @@ class BidangController extends Controller
                 ->select('bidang_id', 'bidang_nama')
                 ->orderBy('bidang_nama')
                 ->get();
+
             return response()->json([
                 'status' => 'success',
                 'data' => $bidang
@@ -33,6 +34,7 @@ class BidangController extends Controller
             ], 500);
         }
     }
+
     public function store(Request $request)
     {
         try {
@@ -40,12 +42,14 @@ class BidangController extends Controller
                 'bidang_nama' => 'required|string|max:100',
                 'bidang_kode' => 'required|string|max:10|unique:bidang'
             ]);
+
             $bidangId = DB::table('m_bidang')->insertGetId([
                 'bidang_nama' => $request->bidang_nama,
                 'bidang_kode' => $request->bidang_kode,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Bidang berhasil ditambahkan',

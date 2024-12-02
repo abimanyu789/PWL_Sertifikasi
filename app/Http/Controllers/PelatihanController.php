@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory; // import excel
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf; // import pdf
+use Illuminate\Support\Facades\DB;
 
 class PelatihanController extends Controller
 {
@@ -53,12 +54,46 @@ class PelatihanController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/dosenLayak') . '\')" class="btn btn-success btn-sm">Kirim</button>';
                 return $btn;
             }) 
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
             ->make(true); 
     } 
+    public function dosenLayak($pelatihanId)
+    {
+        // Ambil pelatihan berdasarkan ID
+        $pelatihan = PelatihanModel::find($pelatihanId);
 
+        if (!$pelatihan) {
+            return response()->json([
+                'message' => 'Pelatihan tidak ditemukan.'
+            ], 404);
+        }
+
+        // Ambil dosen berdasarkan bidang dan mata kuliah yang terkait dengan pelatihan
+        $dosenLayak = DB::table('m_user')
+            ->join('t_dosen_bidang', 'm_user.user_id', '=', 't_dosen_bidang.user_id')
+            ->join('m_bidang', 't_dosen_bidang.bidang_id', '=', 'm_bidang.bidang_id')
+            ->join('m_pelatihan', 'm_bidang.bidang_id', '=', 'm_pelatihan.bidang_id')
+            ->leftJoin('t_dosen_matkul', 'm_user.user_id', '=', 't_dosen_matkul.user_id')
+            ->join('m_mata_kuliah', 't_dosen_matkul.mk_id', '=', 'm_mata_kuliah.mk_id')
+            ->join('m_pelatihan_mata_kuliah', 'm_mata_kuliah.mk_id', '=', 'm_pelatihan_mata_kuliah.mk_id')
+            ->select(
+                'm_user.user_id',
+                'm_user.nama as nama_dosen',
+                DB::raw('COUNT(DISTINCT t_dosen_matkul.pelatihan_id) as pelatihan_count')
+            )
+            ->where('m_pelatihan.pelatihan_id', '=', $pelatihanId)
+            ->groupBy('m_user.user_id', 'm_user.nama')
+            ->orderBy('pelatihan_count', 'asc') // Urutkan dari yang paling sedikit pelatihan
+            ->get();
+
+        return response()->json([
+            'dosen_layak' => $dosenLayak
+        ]);
+    }
+    
     public function create_ajax()
     {
         

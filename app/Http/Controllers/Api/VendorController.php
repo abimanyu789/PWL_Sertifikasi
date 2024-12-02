@@ -21,6 +21,7 @@ class VendorController extends Controller
                 ->select('vendor_id', 'vendor_nama', 'alamat', 'kota', 'no_telp', 'alamat_web')
                 ->orderBy('vendor_nama')
                 ->get();
+
             return response()->json([
                 'status' => 'success',
                 'data' => $vendor
@@ -32,6 +33,7 @@ class VendorController extends Controller
             ], 500);
         }
     }
+
     public function store(Request $request)
     {
         try {
@@ -42,6 +44,7 @@ class VendorController extends Controller
                 'no_telp' => 'required|string|max:20',
                 'alamat_web' => 'nullable|string|max:200'
             ]);
+
             $vendorId = DB::table('m_vendor')->insertGetId([
                 'vendor_nama' => $request->vendor_nama,
                 'alamat' => $request->alamat,
@@ -51,6 +54,7 @@ class VendorController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Vendor berhasil ditambahkan',

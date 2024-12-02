@@ -20,6 +20,7 @@ class AuthorizeUser
         //     return $next($request);
         // }
 
+        
         $user_role = $request->user()->getRole();
         if (in_array($user_role, $roles)){
             return $next($request);

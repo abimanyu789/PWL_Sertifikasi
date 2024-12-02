@@ -1,15 +1,13 @@
 <?php
 
-// Import necessary namespaces at the top of your file
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\LevelController;
-use App\Http\Controllers\Api\UploadController;
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\SertifikasiController;
+use App\Http\Controllers\Api\UserController;
+// use App\Http\Controllers\Api\StatistikController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +19,6 @@ use App\Http\Controllers\Api\SertifikasiController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-// Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-// Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
-
 
 Route::post('/login', LoginController::class)->name('login');
 Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
@@ -45,7 +36,9 @@ Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('lo
 
  // Sertifikasi routes
  Route::post('/uploads', [SertifikasiController::class, 'store']);
- 
+
+// Route::get('/statistics', [StatistikController::class, 'getStatistics']);
+
  Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'profile']);
 });
@@ -62,3 +55,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
         'user' => $request->user()
     ]);
 });
+
+// Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');

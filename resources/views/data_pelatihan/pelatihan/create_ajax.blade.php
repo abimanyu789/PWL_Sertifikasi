@@ -49,7 +49,7 @@
                     <select name="vendor_id" id="vendor_id" class="form-control" required>
                         <option value="">- Pilih Vendor -</option>
                         @foreach ($vendor as $v)
-                            <option value="{{ $v->vendor_id }}">{{ $v->nama_vendor }}</option>
+                            <option value="{{ $v->vendor_id }}">{{ $v->vendor_nama }}</option>
                         @endforeach
                     </select>
                     <small id="error-vendor_id" class="error-text form-text text-danger"></small>
