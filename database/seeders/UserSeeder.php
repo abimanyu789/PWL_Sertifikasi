@@ -15,16 +15,16 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            // [
-            //     'user_id' => 1,
-            //     'level_id' => 1,  // Sesuaikan dengan data level yang ada
-            //     'nip' => '12345678', // Contoh NIP
-            //     'nama' => 'Administrator',
-            //     'username' => 'admin',  // Username sesuai dengan yang diinginkan
-            //     'email' => 'admin@example.com',  // Email sesuai dengan yang diinginkan
-            //     'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
-            //     'avatar' => ''
-            // ],
+            [
+                'user_id' => 1,
+                'level_id' => 1,  // Sesuaikan dengan data level yang ada
+                'nip' => '12345678', // Contoh NIP
+                'nama' => 'Administrator',
+                'username' => 'admin',  // Username sesuai dengan yang diinginkan
+                'email' => 'admin@example.com',  // Email sesuai dengan yang diinginkan
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
+                'avatar' => ''
+            ],
             [
                 'user_id' => 2,
                 'level_id' => 2,  // Sesuaikan dengan data level yang ada
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 'nama' => 'Pimpinan',
                 'username' => 'pimpinan',  // Username sesuai dengan yang diinginkan
                 'email' => 'pimpinan@example.com',  // Email sesuai dengan yang diinginkan
-                'password' => Hash::make('098765'), // Jangan lupa untuk enkripsi password
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
                 'avatar' => ''
             ],
             [
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
                 'nama' => 'Dosen',
                 'username' => 'dosen',  // Username sesuai dengan yang diinginkan
                 'email' => 'dosen@example.com',  // Email sesuai dengan yang diinginkan
-                'password' => Hash::make('123412'), // Jangan lupa untuk enkripsi password
+                'password' => Hash::make('123456'), // Jangan lupa untuk enkripsi password
                 'avatar' => ''
             ]
         ];
