@@ -322,23 +322,9 @@
                 <li class="nav-item">
                     <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-certificate"></i>
-                            <p>Sertifikasi</p>
+                            <p>Data Sertifikasi</p>
                         </a>
                     </li>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{{ url('/sertifikasi-saya') }}" class="nav-link {{ $activeMenu == 'sertifikasi_saya' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
-                        <i class="fas fa-certificate nav-icon"></i>
-                        <p>Sertifikasi Saya</p>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{{ url('/pelatihan-saya') }}" class="nav-link {{ $activeMenu == 'pelatihan_saya' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
-                        <i class="fas fa-book nav-icon"></i>
-                        <p>Pelatihan Saya</p>
-                    </a>
                 </li>
 
                 <li class="nav-item has-treeview {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'menu-open' : '' }}">
