@@ -10,18 +10,18 @@
             </div>
 
             <div class="modal-body">
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <label>Download Template</label>
-                    <a href="{{ asset('template_pelatihan.xlsx') }}" class="btn btn-info btn-sm" download>
-                        <i class="fa fa-file-excel"></i>Download
+                    <a href="{{ url('/pelatihan/export_template') }}" class="btn btn-info btn-sm" download>
+                        <i class="fa fa-file-excel"></i> Download Template
                     </a>
-                    <small id="error-file_pelatihan" class="error-text form-text text-danger"></small>
-                </div> --}}
+                </div>
 
                 <div class="form-group">
                     <label>Pilih File</label>
                     <input type="file" name="file_pelatihan" id="file_pelatihan" class="form-control" required>
                     <small id="error-file_pelatihan" class="error-text form-text text-danger"></small>
+                    <small class="form-text text-muted">File harus berformat .xlsx (Excel)</small>
                 </div>
             </div>
 
@@ -41,6 +41,12 @@
                     required: true,
                     extension: "xlsx"
                 },
+            },
+            messages: {
+                file_user: {
+                    required: "File harus dipilih",
+                    extension: "File harus berformat .xlsx"
+                }
             },
             submitHandler: function(form) {
                 var formData = new FormData(form); // Jadikan form ke FormData untuk menghandle file

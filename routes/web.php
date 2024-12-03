@@ -113,11 +113,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [PelatihanController::class, 'import_ajax']); // Proses import
         Route::get('/export_excel', [PelatihanController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [PelatihanController::class, 'export_pdf']); 
-        
+        Route::get('/export_template', [PelatihanController::class, 'exportTemplate']);
         Route::get('/{id}/dosenLayak', [PelatihanController::class, 'dosenLayak']);
     });
 
-    Route::group(['prefix' => 'sertifikasi', 'middleware'=> 'authorize:ADM'], function(){
+    Route::group(['prefix' => 'sertifikasi', 'middleware'=> 'authorize:ADM,PMN,DSN'], function(){
         Route::get('/', [SertifikasiController::class, 'index']);
         Route::post('/list', [SertifikasiController::class, 'list']);
         Route::get('/create_ajax', [SertifikasiController::class, 'create_ajax']);
@@ -131,6 +131,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [SertifikasiController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [SertifikasiController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [SertifikasiController::class, 'export_pdf']); 
+        Route::get('/export_template', [SertifikasiController::class, 'exportTemplate']);
+        Route::get('/{id}/dosenLayak', [PelatihanController::class, 'dosenLayak']);
     });
 
     Route::group(['prefix' => 'vendor', 'middleware'=> 'authorize:ADM'], function(){

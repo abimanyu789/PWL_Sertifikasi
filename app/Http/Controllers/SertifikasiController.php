@@ -260,7 +260,7 @@ class SertifikasiController extends Controller
             $sheet->setCellValue('B' . $row, $s->nama_sertifikasi);
             $sheet->setCellValue('C' . $row, $s->tanggal);
             $sheet->setCellValue('D' . $row, $s->tanggal_berlaku);
-            $sheet->setCellValue('E' . $row, $s->bidang->nama_bidang);
+            $sheet->setCellValue('E' . $row, $s->bidang->bidang_nama);
             $sheet->setCellValue('F' . $row, $s->jenis_sertifikasi->jenis_nama);
         
             $row++;
@@ -289,5 +289,29 @@ class SertifikasiController extends Controller
         $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
         return $pdf->stream('Data sertifikasi ' . date('Y-m-d H:i:s') . '.pdf');
 
+    }
+
+    public function exportTemplate()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Sertifikasi');
+        $sheet->setCellValue('C1', 'Tanggal');
+        $sheet->setCellValue('D1', 'Tanggal Berlaku');
+        $sheet->setCellValue('E1', 'Bidang');
+        $sheet->setCellValue('F1', 'Jenis Sertifikasi');
+
+
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Template_Sertifikasi.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=$filename");
+        $writer->save("php://output");
+        exit;
     }
 }

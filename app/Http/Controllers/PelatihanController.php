@@ -316,9 +316,9 @@ class PelatihanController extends Controller
             $sheet->setCellValue('B' . $row, $p->nama_pelatihan);
             $sheet->setCellValue('C' . $row, $p->deskripsi);
             $sheet->setCellValue('D' . $row, $p->tanggal);
-            $sheet->setCellValue('E' . $row, $p->bidang_id);
-            $sheet->setCellValue('F' . $row, $p->level_pelatihan_id);
-            $sheet->setCellValue('G' . $row, $p->vendor_id);
+            $sheet->setCellValue('E' . $row, $p->bidang->bidang_nama ?? '-');
+            $sheet->setCellValue('F' . $row, $p->level_pelatihan->level_pelatihan_nama ?? '-');
+            $sheet->setCellValue('G' . $row, $p->vendor->vendor_nama ?? '-');
 
             $row++;
             $no++;
@@ -345,6 +345,30 @@ class PelatihanController extends Controller
         $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
         return $pdf->stream('Data Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
 
+    }
+
+    public function exportTemplate()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Pelatihan');
+        $sheet->setCellValue('C1', 'Deskripsi');
+        $sheet->setCellValue('D1', 'Tanggal');
+        $sheet->setCellValue('E1', 'Bidang');
+        $sheet->setCellValue('F1', 'Level Pelatihan');
+        $sheet->setCellValue('G1', 'Vendor');
+
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Template_Pelatihan.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=$filename");
+        $writer->save("php://output");
+        exit;
     }
     
 }
