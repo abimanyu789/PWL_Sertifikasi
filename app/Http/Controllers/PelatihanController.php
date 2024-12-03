@@ -54,7 +54,10 @@ class PelatihanController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/dosenLayak') . '\')" class="btn btn-success btn-sm">Kirim</button>';
+                // Tambahkan tombol "Kirim" hanya untuk role pimpinan
+                if (auth()->user()->level_id == 2) {
+                    $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/dosenLayak') . '\')" class="btn btn-success btn-sm">Kirim</button>';
+                }
                 return $btn;
             }) 
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
@@ -62,6 +65,11 @@ class PelatihanController extends Controller
     } 
     public function dosenLayak($pelatihanId)
     {
+        if (auth()->user()->level_id == 2) {
+            return response()->json([
+                'message' => 'Anda tidak memiliki akses untuk mengirim dosen layak.'
+            ], 403);
+        }
         // Ambil pelatihan berdasarkan ID
         $pelatihan = PelatihanModel::find($pelatihanId);
 

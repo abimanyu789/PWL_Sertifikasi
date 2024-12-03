@@ -303,7 +303,7 @@
                 <li class="nav-item">
                     <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-certificate"></i>
-                            <p>Sertifikasi</p>
+                            <p>Daftar Sertifikasi</p>
                         </a>
                     </li>
                 </li>
