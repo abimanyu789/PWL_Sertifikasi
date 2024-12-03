@@ -11,6 +11,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\SertifikasiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\DaftarDosenController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -150,6 +151,23 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_excel', [VendorController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [VendorController::class, 'export_pdf']); 
         Route::get('/export_template', [VendorController::class, 'exportTemplate']);
+    });
+
+    Route::group(['prefix' => 'view_dosen', 'middleware'=> 'authorize:PMN'], function(){
+        Route::get('/', [DaftarDosenController::class, 'index']);          
+        Route::post('list', [DaftarDosenController::class, 'list']);
+        Route::get('/create_ajax', [DaftarDosenController::class, 'create_ajax']);    
+        Route::post('/ajax', [DaftarDosenController::class, 'store_ajax']);
+        Route::get('/{id}/show_ajax', [DaftarDosenController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [DaftarDosenController::class, 'edit_ajax']);    
+        Route::put('/{id}/update_ajax', [DaftarDosenController::class, 'update_ajax']); 
+        Route::get('/{id}/delete_ajax', [DaftarDosenController::class, 'confirm_ajax']);   
+        Route::delete('/{id}/delete_ajax', [DaftarDosenController::class, 'delete_ajax']);
+        Route::get('/import', [DaftarDosenController::class, 'import']);                      // ajax form upload excel
+        Route::post('/import_ajax', [DaftarDosenController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/export_excel', [DaftarDosenController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [DaftarDosenController::class, 'export_pdf']); 
+        Route::get('/export_template', [DaftarDosenController::class, 'exportTemplate']);
     });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
