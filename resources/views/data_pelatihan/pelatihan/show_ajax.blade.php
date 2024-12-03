@@ -45,15 +45,15 @@
                     </tr>
                     <tr>
                         <th>Bidang</th>
-                        <td>{{ $pelatihan->bidang->nama_bidang ?? '-' }}</td>
+                        <td>{{ $pelatihan->bidang->bidang_nama ?? '-' }}</td>
                     </tr>
                     <tr>
                         <th>Level Pelatihan</th>
-                        <td>{{ $pelatihan->level->level_pelatihan_nama ?? '-' }}</td>
+                        <td>{{ $pelatihan->level_pelatihan->level_pelatihan_nama ?? '-' }}</td>
                     </tr>
                     <tr>
                         <th>Vendor</th>
-                        <td>{{ $pelatihan->vendor->nama_vendor ?? '-' }}</td>
+                        <td>{{ $pelatihan->vendor->vendor_nama ?? '-' }}</td>
                     </tr>
                 </table>
             </div>

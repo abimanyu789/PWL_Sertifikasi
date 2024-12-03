@@ -149,8 +149,12 @@ class PelatihanController extends Controller
 
     public function edit_ajax(string $id)
     {
-        $pelatihan = PelatihanModel::find($id);
-        return view('data_pelatihan.pelatihan.edit_ajax', ['pelatihan' => $pelatihan]);
+        $pelatihan = PelatihanModel::with('bidang', 'vendor')->find($id);
+        $bidang = BidangModel::select('bidang_id', 'bidang_nama')->get();
+        $vendor = VendorModel::select('vendor_id', 'vendor_nama')->get();
+        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_id', 'level_pelatihan_nama')->get();
+        // return view('data_pelatihan.pelatihan.edit_ajax', compact('pelatihan', 'bidang', 'vendor', 'level_pelatihan'));
+        return view('data_pelatihan.pelatihan.edit_ajax', ['pelatihan' => $pelatihan , 'bidang' => $bidang, 'vendor' => $vendor, 'level_pelatihan' => $level_pelatihan]);
     }
 
     public function update_ajax(Request $request, string $id)
@@ -224,6 +228,7 @@ class PelatihanController extends Controller
 
     public function show_ajax(string $id)
     {
+        
         $pelatihan = PelatihanModel::find($id);
         return view('data_pelatihan.pelatihan.show_ajax', ['pelatihan' => $pelatihan]);
     }
