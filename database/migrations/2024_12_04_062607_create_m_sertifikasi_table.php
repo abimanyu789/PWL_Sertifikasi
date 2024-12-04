@@ -16,12 +16,12 @@ return new class extends Migration
             $table->string('nama_sertifikasi', 100);
             $table->dateTime('tanggal');
             $table->unsignedBigInteger('bidang_id')->index;
-            $table->unsignedBigInteger('jenis_id')->index;
+            $table->unsignedBigInteger('level_sertif_id')->index;
             $table->dateTime('tanggal_berlaku');
             $table->timestamps();
 
             $table->foreign('bidang_id')->references('bidang_id')->on('m_bidang');
-            $table->foreign('jenis_id')->references('jenis_id')->on('m_level_sertifikasi');
+            $table->foreign('level_sertif_id')->references('level_sertif_id')->on('m_level_sertifikasi');
         });
     }
 

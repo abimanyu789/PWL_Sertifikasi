@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('m_level_sertifikasi', function (Blueprint $table) {
-            $table->id('jenis_id');
-            $table->string('jenis_kode',10)->unique();
-            $table->string('jenis_nama',100);
+            $table->id('level_sertif_id');
+            $table->string('level_sertif_kode',10)->unique();
+            $table->string('level_sertif_nama',100);
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_jenis_sertifikasi');
+        Schema::dropIfExists('m_level_sertifikasi');
     }
 };
