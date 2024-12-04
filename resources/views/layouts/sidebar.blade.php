@@ -183,6 +183,12 @@
                                 <p>Bidang Minat</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/matkul') }}" class="nav-link {{ $activeMenu == 'matkul' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Mata Kuliah</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

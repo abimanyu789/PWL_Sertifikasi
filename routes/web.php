@@ -12,6 +12,7 @@ use App\Http\Controllers\SertifikasiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\DaftarDosenController;
+use App\Http\Controllers\MataKuliahController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -80,6 +81,22 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [BidangController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [BidangController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [BidangController::class, 'export_pdf']);     
+    });
+
+    Route::group(['prefix' => 'matkul', 'middleware'=> 'authorize:ADM'], function(){
+        Route::get('/', [MataKuliahController::class, 'index']);      
+        Route::post('/list', [MataKuliahController::class, 'list']);   
+        Route::get('/create_ajax', [MataKuliahController::class, 'create_ajax']);
+        Route::post('/ajax', [MataKuliahController::class, 'store_ajax']);
+        Route::get('/{id}/show_ajax', [MataKuliahController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [MataKuliahController::class, 'edit_ajax']);
+        Route::put('/{id}/update_ajax', [MataKuliahController::class, 'update_ajax']);
+        Route::get('/{id}/delete_ajax', [MataKuliahController::class, 'confirm_ajax']);
+        Route::delete('/{id}/delete_ajax', [MataKuliahController::class, 'delete_ajax']);  
+        Route::get('/import', [MataKuliahController::class, 'import']);                      // ajax form upload excel
+        Route::post('/import_ajax', [MataKuliahController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/export_excel', [MataKuliahController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [MataKuliahController::class, 'export_pdf']);     
     });
 
     Route::group(['prefix' => 'jenis_sertifikasi', 'middleware'=> 'authorize:ADM'], function(){
