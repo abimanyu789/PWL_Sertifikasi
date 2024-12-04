@@ -13,7 +13,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\DaftarDosenController;
 use App\Http\Controllers\MataKuliahController;
-
+use App\Http\Controllers\QuotaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -186,6 +186,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [DaftarDosenController::class, 'export_pdf']); 
         Route::get('/export_template', [DaftarDosenController::class, 'exportTemplate']);
     });
+
+    Route::group(['prefix' => 'quota', 'middleware' => 'authorize:ADM'], function () {
+        Route::get('/', [QuotaController::class, 'index']);
+        Route::post('/list', [QuotaController::class, 'list']);
+        Route::get('/pelatihan/{pelatihanId}/add_ajax', [QuotaController::class, 'add_ajax']);
+        Route::post('/pelatihan/{pelatihanId}/ajax', [QuotaController::class, 'store_ajax']); 
+    });    
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
