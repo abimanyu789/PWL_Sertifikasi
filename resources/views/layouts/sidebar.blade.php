@@ -200,13 +200,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/jenis_pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active' : '' }}">
+                            <a href="{{ url('/jenis_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenis_pelatihan' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Jenis Pelatihan</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'level_pelatihan' ? 'active' : '' }}">
+                            <a href="{{ url('/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Jenis Sertifikasi</p>
                             </a>
@@ -222,13 +222,13 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/vendor_pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active' : '' }}">
+                            <a href="{{ url('/vendor_pelatihan') }}" class="nav-link {{ $activeMenu == 'vendor_pelatihan' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Vendor Pelatihan</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'level_pelatihan' ? 'active' : '' }}">
+                            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendor_sertifikasi' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Vendor Sertifikasi</p>
                             </a>
@@ -321,26 +321,26 @@
                 </li>
 
                 <!-- Laporan Section -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['laporan_sertifikasi', 'laporan_pelatihan']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['laporan_sertifikasi', 'laporan_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="fas fa-file-alt nav-icon"></i>
                         <p>Data Upload<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/laporan_sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
+                            <a href="{{ url('/laporan_sertifikasi') }}" class="nav-link {{ $activeMenu == 'laporan_sertifikasi' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sertifikasi</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/laporan_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
+                            <a href="{{ url('/laporan_pelatihan') }}" class="nav-link {{ $activeMenu == 'laporan_pelatihan' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Pelatihan</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/view_dosen') }}" class="nav-link {{ $activeMenu == 'list_dosen' ? 'active' : '' }}">
+                            <a href="{{ url('/view_dosen') }}" class="nav-link {{ $activeMenu == 'view_dosen' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Data Dosen</p>
                             </a>
@@ -359,7 +359,7 @@
 
                 <!-- Data Pelatihan Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                    <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>Data Pelatihan</p>
                     </a>
@@ -367,7 +367,7 @@
 
                 <!-- Data Sertifikasi Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/list_sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
+                    <a href="{{ url('/list_sertifikasi') }}" class="nav-link {{ $activeMenu == 'list_sertifikasi' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-certificate"></i>
                             <p>Data Sertifikasi</p>
                         </a>
@@ -409,7 +409,7 @@
 
                 <!-- Data Pelatihan Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                    <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>Data Pelatihan</p>
                     </a>
@@ -417,7 +417,7 @@
 
                 <!-- Data Sertifikasi Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/list_sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
+                    <a href="{{ url('/list_sertifikasi') }}" class="nav-link {{ $activeMenu == 'list_sertifikasi' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-certificate"></i>
                             <p>Data Sertifikasi</p>
                         </a>
