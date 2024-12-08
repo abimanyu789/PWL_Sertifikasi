@@ -159,8 +159,8 @@
 
             @if(auth()->user()->level_id == 1)
                 <!-- Menu Admin - Tetap seperti yang sudah ada -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['user', 'level', 'bidang']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['user', 'level', 'bidang']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['user', 'level']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['user', 'level']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Data Pengguna<i class="right fas fa-angle-left"></i></p>
                     </a>
