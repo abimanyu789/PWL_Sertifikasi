@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('bidang_id');
             $table->string('bidang_kode',10)->unique();
             $table->string('bidang_nama',100);
+
             $table->timestamps();
         });
     }

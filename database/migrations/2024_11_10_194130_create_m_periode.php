@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('m_jenis_sertifikasi', function (Blueprint $table) {
-            $table->id('jenis_id');
-            $table->string('jenis_kode',10)->unique();
-            $table->string('jenis_nama',100);
+        Schema::create('m_periode', function (Blueprint $table) {
+            $table->id('periode_id');
+            $table->unsignedSmallInteger('periode_tahun');
             $table->timestamps();
         });
     }
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('m_jenis_sertifikasi');
+        Schema::dropIfExists('m_periode');
     }
 };

@@ -13,15 +13,20 @@ return new class extends Migration
     {
         Schema::create('m_sertifikasi', function (Blueprint $table) {
             $table->id('sertifikasi_id');
-            $table->string('nama_sertifikasi', 100);
-            $table->dateTime('tanggal');
-            $table->unsignedBigInteger('bidang_id')->index;
+            $table->string('nama_sertifikasi');
+            $table->date('tanggal');
+            $table->unsignedBigInteger('kuota');
+            $table->string('level_sertifikasi');
+            $table->unsignedBigInteger('vendor_id')->index;
             $table->unsignedBigInteger('jenis_id')->index;
-            $table->dateTime('tanggal_berlaku');
+            $table->unsignedBigInteger('mk_id')->index;
+            $table->unsignedBigInteger('periode_id')->index;
             $table->timestamps();
 
-            $table->foreign('bidang_id')->references('bidang_id')->on('m_bidang');
-            $table->foreign('jenis_id')->references('jenis_id')->on('m_jenis_sertifikasi');
+            $table->foreign('vendor_id')->references('vendor_id')->on('m_vendor');
+            $table->foreign('jenis_id')->references('jenis_id')->on('m_jenis');
+            $table->foreign('mk_id')->references('mk_id')->on('m_mata_kuliah');
+            $table->foreign('periode_id')->references('periode_id')->on('m_periode');
         });
     }
 

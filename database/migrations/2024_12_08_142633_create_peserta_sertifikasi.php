@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('t_quota_pelatihan', function (Blueprint $table) {
-            $table->id('quota_pelatihan_id');
+        Schema::create('peserta_sertifikasi', function (Blueprint $table) {
+            $table->id('peserta_sertifikasi_id');
             $table->unsignedBigInteger('user_id')->index;
-            $table->unsignedBigInteger('quota_id')->index;
+            $table->unsignedBigInteger('sertifikasi_id')->index;
+            $table->string('status');
             $table->timestamps();
 
             $table->foreign('user_id')->references('user_id')->on('m_user');
-            $table->foreign('quota_id')->references('quota_id')->on('m_quota');
+            $table->foreign('sertifikasi_id')->references('sertifikasi_id')->on('m_sertifikasi');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('t_quota_pelatihan');
+        Schema::dropIfExists('peserta_sertifikasi');
     }
 };

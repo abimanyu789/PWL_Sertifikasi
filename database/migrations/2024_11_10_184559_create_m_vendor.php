@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('alamat', 100);
             $table->string('kota', 100);
             $table->string('no_telp', 20);
-            $table->string('alamat_web',200);
+            $table->string('alamat_web', 200);
             $table->timestamps();
         });
     }

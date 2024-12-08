@@ -13,17 +13,22 @@ return new class extends Migration
     {
         Schema::create('m_pelatihan', function (Blueprint $table) {
             $table->id('pelatihan_id');
-            $table->string('nama_pelatihan', 100);
-            $table->string('deskripsi');
-            $table->dateTime('tanggal');
-            $table->unsignedBigInteger('bidang_id')->index;
-            $table->unsignedBigInteger('level_pelatihan_id')->index;
+            $table->string('nama_pelatihan');
+            $table->date('tanggal');
+            $table->unsignedBigInteger('kuota');
+            $table->string('lokasi');
+            $table->unsignedBigInteger('biaya');
+            $table->string('level_pelatihan');
             $table->unsignedBigInteger('vendor_id')->index;
+            $table->unsignedBigInteger('jenis_id')->index;
+            $table->unsignedBigInteger('mk_id')->index;
+            $table->unsignedBigInteger('periode_id')->index;
             $table->timestamps();
 
-            $table->foreign('bidang_id')->references('bidang_id')->on('m_bidang');
-            $table->foreign('level_pelatihan_id')->references('level_pelatihan_id')->on('m_level_pelatihan');
             $table->foreign('vendor_id')->references('vendor_id')->on('m_vendor');
+            $table->foreign('jenis_id')->references('jenis_id')->on('m_jenis');
+            $table->foreign('mk_id')->references('mk_id')->on('m_mata_kuliah');
+            $table->foreign('periode_id')->references('periode_id')->on('m_periode');
         });
     }
 
