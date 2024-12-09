@@ -177,18 +177,6 @@
                                 <p>Level</p>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
-                            <a href="{{ url('/bidang') }}" class="nav-link {{ $activeMenu == 'bidang' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Bidang Mina</p>
-                            </a>
-                        </li> --}}
-                        {{-- <li class="nav-item">
-                            <a href="{{ url('/matkul') }}" class="nav-link {{ $activeMenu == 'matkul' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Mata Kuliah</p>
-                            </a>
-                        </li> --}}
                     </ul>
                 </li>
 
@@ -222,7 +210,7 @@
                         <!-- Bidang Minat -->
                         <li class="nav-item">
                             <a href="{{ url('/bidang') }}" class="nav-link {{ $activeMenu == 'bidang' ? 'active' : '' }}">
-                                <i class="fas fa-lightbulb nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Bidang Minat</p>
                             </a>
                         </li>
@@ -265,29 +253,12 @@
 
             @elseif(auth()->user()->level_id == 2)
                 <!-- Menu Pimpinan -->
-                {{-- <li class="nav-item">
+                <li class="nav-item">
                     <a href="{{ url('/view_dosen') }}" class="nav-link {{ $activeMenu == 'view_dosen' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                        <p>Data Dosen</p>
+                        <p>Monitoring</p>
                     </a>
                 </li>
-
-                <!-- Data Pelatihan Section -->
-                <li class="nav-item">
-                    <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
-                        <i class="nav-icon fas fa-book-open"></i>
-                        <p>Data Pelatihan</p>
-                    </a>
-                </li>
-
-                <!-- Data Sertifikasi Section -->
-                <li class="nav-item">
-                    <a href="{{ url('/list_sertifikasi') }}" class="nav-link {{ $activeMenu == 'list_sertifikasi' ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-certificate"></i>
-                            <p>Data Sertifikasi</p>
-                        </a>
-                    </li>
-                </li> --}}
 
                 <!-- ACC Pengajuan -->
                 <li class="nav-item">
