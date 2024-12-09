@@ -1,23 +1,23 @@
-<form action="{{ url('/bidang/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
+<form action="{{ url('/jenis/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Import Data Bidang Minat</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Import Data Jenis</h5>
                 <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>Download Template</label>
-                    <a href="{{ asset('template_bidang.xlsx') }}" class="btn btn-info btnsm" download><i
+                    <a href="{{ asset('template_jenis.xlsx') }}" class="btn btn-info btnsm" download><i
                             class="fa fa-file-excel"></i> Download</a>
-                    <small id="error-bidang_id" class="error-text form-text textdanger"></small>
+                    <small id="error-jenis_id" class="error-text form-text textdanger"></small>
                 </div>
                 <div class="form-group">
                     <label>Pilih File</label>
-                    <input type="file" name="file_bidang" id="file_bidang" class="form-control" required>
-                    <small id="error-file_bidang" class="error-text form-text textdanger"></small>
+                    <input type="file" name="file_jenis" id="file_jenis" class="form-control" required>
+                    <small id="error-file_jenis" class="error-text form-text textdanger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -31,7 +31,7 @@
     $(document).ready(function() {
         $("#form-import").validate({
             rules: {
-                file_bidang: {
+                file_jenis: {
                     required: true,
                     extension: "xlsx"
                 },
@@ -52,7 +52,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            tableBidang.ajax.reload(); // reload datatable
+                            tablejenis.ajax.reload(); // reload datatable
                         } else { // jika error
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

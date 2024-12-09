@@ -73,23 +73,23 @@
                 background-color: #1F4C97;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
-        
+
             .header-content {
                 display: flex;
                 align-items: center;
                 gap: 10px;
             }
-        
+
             .logo-icon {
                 font-size: 30px;
                 color: white;
             }
-        
+
             .header-text {
                 display: flex;
                 flex-direction: column;
             }
-        
+
             .header-text h4 {
                 color: white;
                 font-weight: 700;
@@ -98,7 +98,7 @@
                 line-height: 1.2;
                 margin-top: 4px; /* Memberikan jarak antara title dan subtitle */
             }
-        
+
             .header-text span {
                 color: #d1d5db;
                 font-size: 12px;
@@ -119,7 +119,7 @@
                 height: 80px; /* Penuhi kontainer */
                 object-fit: cover; /* Gambar menyesuaikan */
                 border-radius: 80px; /* Membuat gambar berbentuk lingkaran */
-                
+
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Tambahkan bayangan */
             }
 
@@ -136,14 +136,14 @@
     <!-- User Panel -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex flex-column align-items-center">
         <div class="image">
-            <img src="{{ auth()->user()->avatar ? asset('storage/photos/' . auth()->user()->avatar) : asset('img/pp.jpg') }}" 
-                class="profile-img img-circle elevation-2" 
+            <img src="{{ auth()->user()->avatar ? asset('storage/photos/' . auth()->user()->avatar) : asset('img/pp.jpg') }}"
+                class="profile-img img-circle elevation-2"
                 alt="User Image">
         </div>
         <div class="info mt-2">
             <a href="{{ url('/profile') }}" class="d-block text-white text-center">{{ auth()->user()->username }}</a>
         </div>
-    </div>    
+    </div>
 
     <!-- Sidebar Menu -->
     <nav class="mt-2">
@@ -201,7 +201,7 @@
                         </li>
                         <!-- Jenis -->
                         <li class="nav-item">
-                            <a href="{{ url('/data_jenis') }}" class="nav-link {{ $activeMenu == 'data_jenis' ? 'active' : '' }}">
+                            <a href="{{ url('/jenis') }}" class="nav-link {{ $activeMenu == 'data_jenis' ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-chalkboard-teacher"></i> <!-- Ikon untuk bidang minat -->
                                 <p>Data Jenis</p>
                             </a>
@@ -241,7 +241,7 @@
                     </ul>
                 </li>
 
-                
+
 
                 <!-- Laporan Section -->
                 <li class="nav-item">
@@ -268,7 +268,7 @@
                         </a>
                     </li>
                 </li>
-                
+
                 <!-- Data Sertifikasi Section -->
                 <li class="nav-item">
                     <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
@@ -276,7 +276,7 @@
                             <p>Statistik</p>
                         </a>
                     </li>
-                </li>                
+                </li>
 
             @elseif(auth()->user()->level_id == 3)
                 <!-- Menu Dosen -->

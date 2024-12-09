@@ -1,4 +1,4 @@
-@empty($bidang)
+@empty($jenis)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,55 +11,48 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/bidang') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/jenis') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/bidang/' . $bidang->bidang_id . '/update_ajax') }}" method="POST" id="form-edit">
+    <form action="{{ url('/jenis/' . $jenis->jenis_id . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
-        @method('PUT')
+        @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Bidang Minat</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Jenis</h5>
                     <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label>Kode</label>
-                        <input value="{{ $bidang->bidang_kode }}" type="text" name="bidang_kode" id="bidang_kode"
-                            class="form-control" required>
-                        <small id="error-bidang_kode" class="error-text form-text textdanger"></small>
+                    <div class="alert alert-warning">
+                        <h5><i class="icon fas fa-ban"></i> Konfirmasi !!!</h5>
+                        Apakah Anda ingin menghapus data seperti di bawah ini?
                     </div>
-                    <div class="form-group">
-                        <label>Nama</label>
-                        <input value="{{ $bidang->bidang_nama }}" type="text" name="bidang_nama" id="bidang_nama" class="form-control"
-                            required>
-                        <small id="error-bidang_nama" class="error-text form-text text-danger"></small>
-                    </div>
+                    <table class="table table-sm table-bordered table-striped">
+                        <tr>
+                            <th class="text-right col-3">Kode :</th>
+                            <td class="col-9">{{ $jenis->jenis_kode }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Nama :</th>
+                            <td class="col-9">{{ $jenis->jenis_nama }}</td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btnwarning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
                 </div>
             </div>
         </div>
     </form>
     <script>
         $(document).ready(function() {
-            $("#form-edit").validate({
-                rules: {
-                    bidang_kode: {
-                        required: true,
-                        minlength: 3
-                    },
-                    bidang_nama: {
-                        required: true,
-                        maxlength: 100
-                    }
-                },
+            $("#form-delete").validate({
+                rules: {},
                 submitHandler: function(form) {
                     $.ajax({
                         url: form.action,
@@ -73,7 +66,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataBidang.ajax.reload();
+                                dataJenis.ajax.reload();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

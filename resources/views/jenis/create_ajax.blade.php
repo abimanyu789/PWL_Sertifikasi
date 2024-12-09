@@ -1,59 +1,59 @@
-<form action="{{ url('/bidang/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
+<form action="{{ url('/jenis/ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Import Data Bidang Minat</h5>
-                <button type="button" class="close" data-dismiss="modal" arialabel="Close"><span
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Jenis</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Download Template</label>
-                    <a href="{{ asset('template_bidang.xlsx') }}" class="btn btn-info btnsm" download><i
-                            class="fa fa-file-excel"></i> Download</a>
-                    <small id="error-bidang_id" class="error-text form-text textdanger"></small>
+                    <label>Kode</label>
+                    <input value="" type="text" name="jenis_kode" id="jenis_kode" class="form-control" required>
+                    <small id="error-jenis_kode" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Pilih File</label>
-                    <input type="file" name="file_bidang" id="file_bidang" class="form-control" required>
-                    <small id="error-file_bidang" class="error-text form-text textdanger"></small>
+                    <label>Nama</label>
+                    <input value="" type="text" name="jenis_nama" id="jenis_nama" class="form-control" required>
+                    <small id="error-jenis_nama" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </div>
     </div>
 </form>
 <script>
     $(document).ready(function() {
-        $("#form-import").validate({
+        $("#form-tambah").validate({
             rules: {
-                file_bidang: {
+                jenis_kode: {
                     required: true,
-                    extension: "xlsx"
+                    minlength: 3
                 },
+                jenis_nama: {
+                    required: true,
+                    maxlength: 100
+                }
             },
             submitHandler: function(form) {
-                var formData = new FormData(form); // Jadikan form ke FormData untuk menghandle file
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: formData, // Data yang dikirim berupa FormData
-                    processData: false, // setting processData dan contentType ke false, untuk menghandle file
-                    contentType: false,
+                    data: $(form).serialize(),
                     success: function(response) {
-                        if (response.status) { // jika sukses
+                        if (response.status) {
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            tableBidang.ajax.reload(); // reload datatable
-                        } else { // jika error
+                            dataJenis.ajax.reload();
+                        } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
                                 $('#error-' + prefix).text(val[0]);

@@ -14,11 +14,11 @@ class BidangController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Bidang',
-            'list' => ['Home', 'Bidang']
+            'title' => 'Daftar Bidang Minat',
+            'list' => ['Home', 'Bidang Minat']
         ];
         $page = (object) [
-            'title' => 'Daftar bidang yang terdaftar dalam sistem'
+            'title' => 'Daftar bidang minat secara spesifik yang terdaftar dalam sistem'
         ];
 
         $activeMenu = 'bidang'; // set menu yang sedang aktif
@@ -47,7 +47,7 @@ class BidangController extends Controller
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
             ->make(true);
     }
-    
+
     public function create_ajax()
     {
         $bidang = BidangModel::all();
