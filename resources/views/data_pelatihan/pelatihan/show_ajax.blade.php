@@ -28,10 +28,6 @@
             <div class="modal-body">
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
-                        <th>ID Pelatihan</th>
-                        <td>{{ $pelatihan->pelatihan_id }}</td>
-                    </tr>
-                    <tr>
                         <th>Nama Pelatihan</th>
                         <td>{{ $pelatihan->nama_pelatihan }}</td>
                     </tr>
@@ -40,20 +36,40 @@
                         <td>{{ $pelatihan->deskripsi }}</td>
                     </tr>
                     <tr>
-                        <th>Tanggal Pelatihan</th>
+                        <th>Tanggal</th>
                         <td>{{ $pelatihan->tanggal }}</td>
                     </tr>
                     <tr>
-                        <th>Bidang</th>
-                        <td>{{ $pelatihan->bidang->bidang_nama ?? '-' }}</td>
+                        <th>Kuota</th>
+                        <td>{{ $pelatihan->kuota }}</td>
+                    </tr>
+                    <tr>
+                        <th>lokasi</th>
+                        <td>{{ $pelatihan->lokasi }}</td>
+                    </tr>
+                    <tr>
+                        <th>Biaya</th>
+                        <td>{{ $pelatihan->biaya }}</td>
                     </tr>
                     <tr>
                         <th>Level Pelatihan</th>
-                        <td>{{ $pelatihan->level_pelatihan->level_pelatihan_nama ?? '-' }}</td>
+                        <td>{{ $pelatihan->level_pelatihan }}</td>
                     </tr>
                     <tr>
                         <th>Vendor</th>
                         <td>{{ $pelatihan->vendor->vendor_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jenis</th>
+                        <td>{{ $pelatihan->jenis->jenis_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Mata Kuliah</th>
+                        <td>{{ $pelatihan->mata_kuliah->mk_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Periode</th>
+                        <td>{{ $pelatihan->periode->periode_tahun ?? '-' }}</td>
                     </tr>
                 </table>
             </div>

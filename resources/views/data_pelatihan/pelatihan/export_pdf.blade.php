@@ -79,9 +79,14 @@
                     <th>Nama Pelatihan</th>
                     <th>Deskripsi</th>
                     <th>Tanggal</th>
-                    <th>Bidang</th>
+                    <th>Kuota</th>
+                    <th>Lokasi</th>
+                    <th>Biaya</th>
                     <th>Level Pelatihan</th>
                     <th>Vendor</th>
+                    <th>Jenis</th>
+                    <th>Mata Kuliah</th>
+                    <th>Periode</th>
                 </tr>
                 <tbody> 
                     @foreach($pelatihan as $p) 
@@ -90,12 +95,17 @@
                         <td>{{ $p->nama_pelatihan }}</td>
                         <td>{{ $p->deskripsi }}</td>
                         <td>{{ $p->tanggal }}</td>
-                        <td>{{ $p->bidang->nama_bidang }}</td>
-                        <td>{{ $p->level_pelatihan->level_pelatihan_nama }}</td>
-                        <td>{{ $p->vendor->nama_vendor }}</td>
+                        <td>{{ $p->kuota }}</td>
+                        <td>{{ $p->lokasi }}</td>
+                        <td>{{ $p->biaya }}</td>
+                        <td>{{ $p->level_pelatihan }}</td>
+                        <td>{{ $p->vendor->vendor_nama }}</td>
+                        <td>{{ $p->jenis->jenis_nama }}</td>
+                        <td>{{ $p->mata_kuliah->mk_nama }}</td>
+                        <td>{{ $p->periode->periode_tahun }}</td>
                     </tr>
-                    @endforeach 
-        </tbody> 
+                @endforeach 
+            </tbody> 
         </table>
     </div>
 </div>

@@ -5,7 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/pelatihan/import') }}')" class="btn btn-sm btn-info mt-1">Import</button>
+                <button onclick="modalAction('{{ url('/pelatihan/import_ajax') }}')" class="btn btn-sm btn-info mt-1">Import</button>
                 <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a>
                 <a class="btn btn-sm btn-warning mt-1" href="{{ url('/pelatihan/export_pd') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
                 <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
@@ -25,9 +25,8 @@
                         <div class="col-3">
                             <select class="form-control" id="level_pelatihan_id" name="level_pelatihan_id">
                                 <option value="">- Semua -</option>
-                                @foreach ($level_pelatihan as $item)
-                                    <option value="{{ $item->level_pelatihan_id }}">{{ $item->level_pelatihan_nama }}</option>
-                                @endforeach
+                                <option value="Nasional">Nasional</option>
+                                <option value="Internasional">Internasional</option>
                             </select>                            
                             <small class="form-text text-muted">Level Pelatihan</small>
                         </div>
@@ -37,11 +36,10 @@
             <table class="table table-bordered table-striped table-hover table-sm" id="table_pelatihan">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No</th>
                         <th>Nama Pelatihan</th>
-                        <th>Tanggal</th>
-                        <th>Bidang</th>
                         <th>Level Pelatihan</th>
+                        <th>Tanggal</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -64,7 +62,7 @@
     });
 
     function modalAction(url = '') {
-        $('#myModal').load(url,function() {
+        $('#myModal').load(url, function() {
             $('#myModal').modal('show');
         });
     }
@@ -94,52 +92,37 @@
 
     $(document).ready(function() {
         dataPelatihan = $('#table_pelatihan').DataTable({
-            // serverSide: true, jika ingin menggunakan server side processing
             serverSide: true,
             ajax: {
-                "url": "{{ url('pelatihan/list') }}",
-                "dataType": "json",
-                "type": "POST",
-
-                "data": function(d) {
+                url: "{{ url('pelatihan/list') }}",
+                dataType: "json",
+                type: "POST",
+                data: function(d) {
                     d.level_pelatihan_id = $('#level_pelatihan_id').val();
                 }
             },
             columns: [
                 {
-                    data: "level_pelatihan_id",
-                    className: "",
-                    orderable: true,
-                    searchable: true
-                },
-                {
-                    data: "nama_pelatihan",
-                    className: "",
-                    orderable: true,
-                    searchable: true
-                },
-                {
-                    data: "tanggal",
-                    className: "",
-                    orderable: true,
-                    searchable: true
-                },
-                {
-                    // mengambil data level hasil dari ORM berelasi
-                    data: "bidang.bidang_nama",
-                    className: "",
+                    data: "DT_RowIndex",
+                    name: "DT_RowIndex",
                     orderable: false,
                     searchable: false
                 },
                 {
-                    data: "level_pelatihan.level_pelatihan_nama", // menampilkan nama level pelatihan jika ada relasi
-                    className: "",
-                    orderable: true,
-                    searchable: true
+                    data: "nama_pelatihan",
+                    name: "nama_pelatihan"
+                },
+                {
+                    data: "level_pelatihan",
+                    name: "level_pelatihan"
+                },
+                {
+                    data: "tanggal",
+                    name: "tanggal"
                 },
                 {
                     data: "aksi",
-                    className: "",
+                    name: "aksi",
                     orderable: false,
                     searchable: false
                 }
@@ -153,5 +136,6 @@
             handleImport(formData);
         });
     });
+
 </script>
 @endpush

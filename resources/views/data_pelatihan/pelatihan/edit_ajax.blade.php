@@ -29,40 +29,48 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Nama Pelatihan</label>
-                        <input value="{{ $pelatihan->nama_pelatihan }}" type="text" name="nama_pelatihan" id="nama_pelatihan" class="form-control" required>
+                        <input type="text" name="nama_pelatihan" id="nama_pelatihan" class="form-control" required>
                         <small id="error-nama_pelatihan" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Deskripsi</label>
-                        <textarea name="deskripsi" id="deskripsi" class="form-control" required>{{ $pelatihan->deskripsi }}</textarea>
+                        <textarea name="deskripsi" id="deskripsi" class="form-control" required></textarea>
                         <small id="error-deskripsi" class="error-text form-text text-danger"></small>
                     </div>
-                    <div class="form-group">
-                        <label>Tanggal</label>
-                        <input value="{{ $pelatihan->tanggal }}" type="datetime-local" name="tanggal" id="tanggal" class="form-control">
-                        <small id="error-tanggal" class="error-text form-text text-danger"></small>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" name="tanggal" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kuota</label>
+                            <div class="input-group">
+                                <input type="number" name="kuota" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="tambahKuota()">+</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Bidang</label>
-                        <select name="bidang_id" id="bidang_id" class="form-control" required>
-                            <option value="">- Pilih Bidang -</option>
-                            @foreach ($bidang as $b)
-                                <option value="{{ $b->bidang_id }}" {{ $b->bidang_id == $pelatihan->bidang_id ? 'selected' : '' }}>
-                                    {{ $b->bidang_nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <small id="error-bidang_id" class="error-text form-text text-danger"></small>
+                        <label>Lokasi</label>
+                        <input type="text" name="lokasi" id="lokasi" class="form-control" required>
+                        <small id="error-lokasi" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Biaya</label>
+                            <input type="number" name="biaya" class="form-control" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Level Pelatihan</label>
                         <select name="level_pelatihan_id" id="level_pelatihan_id" class="form-control" required>
                             <option value="">- Pilih Level -</option>
-                            @foreach ($level_pelatihan as $lp)
-                                <option value="{{ $lp->level_pelatihan_id }}" {{ $lp->level_pelatihan_id == $pelatihan->level_pelatihan_id ? 'selected' : '' }}>
-                                    {{ $lp->level_pelatihan_nama }}
-                                </option>
-                            @endforeach
+                            <option value="Nasional">Nasional</option>
+                            <option value="Internasional">Internasional</option>
                         </select>
                         <small id="error-level_pelatihan_id" class="error-text form-text text-danger"></small>
                     </div>
@@ -71,9 +79,37 @@
                         <select name="vendor_id" id="vendor_id" class="form-control" required>
                             <option value="">- Pilih Vendor -</option>
                             @foreach ($vendor as $v)
-                                <option value="{{ $v->vendor_id }}" {{ $v->vendor_id == $pelatihan->vendor_id ? 'selected' : '' }}>
-                                    {{ $v->vendor_nama }}
-                                </option>
+                                <option value="{{ $v->vendor_id }}">{{ $v->vendor_nama }}</option>
+                            @endforeach
+                        </select>
+                        <small id="error-vendor_id" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis</label>
+                        <select name="jenis_id" id="jenis_id" class="form-control" required>
+                            <option value="">- Pilih Jenis -</option>
+                            @foreach ($jenis as $j)
+                                <option value="{{ $j->jenis_id }}">{{ $j->jenis_nama }}</option>
+                            @endforeach
+                        </select>
+                        <small id="error-jenis_id" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Mata Kuliah</label>
+                        <select name="mk_id" id="mk_id" class="form-control" required>
+                            <option value="">- Pilih Mata Kuliah -</option>
+                            @foreach ($matkul as $mk)
+                                <option value="{{ $mk->mk_id }}">{{ $mk->mk_nama }}</option>
+                            @endforeach
+                        </select>
+                        <small id="error-mk_id" class="error-text form-text text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Periode</label>
+                        <select name="periode_id" id="periode_id" class="form-control" required>
+                            <option value="">- Pilih Periode -</option>
+                            @foreach ($periode as $p)
+                                <option value="{{ $p->periode_id }}">{{ $v->periode_tahun }}</option>
                             @endforeach
                         </select>
                         <small id="error-vendor_id" class="error-text form-text text-danger"></small>
@@ -114,6 +150,18 @@
                     number: true
                 },
                 vendor_id: {
+                    required: true,
+                    number: true
+                },
+                jenis_id: {
+                    required: true,
+                    number: true
+                },
+                mk_id: {
+                    required: true,
+                    number: true
+                },
+                periode_id: {
                     required: true,
                     number: true
                 }

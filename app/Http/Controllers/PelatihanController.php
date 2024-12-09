@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PelatihanModel;
-use App\Models\LevelPelatihanModel;
-use App\Models\BidangModel;
+use App\Models\MatkulModel;
+use App\Models\JenisModel;
+use App\Models\PeriodeModel;
 use App\Models\VendorModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -22,15 +23,18 @@ class PelatihanController extends Controller
             'title' => 'Daftar Pelatihan',
             'list' => ['Home', 'Pelatihan']
         ];
+        
         $page = (object) [
             'title' => 'Daftar pelatihan yang terdaftar dalam sistem',
         ];
-        $activeMenu = 'pelatihan'; // set menu yang sedang aktif
-        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_id', 'level_pelatihan_nama')->get(); // Ambil level pelatihan untuk filter
+     
+        $activeMenu = 'pelatihan'; 
+        $levelPelatihan = ['Nasional', 'Internasional'];
+     
         return view('data_pelatihan.pelatihan.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
-            'level_pelatihan' => $level_pelatihan, // Ubah ke $levels
+            'levelPelatihan' => $levelPelatihan,
             'activeMenu' => $activeMenu
         ]);
     }
@@ -39,13 +43,11 @@ class PelatihanController extends Controller
     public function list(Request $request) 
     { 
 
-        $pelatihan = PelatihanModel::query();
-        if ($request->has('level_pelatihan_id') && $request->level_pelatihan_id != '') {
-            $pelatihan->where('level_pelatihan_id', $request->level_pelatihan_id);
+        $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode']);
+        
+        if ($request->level_pelatihan) {
+            $pelatihan->where('level_pelatihan', $request->level_pelatihan);
         }
-
-        $pelatihan = PelatihanModel::select('pelatihan_id', 'nama_pelatihan', 'deskripsi','tanggal', 'bidang_id', 'level_pelatihan_id', 'vendor_id') 
-                    ->with('level_pelatihan', 'bidang'); 
     
         return DataTables::of($pelatihan) 
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
@@ -55,60 +57,61 @@ class PelatihanController extends Controller
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 // Tambahkan tombol "Kirim" hanya untuk role pimpinan
-                if (auth()->user()->level_id == 2) {
-                    $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/dosenLayak') . '\')" class="btn btn-success btn-sm">Kirim</button>';
-                }
+                // if (auth()->user()->level_id == 2) {
+                //     $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/dosenLayak') . '\')" class="btn btn-success btn-sm">Kirim</button>';
+                // }
                 return $btn;
             }) 
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
             ->make(true); 
     } 
-    public function dosenLayak($pelatihanId)
-    {
-        if (auth()->user()->level_id == 2) {
-            return response()->json([
-                'message' => 'Anda tidak memiliki akses untuk mengirim dosen layak.'
-            ], 403);
-        }
-        // Ambil pelatihan berdasarkan ID
-        $pelatihan = PelatihanModel::find($pelatihanId);
+    // public function dosenLayak($pelatihanId)
+    // {
+    //     if (auth()->user()->level_id == 2) {
+    //         return response()->json([
+    //             'message' => 'Anda tidak memiliki akses untuk mengirim dosen layak.'
+    //         ], 403);
+    //     }
+    //     // Ambil pelatihan berdasarkan ID
+    //     $pelatihan = PelatihanModel::find($pelatihanId);
 
-        if (!$pelatihan) {
-            return response()->json([
-                'message' => 'Pelatihan tidak ditemukan.'
-            ], 404);
-        }
+    //     if (!$pelatihan) {
+    //         return response()->json([
+    //             'message' => 'Pelatihan tidak ditemukan.'
+    //         ], 404);
+    //     }
 
-        // Ambil dosen berdasarkan bidang dan mata kuliah yang terkait dengan pelatihan
-        $dosenLayak = DB::table('m_user')
-            ->join('t_dosen_bidang', 'm_user.user_id', '=', 't_dosen_bidang.user_id')
-            ->join('m_bidang', 't_dosen_bidang.bidang_id', '=', 'm_bidang.bidang_id')
-            ->join('m_pelatihan', 'm_bidang.bidang_id', '=', 'm_pelatihan.bidang_id')
-            ->leftJoin('t_dosen_matkul', 'm_user.user_id', '=', 't_dosen_matkul.user_id')
-            ->join('m_mata_kuliah', 't_dosen_matkul.mk_id', '=', 'm_mata_kuliah.mk_id')
-            ->join('m_pelatihan_mata_kuliah', 'm_mata_kuliah.mk_id', '=', 'm_pelatihan_mata_kuliah.mk_id')
-            ->select(
-                'm_user.user_id',
-                'm_user.nama as nama_dosen',
-                DB::raw('COUNT(DISTINCT t_dosen_matkul.pelatihan_id) as pelatihan_count')
-            )
-            ->where('m_pelatihan.pelatihan_id', '=', $pelatihanId)
-            ->groupBy('m_user.user_id', 'm_user.nama')
-            ->orderBy('pelatihan_count', 'asc') // Urutkan dari yang paling sedikit pelatihan
-            ->get();
+    //     // Ambil dosen berdasarkan bidang dan mata kuliah yang terkait dengan pelatihan
+    //     $dosenLayak = DB::table('m_user')
+    //         ->join('t_dosen_bidang', 'm_user.user_id', '=', 't_dosen_bidang.user_id')
+    //         ->join('m_bidang', 't_dosen_bidang.bidang_id', '=', 'm_bidang.bidang_id')
+    //         ->join('m_pelatihan', 'm_bidang.bidang_id', '=', 'm_pelatihan.bidang_id')
+    //         ->leftJoin('t_dosen_matkul', 'm_user.user_id', '=', 't_dosen_matkul.user_id')
+    //         ->join('m_mata_kuliah', 't_dosen_matkul.mk_id', '=', 'm_mata_kuliah.mk_id')
+    //         ->join('m_pelatihan_mata_kuliah', 'm_mata_kuliah.mk_id', '=', 'm_pelatihan_mata_kuliah.mk_id')
+    //         ->select(
+    //             'm_user.user_id',
+    //             'm_user.nama as nama_dosen',
+    //             DB::raw('COUNT(DISTINCT t_dosen_matkul.pelatihan_id) as pelatihan_count')
+    //         )
+    //         ->where('m_pelatihan.pelatihan_id', '=', $pelatihanId)
+    //         ->groupBy('m_user.user_id', 'm_user.nama')
+    //         ->orderBy('pelatihan_count', 'asc') // Urutkan dari yang paling sedikit pelatihan
+    //         ->get();
 
-        return response()->json([
-            'dosen_layak' => $dosenLayak
-        ]);
-    }
+    //     return response()->json([
+    //         'dosen_layak' => $dosenLayak
+    //     ]);
+    // }
     
     public function create_ajax()
     {
         
         $data = [
-            'bidang' => BidangModel::all(),
-            'level' => LevelPelatihanModel::all(),
             'vendor' => VendorModel::all(),
+            'jenis' => JenisModel::all(),
+            'mata_kuliah' => MatkulModel::all(),
+            'periode' => PeriodeModel::all()
         ];
             
         return view('data_pelatihan.pelatihan.create_ajax', $data);
@@ -119,11 +122,17 @@ class PelatihanController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'nama_pelatihan' => 'required|string|max:100',
-                'deskripsi' => 'nullable|string|max:255',
+                'deskripsi' => 'required|string|max:500', // Deskripsi wajib diisi
                 'tanggal' => 'required|date',
-                'bidang_id' => 'required|integer',
-                'level_pelatihan_id' => 'required|integer',
-                'vendor_id' => 'required|integer',
+                'kuota' => 'required|integer|min:1',
+                'lokasi' => 'required|string|max:255',
+                'biaya' => 'required|integer|min:0',
+                'level_pelatihan' => 'required|string',
+                'vendor_id' => 'required|exists:m_vendor,vendor_id',
+                'jenis_id' => 'required|exists:m_jenis,jenis_id',
+                'mk_id' => 'required|exists:m_mata_kuliah,mk_id',
+                'periode_id' => 'required|exists:m_periode,periode_id',
+                
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -149,12 +158,13 @@ class PelatihanController extends Controller
 
     public function edit_ajax(string $id)
     {
-        $pelatihan = PelatihanModel::with('bidang', 'vendor')->find($id);
-        $bidang = BidangModel::select('bidang_id', 'bidang_nama')->get();
-        $vendor = VendorModel::select('vendor_id', 'vendor_nama')->get();
-        $level_pelatihan = LevelPelatihanModel::select('level_pelatihan_id', 'level_pelatihan_nama')->get();
+        $pelatihan = PelatihanModel::with('jenis', 'vendor', 'mata_kuliah', 'periode')->find($id);
+        $jenis = JenisModel::all();
+        $vendor = VendorModel::all();
+        $mata_kuliah = MatkulModel::all();
+        $periode = PeriodeModel::all();
         // return view('data_pelatihan.pelatihan.edit_ajax', compact('pelatihan', 'bidang', 'vendor', 'level_pelatihan'));
-        return view('data_pelatihan.pelatihan.edit_ajax', ['pelatihan' => $pelatihan , 'bidang' => $bidang, 'vendor' => $vendor, 'level_pelatihan' => $level_pelatihan]);
+        return view('data_pelatihan.pelatihan.edit_ajax', ['pelatihan' => $pelatihan , 'jenis' => $jenis, 'vendor' => $vendor,'mata_kuliah' => $mata_kuliah, 'periode' => $periode]);
     }
 
     public function update_ajax(Request $request, string $id)

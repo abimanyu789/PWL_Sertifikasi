@@ -202,7 +202,7 @@
                         <!-- Jenis -->
                         <li class="nav-item">
                             <a href="{{ url('/jenis') }}" class="nav-link {{ $activeMenu == 'data_jenis' ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-chalkboard-teacher"></i> <!-- Ikon untuk bidang minat -->
+                                <i class="far fa-circle nav-icon"></i> <!-- Ikon untuk bidang minat -->
                                 <p>Data Jenis</p>
                             </a>
                         </li>
@@ -234,7 +234,7 @@
                         <!-- Periode -->
                         <li class="nav-item">
                             <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
-                                <i class="far fa-calendar-alt nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Periode</p>
                             </a>
                         </li>
@@ -245,8 +245,8 @@
 
                 <!-- Laporan Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
-                        <i class="far fa-calendar-alt nav-icon"></i>
+                    <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book-open"></i>
                         <p>Draft Surat Tugas</p>
                     </a>
                 </li>

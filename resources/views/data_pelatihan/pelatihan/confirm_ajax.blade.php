@@ -47,16 +47,36 @@
                             <td class="col-9">{{ $pelatihan->tanggal }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Bidang:</th>
-                            <td class="col-9">{{ $pelatihan->bidang_id }}</td>
+                            <th class="text-right col-3">Kuota:</th>
+                            <td class="col-9">{{ $pelatihan->kuota }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Lokasi:</th>
+                            <td class="col-9">{{ $pelatihan->lokasi }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Biaya:</th>
+                            <td class="col-9">{{ $pelatihan->biaya }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Level Pelatihan:</th>
-                            <td class="col-9">{{ $pelatihan->level_pelatihan_id }}</td>
+                            <td class="col-9">{{ $pelatihan->level_pelatihan }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Vendor:</th>
                             <td class="col-9">{{ $pelatihan->vendor_id }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Jenis:</th>
+                            <td class="col-9">{{ $pelatihan->jenis_id }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Mata Kuliah:</th>
+                            <td class="col-9">{{ $pelatihan->mk_id }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Periode:</th>
+                            <td class="col-9">{{ $pelatihan->periode_id }}</td>
                         </tr>
                     </table>
                 </div>
