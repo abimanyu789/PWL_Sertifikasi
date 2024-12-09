@@ -8,8 +8,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\StatistikController;
-
-
+use App\Http\Controllers\PelatihanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,20 +48,20 @@ Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('lo
 //     return $request->user();
 // });
 
- // Bidang routes
- Route::get('/bidang', [BidangController::class, 'index']);
- Route::post('/bidang', [BidangController::class, 'store']);
+// Bidang routes
+Route::get('/bidang', [BidangController::class, 'index']);
+Route::post('/bidang', [BidangController::class, 'store']);
 
- // Vendor routes
- Route::get('/vendor', [VendorController::class, 'index']);
- Route::post('/vendor', [VendorController::class, 'store']);
+// Vendor routes
+Route::get('/vendor', [VendorController::class, 'index']);
+Route::post('/vendor', [VendorController::class, 'store']);
 
- // Sertifikasi routes
- Route::post('/uploads', [SertifikasiController::class, 'store']);
+// Sertifikasi routes
+Route::post('/uploads', [SertifikasiController::class, 'store']);
 
 Route::get('/statistics', [StatistikController::class, 'getStatistics']);
 
- Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'profile']);
 });
 
@@ -83,3 +82,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get("sertifikasi", [SertifikasiController::class, "index"]);
 Route::get("sertifikasi/{id}", [SertifikasiController::class, "show"]);
+
+Route::get("pelatihan", [PelatihanController::class, "index"]);
+Route::get("pelatihan/{id}", [PelatihanController::class, "show"]); 
