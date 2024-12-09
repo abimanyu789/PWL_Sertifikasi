@@ -168,7 +168,7 @@
                         <li class="nav-item">
                             <a href="{{ url('/user') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Data User</p>
+                                <p>Daftar Pengguna</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -193,25 +193,12 @@
                 </li>
 
                 <!-- Data Jenis Pelatihan dan Sertifikasi -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['jenis_pelatihan', 'jenis_sertifikasi']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['jenis_pelatihan', 'jenis_sertifikasi']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
-                        <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                        <p>Data Jenis<i class="right fas fa-angle-left"></i></p>
+                <!-- Bidang Minat -->
+                <li class="nav-item">
+                    <a href="{{ url('/data_jenis') }}" class="nav-link {{ $activeMenu == 'data_jenis' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chalkboard-teacher"></i> <!-- Ikon untuk bidang minat -->
+                        <p>Data Jenis</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ url('/jenis_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenis_pelatihan' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Jenis Pelatihan</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('/jenis_sertifikasi') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Jenis Sertifikasi</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
                 <!-- Vendor Sertifikasi  -->
@@ -253,10 +240,10 @@
                 </li>
 
                 <!-- Data Pelatihan Section -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['pelatihan', 'level_pelatihan']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['pelatihan', 'level_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['pelatihan', 'sertifikasi']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['pelatihan', 'sertifikasi']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book"></i>
-                        <p>Data Pelatihan<i class="right fas fa-angle-left"></i></p>
+                        <p>Pelatihan & Sertifikasi<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
@@ -266,31 +253,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/level_pelatihan') }}" class="nav-link {{ $activeMenu == 'level_pelatihan' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Level Pelatihan</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- Data Sertifikasi Section -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['sertifikasi', 'level_sertifikasi']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['sertifikasi', 'level_sertifikasi']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
-                        <i class="nav-icon fas fa-certificate"></i>
-                        <p>Data Sertifikasi<i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
                             <a href="{{ url('/sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sertifikasi</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('/level_sertifikasi') }}" class="nav-link {{ $activeMenu == 'level_sertifikasi' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Level Sertifikasi</p>
                             </a>
                         </li>
                     </ul>
@@ -350,7 +315,7 @@
 
             @elseif(auth()->user()->level_id == 2)
                 <!-- Menu Pimpinan -->
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="{{ url('/view_dosen') }}" class="nav-link {{ $activeMenu == 'view_dosen' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-chalkboard-teacher"></i>
                         <p>Data Dosen</p>
@@ -372,6 +337,15 @@
                             <p>Data Sertifikasi</p>
                         </a>
                     </li>
+                </li> --}}
+
+                <!-- ACC Pengajuan -->
+                <li class="nav-item">
+                    <a href="{{ url('/acc_daftar') }}" class="nav-link {{ $activeMenu == 'acc_daftar' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-check-circle"></i>
+                            <p>Validasi Pengajuan</p>
+                        </a>
+                    </li>
                 </li>
                 
                 <!-- Data Sertifikasi Section -->
@@ -389,7 +363,7 @@
                 <li class="nav-item has-treeview {{ in_array($activeMenu, ['mandiri_sertifikasi', 'mandiri_pelatihan']) ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ in_array($activeMenu, ['mandiri_sertifikasi', 'mandiri_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="fas fa-pen nav-icon"></i>
-                        <p>Daftar Mandiri<i class="right fas fa-angle-left"></i></p>
+                        <p>Upload Mandiri<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
@@ -411,38 +385,8 @@
                 <li class="nav-item">
                     <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book-open"></i>
-                        <p>Data Pelatihan</p>
+                        <p>Draf Surat Tugas </p>
                     </a>
-                </li>
-
-                <!-- Data Sertifikasi Section -->
-                <li class="nav-item">
-                    <a href="{{ url('/list_sertifikasi') }}" class="nav-link {{ $activeMenu == 'list_sertifikasi' ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-certificate"></i>
-                            <p>Data Sertifikasi</p>
-                        </a>
-                    </li>
-                </li>
-
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
-                        <i class="fas fa-file-alt nav-icon"></i>
-                        <p>Form Upload<i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ url('/upload_sertifikasi') }}" class="nav-link {{ $activeMenu == 'sertifikasi' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Sertifikasi</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('/upload_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenis_sertifikasi' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Pelatihan</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
             @endif
 
