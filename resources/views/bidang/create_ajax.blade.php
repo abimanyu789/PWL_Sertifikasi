@@ -3,20 +3,39 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Bidang Minat</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Bidang</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Kode</label>
-                    <input value="" type="text" name="bidang_kode" id="bidang_kode" class="form-control" required>
-                    <small id="error-bidang_kode" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Nama</label>
-                    <input value="" type="text" name="bidang_nama" id="bidang_nama" class="form-control" required>
-                    <small id="error-bidang_nama" class="error-text form-text text-danger"></small>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Kode Bidang</label>
+                            <input type="text" name="bidang_kode" class="form-control" required>
+                            <small class="text-danger" id="error-bidang_kode"></small>
+                        </div>
+                    </div>                   
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Nama Bidang</label>
+                            <input type="text" name="bidang_nama" class="form-control" required>
+                            <small class="text-danger" id="error-bidang_nama"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Jenis</label>
+                            <select name="jenis_id" class="form-control" required>
+                                <option value="">Pilih Jenis</option>
+                                @foreach($jenis as $j)
+                                    <option value="{{ $j->jenis_id }}">{{ $j->jenis_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-danger" id="error-jenis_id"></small>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -32,52 +51,42 @@
             rules: {
                 bidang_kode: {
                     required: true,
-                    minlength: 3
+                    minlength: 3,
+                    maxlength: 255
                 },
                 bidang_nama: {
                     required: true,
-                    maxlength: 100
-                }
+                    minlength: 3,
+                    maxlength: 255
+                },
+                jenis_id: {
+                    required: true
+                },
             },
             submitHandler: function(form) {
                 $.ajax({
-                    url: form.action,
-                    type: form.method,
+                    url: $(form).attr('action'),
+                    method: 'POST',
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
                             $('#myModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            });
-                            dataBidang.ajax.reload();
+                            Swal.fire('Berhasil', response.message, 'success');
+                            dataBidang.ajax.reload(); // karena ini untuk tabel bidang
                         } else {
-                            $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
+                            if (response.msgField) {
+                                $.each(response.msgField, function(field, message) {
+                                    $('#error-' + field).text(message[0]);
+                                });
+                            }
+                            Swal.fire('Gagal', response.message, 'error');
                         }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
                     }
                 });
                 return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function(element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
             }
         });
     });
