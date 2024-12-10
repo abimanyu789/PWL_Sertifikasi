@@ -10,13 +10,25 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Kode</label>
-                    <input value="" type="text" name="bidang_kode" id="bidang_kode" class="form-control" required>
+                    <input value="" type="text" name="bidang_kode" id="bidang_kode" class="form-control"
+                        required>
                     <small id="error-bidang_kode" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Nama</label>
-                    <input value="" type="text" name="bidang_nama" id="bidang_nama" class="form-control" required>
+                    <input value="" type="text" name="bidang_nama" id="bidang_nama" class="form-control"
+                        required>
                     <small id="error-bidang_nama" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Bidang</label>
+                    <select name="jenis_id" class="form-control" required>
+                        <option value="">Pilih Jenis Bidang Berkaitan</option>
+                        @foreach ($jenis as $j)
+                            <option value="{{ $j->jenis_id }}">{{ $j->jenis_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-danger" id="error-jenis_id"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -37,6 +49,9 @@
                 bidang_nama: {
                     required: true,
                     maxlength: 100
+                },
+                jenis_id: {
+                    required: true
                 }
             },
             submitHandler: function(form) {

@@ -23,6 +23,7 @@
                         <th>No</th>
                         <th>Kode Bidang</th>
                         <th>Nama Bidang</th>
+                        <th>Jenis Bidang Berkaitan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -73,6 +74,11 @@
                     orderable: true,
                     searchable: true
                 }, {
+                    data: "jenis.jenis_nama",
+                    className: "",
+                    orderable: true,
+                    searchable: true
+                },{
                     data: "aksi",
                     className: "",
                     orderable: false,

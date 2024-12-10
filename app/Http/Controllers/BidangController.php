@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BidangModel;
+use App\Models\JenisModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -30,7 +31,7 @@ class BidangController extends Controller
     // Ambil data bidang dalam bentuk json untuk datatables
     public function list(Request $request)
     {
-        $bidangs = BidangModel::select('bidang_id', 'bidang_kode', 'bidang_nama');
+        $bidangs = BidangModel::with(['jenis']);
 
         return DataTables::of($bidangs)
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
@@ -50,7 +51,11 @@ class BidangController extends Controller
 
     public function create_ajax()
     {
-        $bidang = BidangModel::all();
+        $data = [
+            'bidang' => BidangModel::all(),
+            'jenis' => JenisModel::all()
+        ];
+
         return view('bidang.create_ajax');
     }
 
@@ -60,7 +65,8 @@ class BidangController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'bidang_kode' => 'required|string|max:10|unique:m_bidang,bidang_kode',
-                'bidang_nama' => 'required|string|max:100'
+                'bidang_nama' => 'required|string|max:100',
+                'jenis_id' => 'required|exists:m_jenis,jenis_id',
             ];
 
             // Gunakan Validator dari Illuminate\Support\Facades\Validator;
@@ -88,8 +94,9 @@ class BidangController extends Controller
 
     public function edit_ajax(string $id)
     {
-        $bidang = BidangModel::find($id);
-        return view('bidang.edit_ajax', ['bidang' => $bidang]);
+        $bidang = BidangModel::with('jenis')->find($id);
+        $jenis = JenisModel::all();
+        return view('bidang.edit_ajax', ['bidang' => $bidang, 'jenis' => $jenis]);
     }
 
     public function update_ajax(Request $request, $id)
