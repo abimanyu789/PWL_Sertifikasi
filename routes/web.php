@@ -151,8 +151,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{id}/update_ajax', [SertifikasiController::class, 'update_ajax']);
         Route::get('/{id}/delete_ajax',[SertifikasiController::class, 'confirm_ajax']);
         Route::delete('/{id}/delete_ajax', [SertifikasiController::class, 'delete_ajax']);
-        Route::get('/import', [SertifikasiController::class, 'import']);                      // ajax form upload excel
-        Route::post('/import_ajax', [SertifikasiController::class, 'import_ajax']);           // ajax import excel
+        Route::get('/import', [SertifikasiController::class, 'import']); // ajax form upload excel
+        Route::post('/import_ajax', [SertifikasiController::class, 'import_ajax']); // ajax import excel         // ajax import excel
         Route::get('/export_excel', [SertifikasiController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [SertifikasiController::class, 'export_pdf']);
         Route::get('/export_template', [SertifikasiController::class, 'exportTemplate']);

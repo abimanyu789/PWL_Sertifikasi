@@ -41,19 +41,19 @@
                     </tr>
                     <tr>
                         <th>Kuota</th>
-                        <td>{{ $pelatihan->kuota }}</td>
+                        <td>{{ $pelatihan->kuota}}</td>
                     </tr>
                     <tr>
-                        <th>lokasi</th>
-                        <td>{{ $pelatihan->lokasi }}</td>
+                        <th>Lokasi</th>
+                        <td>{{ $pelatihan->lokasi}}</td>
                     </tr>
                     <tr>
                         <th>Biaya</th>
-                        <td>{{ $pelatihan->biaya }}</td>
+                        <td>{{ $pelatihan->biaya}}</td>
                     </tr>
                     <tr>
                         <th>Level Pelatihan</th>
-                        <td>{{ $pelatihan->level_pelatihan }}</td>
+                        <td>{{ $pelatihan->level_pelatihan}}</td>
                     </tr>
                     <tr>
                         <th>Vendor</th>

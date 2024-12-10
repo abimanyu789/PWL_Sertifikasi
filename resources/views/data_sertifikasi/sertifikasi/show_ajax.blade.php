@@ -28,28 +28,40 @@
             <div class="modal-body">
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
-                        <th>ID Sertifikasi</th>
-                        <td>{{ $sertifikasi->sertifikasi_id }}</td>
-                    </tr>
-                    <tr>
                         <th>Nama Sertifikasi</th>
                         <td>{{ $sertifikasi->nama_sertifikasi }}</td>
+                    </tr>
+                    <tr>
+                        <th>Deskripsi</th>
+                        <td>{{ $sertifikasi->deskripsi }}</td>
                     </tr>
                     <tr>
                         <th>Tanggal</th>
                         <td>{{ $sertifikasi->tanggal }}</td>
                     </tr>
                     <tr>
-                        <th>Tanggal Berlaku</th>
-                        <td>{{ $sertifikasi->tanggal_berlaku }}</td>
+                        <th>Kuota</th>
+                        <td>{{ $sertifikasi->kuota}}</td>
                     </tr>
                     <tr>
-                        <th>Bidang</th>
-                        <td>{{ $sertifikasi->bidang->bidang_nama ?? 'Tidak Ada' }}</td>
+                        <th>Level Sertifikasi</th>
+                        <td>{{ $sertifikasi->level_sertifikasi}}</td>
                     </tr>
                     <tr>
-                        <th>Jenis Sertifikasi</th>
-                        <td>{{ $sertifikasi->jenis_sertifikasi->jenis_nama ?? 'Tidak Ada' }}</td>
+                        <th>Vendor</th>
+                        <td>{{ $sertifikasi->vendor->vendor_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jenis</th>
+                        <td>{{ $sertifikasi->jenis->jenis_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Mata Kuliah</th>
+                        <td>{{ $sertifikasi->mata_kuliah->mk_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Periode</th>
+                        <td>{{ $sertifikasi->periode->periode_tahun ?? '-' }}</td>
                     </tr>
                 </table>
             </div>

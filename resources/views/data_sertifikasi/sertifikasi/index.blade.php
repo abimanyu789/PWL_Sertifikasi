@@ -5,9 +5,9 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/sertifikasi/import') }}')" class="btn btn-sm btn-info mt-1">Import</button>
+                <button onclick="modalAction('{{ url('/sertifikasi/import_ajax') }}')" class="btn btn-sm btn-info mt-1">Import</button>
                 <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/sertifikasi/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/sertifikasi/export_pd') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/sertifikasi/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
                 <button onclick="modalAction('{{ url('/sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
@@ -23,11 +23,10 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            <select class="form-control" id="jenis_id" name="jenis_id">
+                            <select class="form-control" id="level_sertifikasi" name="level_sertifikasi">
                                 <option value="">- Semua -</option>
-                                @foreach($jenisSertifikasi as $item)
-                                    <option value="{{ $item->jenis_id }}">{{ $item->jenis_nama }}</option>
-                                @endforeach
+                                <option value="Nasional">Nasional</option>
+                                <option value="Internasional">Internasional</option>
                             </select>                            
                             <small class="form-text text-muted">Jenis Sertifikasi</small>
                         </div>
@@ -39,10 +38,9 @@
                     <tr>
                         <th>ID</th>
                         <th>Nama Sertifikasi</th>
+                        <th>Level Sertifikasi</th>
                         <th>Tanggal</th>
-                        <th>Tanggal Berlaku</th>
-                        <th>Bidang</th>
-                        <th>Jenis Sertifikasi</th>
+                        <th>Vendor</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -74,57 +72,46 @@
                 "dataType": "json",
                 "type": "POST",
                 "data": function(d) {
-                    d.jenis_id = $('#jenis_id').val();
+                    d.jenis_id = $('#level_sertifikasi').val();
                 }
             },
             columns: [
                 {
-                    data: "sertifikasi_id",
-                    className: "",
-                    orderable: true,
-                    searchable: true
+                    data: "DT_RowIndex",
+                    name: "DT_RowIndex",
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: "nama_sertifikasi",
-                    className: "",
-                    orderable: true,
-                    searchable: true
+                    name: "nama_sertifikasi"
+                },
+                {
+                    data: "level_sertifikasi",
+                    name: "level_sertifikasi"
                 },
                 {
                     data: "tanggal",
-                    className: "",
-                    orderable: true,
-                    searchable: true
+                    name: "tanggal"
                 },
                 {
-                    data: "tanggal_berlaku",
-                    className: "",
-                    orderable: true,
-                    searchable: true
-                },
-                {
-                    data: "bidang.bidang_nama",
-                    className: "",
-                    orderable: true,
-                    searchable: true
-                },
-                {
-                    data: "jenis_sertifikasi.jenis_nama",
-                    className: "",
-                    orderable: true,
-                    searchable: true
+                    data: "vendor.vendor_nama",
+                    name: "vendor.vendor_nama"
                 },
                 {
                     data: "aksi",
-                    className: "",
+                    name: "aksi",
                     orderable: false,
                     searchable: false
                 }
             ]
         });
 
-        $('#jenis_id').on('change', function() {
-            dataSertifikasi.ajax.reload();
+        // Event handler untuk form import
+        $('#formImport').on('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            handleImport(formData);
         });
     });
 </script>

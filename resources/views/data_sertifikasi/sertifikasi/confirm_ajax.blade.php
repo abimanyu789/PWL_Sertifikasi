@@ -30,7 +30,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-warning">
-                        <h5><i class="icon fas fa-exclamation-circle"></i> Konfirmasi !!!</h5>
+                        <h5><i class="icon fas fa-exclamation-circle"></i> Kesalahan !!!</h5>
                         Apakah Anda yakin ingin menghapus data berikut?
                     </div>
                     <table class="table table-sm table-bordered table-striped">
@@ -39,20 +39,36 @@
                             <td class="col-9">{{ $sertifikasi->nama_sertifikasi }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Tanggal Sertifikasi:</th>
+                            <th class="text-right col-3">Deskripsi:</th>
+                            <td class="col-9">{{ $sertifikasi->deskripsi }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Tanggal:</th>
                             <td class="col-9">{{ $sertifikasi->tanggal }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Tanggal Berlaku:</th>
-                            <td class="col-9">{{ $sertifikasi->tanggal_berlaku }}</td>
+                            <th class="text-right col-3">Kuota:</th>
+                            <td class="col-9">{{ $sertifikasi->kuota }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Bidang:</th>
-                            <td class="col-9">{{ $sertifikasi->bidang->bidang_nama }}</td>
+                            <th class="text-right col-3">Level Sertifikasi:</th>
+                            <td class="col-9">{{ $sertifikasi->level_sertifikasi }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Jenis Sertifikasi:</th>
+                            <th class="text-right col-3">Vendor:</th>
+                            <td class="col-9">{{ $sertifikasi->vendor->vendor_nama }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Jenis:</th>
                             <td class="col-9">{{ $sertifikasi->jenis->jenis_nama }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Mata Kuliah:</th>
+                            <td class="col-9">{{ $sertifikasi->mata_kuliah->mk_nama}}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Periode:</th>
+                            <td class="col-9">{{ $sertifikasi->periode->periode_tahun }}</td>
                         </tr>
                     </table>
                 </div>

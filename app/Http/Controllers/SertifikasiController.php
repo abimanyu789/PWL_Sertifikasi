@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 use App\Models\SertifikasiModel;
-use App\Models\JenisSertifikasiModel;
-use App\Models\BidangModel;
+use App\Models\MatkulModel;
+use App\Models\JenisModel;
+use App\Models\PeriodeModel;
+use App\Models\VendorModel;
+use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory; // import excel
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf; // import pdf
+use Illuminate\Support\Facades\DB;
 
 class SertifikasiController extends Controller
 {
@@ -19,96 +23,143 @@ class SertifikasiController extends Controller
             'title' => 'Daftar Sertifikasi',
             'list' => ['Home', 'Sertifikasi']
         ];
+        
         $page = (object) [
             'title' => 'Daftar sertifikasi yang terdaftar dalam sistem',
         ];
-        $activeMenu = 'sertifikasi';
-        $jenisSertifikasi = JenisSertifikasiModel::select('jenis_id', 'jenis_nama')->get(); // Ambil data jenis sertifikasi untuk dropdown filter
+     
+        $activeMenu = 'sertifikasi'; 
+        $levelSertifikasi = ['Profesi', 'Keahlian'];
+     
         return view('data_sertifikasi.sertifikasi.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
-            'jenisSertifikasi' => $jenisSertifikasi,
+            'levelSertifikasi' => $levelSertifikasi,
             'activeMenu' => $activeMenu
         ]);
     }
 
-    // Ambil data sertifikasi dalam bentuk JSON untuk DataTables
+    // Ambil data user dalam bentuk json untuk datatables 
     public function list(Request $request) 
     { 
-        $sertifikasi = SertifikasiModel::select('sertifikasi_id', 'nama_sertifikasi', 'tanggal', 'tanggal_berlaku', 'bidang_id', 'jenis_id')
-                    ->with(['bidang', 'jenis_sertifikasi']);  // Gunakan nama relasi yang benar
-        
-        return DataTables::of($sertifikasi)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($sertifikasi) {  
-                $btn  = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
-                return $btn;
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
-    }    
 
+        $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode']);
+        
+        if ($request->level_sertifikasi) {
+            $sertifikasi->where('level_sertifikasi', $request->level_sertifikasi);
+        }
+    
+        return DataTables::of($sertifikasi) 
+            // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
+            ->addIndexColumn()  
+            ->addColumn('aksi', function ($sertifikasi) {  // menambahkan kolom aksi 
+                $btn = '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                // Tambahkan tombol "Kirim" hanya untuk role pimpinan
+                // if (auth()->user()->level_id == 2) {
+                //     $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/dosenLayak') . '\')" class="btn btn-success btn-sm">Kirim</button>';
+                // }
+                return $btn;
+            }) 
+            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
+            ->make(true); 
+    } 
+    
+    
     public function create_ajax()
     {
+        
         $data = [
-            'bidang' => BidangModel::all(),
-            'jenis' => JenisSertifikasiModel::all()
+            'vendor' => VendorModel::all(),
+            'jenis' => JenisModel::all(),
+            'mata_kuliah' => MatkulModel::all(),
+            'periode' => PeriodeModel::all()
         ];
+            
         return view('data_sertifikasi.sertifikasi.create_ajax', $data);
     }
 
-    public function store_ajax(Request $request)
-    {
+    public function store_ajax(Request $request) {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'nama_sertifikasi' => 'required|string|max:100',
+                'nama_sertifikasi' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string|max:255',
                 'tanggal' => 'required|date',
-                'tanggal_berlaku' => 'required|date',
-                'bidang_id' => 'required|integer',
-                'jenis_id' => 'required|integer',
+                'kuota' => 'required|numeric|min:1',
+                'level_sertifikasi' => 'required|in:Profesi,Keahlian',
+                'vendor_id' => 'required|exists:m_vendor,vendor_id',
+                'jenis_id' => 'required|exists:m_jenis,jenis_id',
+                'mk_id' => 'required|exists:m_mata_kuliah,mk_id',
+                'periode_id' => 'required|exists:m_periode,periode_id'
             ];
-
+    
             $validator = Validator::make($request->all(), $rules);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors(),
-                ]);
+                    'msgField' => $validator->errors()
+                ], 422);
             }
-
-            SertifikasiModel::create($request->all());
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Data sertifikasi berhasil disimpan.',
-            ]);
+    
+            try {
+                // Explicit data creation
+                $data = [
+                    'nama_sertifikasi' => $request->nama_sertifikasi,
+                    'deskripsi' => $request->deskripsi,
+                    'tanggal' => $request->tanggal,
+                    'kuota' => (int)$request->kuota,
+                    'level_sertifikasi' => $request->level_sertifikasi,
+                    'vendor_id' => (int)$request->vendor_id,
+                    'jenis_id' => (int)$request->jenis_id,
+                    'mk_id' => (int)$request->mk_id,
+                    'periode_id' => (int)$request->periode_id
+                ];
+    
+                $sertifikasi = SertifikasiModel::create($data);
+    
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data sertifikasi berhasil disimpan.'
+                ], 200);
+    
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Gagal menyimpan data sertifikasi: ' . $e->getMessage()
+                ], 500);
+            }
         }
-
+    
         return redirect('/');
     }
 
     public function edit_ajax(string $id)
     {
-        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis_sertifikasi'])->findOrFail($id);
-        $bidang = BidangModel::select('bidang_id', 'bidang_nama')->get();
-        $jenis = JenisSertifikasiModel::select('jenis_id', 'jenis_nama')->get();
-
-        return view('data_sertifikasi.sertifikasi.edit_ajax', compact('sertifikasi', 'bidang', 'jenis'));
+        $sertifikasi = SertifikasiModel::with('jenis', 'vendor', 'mata_kuliah', 'periode')->find($id);
+        $jenis = JenisModel::all();
+        $vendor = VendorModel::all();
+        $mata_kuliah = MatkulModel::all();
+        $periode = PeriodeModel::all();
+        // return view('data_sertifikasi.sertifikasi.edit_ajax', compact('sertifikasi', 'bidang', 'vendor', 'level_sertifikasi'));
+        return view('data_sertifikasi.sertifikasi.edit_ajax', ['sertifikasi' => $sertifikasi , 'jenis' => $jenis, 'vendor' => $vendor,'mata_kuliah' => $mata_kuliah, 'periode' => $periode]);
     }
-    
+
     public function update_ajax(Request $request, string $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'nama_sertifikasi' => 'required|string|max:100',
+                'nama_sertifikasi' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string|max:255',
                 'tanggal' => 'required|date',
-                'tanggal_berlaku' => 'required|date',
-                'bidang_id' => 'required|integer',
-                'jenis_id' => 'required|integer',
+                'kuota' => 'required|numeric|min:1',
+                'level_sertifikasi' => 'required|in:Profesi,Keahlian',
+                'vendor_id' => 'required|exists:m_vendor,vendor_id',
+                'jenis_id' => 'required|exists:m_jenis,jenis_id',
+                'mk_id' => 'required|exists:m_mata_kuliah,mk_id',
+                'periode_id' => 'required|exists:m_periode,periode_id'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -140,11 +191,11 @@ class SertifikasiController extends Controller
         return redirect('/');
     }
 
-    public function confirm_ajax(string $id){
+    public function confirm_ajax(string $id)
+    {
         $sertifikasi = SertifikasiModel::find($id);
         return view('data_sertifikasi.sertifikasi.confirm_ajax', ['sertifikasi' => $sertifikasi]);
     }
-    
 
     public function delete_ajax(Request $request, string $id)
     {
@@ -168,12 +219,12 @@ class SertifikasiController extends Controller
         return redirect('/');
     }
 
-    public function show_ajax(string $id){
+    public function show_ajax(string $id)
+    {
+        
         $sertifikasi = SertifikasiModel::find($id);
-    
         return view('data_sertifikasi.sertifikasi.show_ajax', ['sertifikasi' => $sertifikasi]);
     }
-    
 
     public function import()
     {
@@ -192,8 +243,8 @@ class SertifikasiController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors(),
+                    'message' => 'Validasi gagal',
+                    'msgField' => $validator->errors()
                 ]);
             }
 
@@ -207,12 +258,15 @@ class SertifikasiController extends Controller
                 if ($key > 1) {
                     $insert[] = [
                         'nama_sertifikasi' => $row['A'],
-                        'tanggal' => $row['B'],
-                        'tanggal_berlaku' => $row['C'],
-                        'bidang_id' => $row['D'],
-                        'jenis_id' => $row['E'],
-                        'created_at' => now(),
-
+                        'deskripsi' => $row['B'],
+                        'tanggal' => $row['C'],
+                        'kuota' => $row['D'],
+                        'level_sertifikasi' => $row['E'],
+                        'vendor_id' => $row['F'],
+                        'jenis_id' => $row['G'],
+                        'mk_id' => $row['H'],
+                        'periode_id' => $row['I'],
+                        'created_at' => now()
                     ];
                 }
             }
@@ -221,58 +275,61 @@ class SertifikasiController extends Controller
                 SertifikasiModel::insertOrIgnore($insert);
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data sertifikasi berhasil diimport.',
+                    'message' => 'Data user berhasil diimport'
                 ]);
             }
 
             return response()->json([
                 'status' => false,
-                'message' => 'Tidak ada data yang diimport.',
+                'message' => 'Tidak ada data yang diimport'
             ]);
         }
 
         return redirect('/');
     }
-
     public function export_excel()
     {
-        $sertifikasi = SertifikasiModel::with(['bidang', 'jenis_sertifikasi'])->get();
+        $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header kolom
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'Nama Sertifikasi');
-        $sheet->setCellValue('C1', 'Tanggal');
-        $sheet->setCellValue('D1', 'Tanggal Berlaku');
-        $sheet->setCellValue('E1', 'Bidang');
-        $sheet->setCellValue('F1', 'Jenis Sertifikasi');
+        $sheet->setCellValue('C1', 'Deskripsi');
+        $sheet->setCellValue('D1', 'Tanggal');
+        $sheet->setCellValue('E1', 'Kuota');
+        $sheet->setCellValue('F1', 'Level Sertifikasi');
+        $sheet->setCellValue('G1', 'Vendor');
+        $sheet->setCellValue('H1', 'Jenis');
+        $sheet->setCellValue('I1', 'Mata Kuliah');
+        $sheet->setCellValue('J1', 'Periode');
 
-        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
 
-        // Isi data
         $row = 2;
         $no = 1;
 
         foreach ($sertifikasi as $s) {
             $sheet->setCellValue('A' . $row, $no);
             $sheet->setCellValue('B' . $row, $s->nama_sertifikasi);
-            $sheet->setCellValue('C' . $row, $s->tanggal);
-            $sheet->setCellValue('D' . $row, $s->tanggal_berlaku);
-            $sheet->setCellValue('E' . $row, $s->bidang->bidang_nama);
-            $sheet->setCellValue('F' . $row, $s->jenis_sertifikasi->jenis_nama);
-        
+            $sheet->setCellValue('C' . $row, $s->deskripsi);
+            $sheet->setCellValue('D' . $row, $s->tanggal);
+            $sheet->setCellValue('E' . $row, $s->kuota);
+            $sheet->setCellValue('F' . $row, $s->level_sertifikasi);
+            $sheet->setCellValue('G' . $row, $s->vendor->vendor_nama ?? '-');
+            $sheet->setCellValue('H' . $row, $s->jenis->jenis_nama ?? '-');
+            $sheet->setCellValue('I' . $row, $s->mata_kuliah->mk_nama ?? '-');
+            $sheet->setCellValue('J' . $row, $s->periode->periode_tahun ?? '-');
+            
             $row++;
             $no++;
-        }        
+        }
 
-        // Atur ukuran kolom agar otomatis
-        foreach (range('A', 'F') as $columnID) {
+        foreach (range('A', 'J') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
-        // Simpan file Excel
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $filename = 'Data Sertifikasi.xlsx';
 
@@ -281,13 +338,14 @@ class SertifikasiController extends Controller
         $writer->save("php://output");
     }
 
+
     public function export_pdf()
     {
         $sertifikasi = SertifikasiModel::all();
         $pdf = Pdf::loadView('data_sertifikasi.sertifikasi.export_pdf', ['sertifikasi' => $sertifikasi]);
-        $pdf->setPaper('a4', 'portrait');
+        $pdf->setPaper('a4', 'landscape');
         $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
-        return $pdf->stream('Data sertifikasi ' . date('Y-m-d H:i:s') . '.pdf');
+        return $pdf->stream('Data Sertifikasi ' . date('Y-m-d H:i:s') . '.pdf');
 
     }
 
@@ -296,15 +354,17 @@ class SertifikasiController extends Controller
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Nama Sertifikasi');
-        $sheet->setCellValue('C1', 'Tanggal');
-        $sheet->setCellValue('D1', 'Tanggal Berlaku');
-        $sheet->setCellValue('E1', 'Bidang');
-        $sheet->setCellValue('F1', 'Jenis Sertifikasi');
+        $sheet->setCellValue('A1', 'Nama Sertifikasi');
+        $sheet->setCellValue('B1', 'Deskripsi');
+        $sheet->setCellValue('C1', 'Tanggal (YYYY-MM-DD)');
+        $sheet->setCellValue('D1', 'Kuota');
+        $sheet->setCellValue('E1', 'Level Sertifikasi');
+        $sheet->setCellValue('F1', 'Vendor ID');
+        $sheet->setCellValue('G1', 'Jenis ID');
+        $sheet->setCellValue('H1', 'Mata Kuliah ID');
+        $sheet->setCellValue('I1', 'Periode ID');
 
-
-        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $filename = 'Template_Sertifikasi.xlsx';
@@ -314,4 +374,5 @@ class SertifikasiController extends Controller
         $writer->save("php://output");
         exit;
     }
+    
 }

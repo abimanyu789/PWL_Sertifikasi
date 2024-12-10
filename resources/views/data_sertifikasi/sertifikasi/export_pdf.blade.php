@@ -77,22 +77,34 @@
                 <tr>
                     <th>No</th>
                     <th>Nama Sertifikasi</th>
+                    <th>Deskripsi</th>
                     <th>Tanggal</th>
-                    <th>Tanggal Berlaku</th>
-                    <th>Bidang</th>
-                    <th>Jenis Sertifikasi</th>
+                    <th>Kuota</th>
+                    <th>Lokasi</th>
+                    <th>Biaya</th>
+                    <th>Level Sertifikasi</th>
+                    <th>Vendor</th>
+                    <th>Jenis</th>
+                    <th>Mata Kuliah</th>
+                    <th>Periode</th>
                 </tr>
                 <tbody> 
                     @foreach($sertifikasi as $s) 
                     <tr> 
                         <td class="text-center">{{ $loop->iteration }}</td>
-                        <td> {{ $s->nama_sertifikasi }}</td>
-                        <td> {{ $s->tanggal }}</td>
-                        <td> {{ $s->tanggal_berlaku }}</td>
-                        <td> {{ $s->bidang->bidang_nama }}</td>  
-                        <td> {{ $s->jenis_sertifikasi->jenis_nama }}</td> 
+                        <td>{{ $s->nama_sertifikasi }}</td>
+                        <td>{{ $s->deskripsi }}</td>
+                        <td>{{ $s->tanggal }}</td>
+                        <td>{{ $s->kuota }}</td>
+                        <td>{{ $s->lokasi }}</td>
+                        <td>{{ $s->biaya }}</td>
+                        <td>{{ $s->level_sertifikasi }}</td>
+                        <td>{{ $s->vendor->vendor_nama }}</td>
+                        <td>{{ $s->jenis->jenis_nama }}</td>
+                        <td>{{ $s->mata_kuliah->mk_nama }}</td>
+                        <td>{{ $p->periode->periode_tahun }}</td>
                     </tr>
-                    @endforeach 
+                @endforeach 
         </tbody> 
         </table>
     </div>

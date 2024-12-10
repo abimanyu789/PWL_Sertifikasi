@@ -9,19 +9,36 @@ class SertifikasiModel extends Model
     protected $primaryKey = 'sertifikasi_id';
     protected $fillable = [
         'nama_sertifikasi',
+        'deskripsi',
         'tanggal',
-        'bidang_id',
+        'kuota',
+        'lokasi',
+        'biaya',
+        'level_sertifikasi',
+        'vendor_id',
         'jenis_id',
-        'tanggal_berlaku'
+        'mk_id',
+        'periode_id'
     ];
     
-    public function bidang()
-    {
-        return $this->belongsTo(BidangModel::class, 'bidang_id', 'bidang_id');
-    }
     
-    public function jenis_sertifikasi()
+    public function vendor()
     {
-        return $this->belongsTo(JenisSertifikasiModel::class, 'jenis_id', 'jenis_id');
+        return $this->belongsTo(VendorModel::class, 'vendor_id', 'vendor_id');
+    }
+
+    public function jenis()
+    {
+        return $this->belongsTo(JenisModel::class, 'jenis_id', 'jenis_id');
+    }
+
+    public function mata_kuliah()
+    {
+        return $this->belongsTo(MatkulModel::class, 'mk_id', 'mk_id');
+    }
+
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeModel::class, 'periode_id', 'periode_id');
     }
 }

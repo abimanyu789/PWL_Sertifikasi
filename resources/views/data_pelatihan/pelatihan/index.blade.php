@@ -23,7 +23,7 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            <select class="form-control" id="level_pelatihan_id" name="level_pelatihan_id">
+                            <select class="form-control" id="level_pelatihan" name="level_pelatihan">
                                 <option value="">- Semua -</option>
                                 <option value="Nasional">Nasional</option>
                                 <option value="Internasional">Internasional</option>
@@ -68,27 +68,6 @@
         });
     }
 
-    function handleImport(formData) {
-        $.ajax({
-            url: "{{ url('pelatihan/import_ajax') }}",
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                if(response.status) {
-                    alert(response.message);
-                    $('#myModal').modal('hide');
-                    dataLevel_pelatihan.ajax.reload();
-                } else {
-                    alert(response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('Error: ' + error);
-            }
-        });
-    }
     var dataPelatihan;
 
     $(document).ready(function() {
@@ -99,7 +78,7 @@
                 dataType: "json",
                 type: "POST",
                 data: function(d) {
-                    d.level_pelatihan_id = $('#level_pelatihan_id').val();
+                    d.level_pelatihan_id = $('#level_pelatihan').val();
                 }
             },
             columns: [

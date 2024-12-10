@@ -50,31 +50,30 @@
             submitHandler: function(form) {
                 var formData = new FormData(form);
                 $.ajax({
-                    url: form.action,
-                    type: form.method,
-                    data: formData,
-                    processData: false,
-                    contentType: false,
+                    url: $(form).attr('action'),
+                    method: 'POST',
+                    data: formData,  // Gunakan FormData
+                    processData: false,  // Penting untuk file upload
+                    contentType: false,  // Penting untuk file upload
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(response) {
                         if (response.status) {
                             $('#myModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
-                            });
+                            Swal.fire('Berhasil', response.message, 'success');
                             dataPelatihan.ajax.reload();
                         } else {
-                            $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan',
-                                text: response.message
-                            });
+                            if (response.msgField) {
+                                $.each(response.msgField, function(field, message) {
+                                    $('#error-' + field).text(message[0]);
+                                });
+                            }
+                            Swal.fire('Gagal', response.message, 'error');
                         }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
                     }
                 });
                 return false;

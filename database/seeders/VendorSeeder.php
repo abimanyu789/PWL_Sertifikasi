@@ -30,71 +30,71 @@ class VendorSeeder extends Seeder
             // ]
             [
                 'vendor_nama' => 'Microsoft Learning',
-                'alamat' => 'One Microsoft Way',
-                'kota' => 'Redmond',
+                'alamat' => 'Jl. Jaya Baya',
+                'kota' => 'Surabaya',
                 'no_telp' => '0895-4882-8080',
                 'alamat_web' => 'learn.microsoft.com'
             ],
             [
                 'vendor_nama' => 'Oracle University',
-                'alamat' => '500 Oracle Parkway',
-                'kota' => 'Redwood City',
+                'alamat' => 'Jl. Keraton',
+                'kota' => 'Yogyakarta',
                 'no_telp' => '0857-0506-7000',
                 'alamat_web' => 'education.oracle.com'
             ],
             [
                 'vendor_nama' => 'Cisco Learning',
-                'alamat' => '170 West Tasman Dr',
-                'kota' => 'San Jose',
+                'alamat' => 'Jl. Singa',
+                'kota' => 'Malang',
                 'no_telp' => '0881-8526-4000',
                 'alamat_web' => 'learning.cisco.com'
             ],
             [
                 'vendor_nama' => 'AWS Training',
-                'alamat' => '410 Terry Avenue North',
-                'kota' => 'Seattle',
+                'alamat' => 'Jl. Merdeka No. 7',
+                'kota' => 'Tangerang',
                 'no_telp' => '0896-7266-1000',
                 'alamat_web' => 'aws.training'
             ],
             [
                 'vendor_nama' => 'Google Cloud Training',
-                'alamat' => '1600 Amphitheatre Parkway',
-                'kota' => 'Mountain View',
+                'alamat' => 'Jl. Kuala Lumpur',
+                'kota' => 'Sidoarjo',
                 'no_telp' => '0882-2253-0000',
                 'alamat_web' => 'cloud.google.com/training'
             ],
             [
                 'vendor_nama' => 'Red Hat Training',
-                'alamat' => '100 East Davie Street',
-                'kota' => 'Raleigh',
+                'alamat' => 'Jl. Adara No. 55',
+                'kota' => 'Bogor',
                 'no_telp' => '0881-9754-3700',
                 'alamat_web' => 'redhat.com/training'
             ],
             [
                 'vendor_nama' => 'IBM Training',
-                'alamat' => '1 New Orchard Road',
-                'kota' => 'Armonk',
+                'alamat' => 'Jl. Sewu No. 2',
+                'kota' => 'Semarang',
                 'no_telp' => '0882-4499-1900',
                 'alamat_web' => 'ibm.com/training'
             ],
             [
                 'vendor_nama' => 'VMware Education',
-                'alamat' => '3401 Hillview Avenue',
-                'kota' => 'Palo Alto',
+                'alamat' => 'Jl. Grigi',
+                'kota' => 'Gresik',
                 'no_telp' => '0877-3486-9273',
                 'alamat_web' => 'vmware.com/education'
             ],
             [
                 'vendor_nama' => 'Salesforce Training',
-                'alamat' => 'Salesforce Tower',
-                'kota' => 'San Francisco',
+                'alamat' => 'Jl. Abidari',
+                'kota' => 'Cirebon',
                 'no_telp' => '0857-0901-7000',
                 'alamat_web' => 'trailhead.salesforce.com'
             ],
             [
                 'vendor_nama' => 'SAP Training',
-                'alamat' => '3999 West Chester Pike',
-                'kota' => 'Newtown Square',
+                'alamat' => 'Jl. Bidadara',
+                'kota' => 'Ngoro',
                 'no_telp' => '0896-7661-1000',
                 'alamat_web' => 'training.sap.com'
             ]
