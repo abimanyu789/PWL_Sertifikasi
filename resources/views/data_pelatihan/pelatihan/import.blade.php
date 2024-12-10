@@ -16,7 +16,6 @@
                         <i class="fa fa-file-excel"></i> Download Template
                     </a>
                 </div>
-
                 <div class="form-group">
                     <label>Pilih File</label>
                     <input type="file" name="file_pelatihan" id="file_pelatihan" class="form-control" required>
@@ -40,32 +39,32 @@
                 file_pelatihan: {
                     required: true,
                     extension: "xlsx"
-                },
+                }
             },
             messages: {
-                file_user: {
+                file_pelatihan: {
                     required: "File harus dipilih",
                     extension: "File harus berformat .xlsx"
                 }
             },
             submitHandler: function(form) {
-                var formData = new FormData(form); // Jadikan form ke FormData untuk menghandle file
+                var formData = new FormData(form);
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: formData, // Data yang dikirim berupa FormData
-                    processData: false, // setting processData dan contentType ke false, untuk menghandle file
+                    data: formData,
+                    processData: false,
                     contentType: false,
                     success: function(response) {
-                        if (response.status) { // jika sukses
+                        if (response.status) {
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            tablePelatihan.ajax.reload(); // reload datatable
-                        } else { // jika error
+                            dataPelatihan.ajax.reload();
+                        } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
@@ -79,17 +78,6 @@
                     }
                 });
                 return false;
-            },
-            errorElement: 'span',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.form-group').append(error);
-            },
-            highlight: function(element, errorClass, validClass) {
-                $(element).addClass('is-invalid');
-            },
-            unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass('is-invalid');
             }
         });
     });

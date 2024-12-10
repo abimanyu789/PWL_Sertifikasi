@@ -117,42 +117,47 @@ class PelatihanController extends Controller
         return view('data_pelatihan.pelatihan.create_ajax', $data);
     }
 
-    public function store_ajax(Request $request)
-    {
+    public function store_ajax(Request $request) {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'nama_pelatihan' => 'required|string|max:100',
-                'deskripsi' => 'required|string|max:500', // Deskripsi wajib diisi
+                'nama_pelatihan' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string|max:255',
                 'tanggal' => 'required|date',
-                'kuota' => 'required|integer|min:1',
+                'kuota' => 'required|numeric|min:1',
                 'lokasi' => 'required|string|max:255',
-                'biaya' => 'required|integer|min:0',
-                'level_pelatihan' => 'required|string',
+                'biaya' => 'required|numeric|min:0',
+                'level_pelatihan' => 'required|in:Nasional,Internasional',
                 'vendor_id' => 'required|exists:m_vendor,vendor_id',
                 'jenis_id' => 'required|exists:m_jenis,jenis_id',
                 'mk_id' => 'required|exists:m_mata_kuliah,mk_id',
-                'periode_id' => 'required|exists:m_periode,periode_id',
-                
+                'periode_id' => 'required|exists:m_periode,periode_id'
             ];
-
+    
             $validator = Validator::make($request->all(), $rules);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors(),
+                    'msgField' => $validator->errors()
                 ]);
             }
-
-            PelatihanModel::create($request->all());
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Data pelatihan berhasil disimpan.',
-            ]);
+    
+            try {
+                PelatihanModel::create($request->all());
+                
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data pelatihan berhasil disimpan.'
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Gagal menyimpan data pelatihan.'
+                ]);
+            }
         }
-
+    
         return redirect('/');
     }
 
@@ -171,12 +176,17 @@ class PelatihanController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'nama_pelatihan' => 'required|string|max:100',
+                'nama_pelatihan' => 'required|string|max:255',
                 'deskripsi' => 'nullable|string|max:255',
                 'tanggal' => 'required|date',
-                'bidang_id' => 'required|integer',
-                'level_pelatihan_id' => 'required|integer',
-                'vendor_id' => 'required|integer',
+                'kuota' => 'required|numeric|min:1',
+                'lokasi' => 'required|string|max:255',
+                'biaya' => 'required|numeric|min:0',
+                'level_pelatihan' => 'required|in:Nasional,Internasional',
+                'vendor_id' => 'required|exists:m_vendor,vendor_id',
+                'jenis_id' => 'required|exists:m_jenis,jenis_id',
+                'mk_id' => 'required|exists:m_mata_kuliah,mk_id',
+                'periode_id' => 'required|exists:m_periode,periode_id'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -247,6 +257,7 @@ class PelatihanController extends Controller
     {
         return view('data_pelatihan.pelatihan.import');
     }
+
     public function import_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -259,8 +270,8 @@ class PelatihanController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors(),
+                    'message' => 'Validasi gagal',
+                    'msgField' => $validator->errors()
                 ]);
             }
 
@@ -276,10 +287,15 @@ class PelatihanController extends Controller
                         'nama_pelatihan' => $row['A'],
                         'deskripsi' => $row['B'],
                         'tanggal' => $row['C'],
-                        'bidang_id' => $row['D'],
-                        'level_pelatihan_id' => $row['E'],
-                        'vendor_id' => $row['F'],
-                        'created_at' => now(),
+                        'kuota' => $row['D'],
+                        'lokasi' => $row['E'],
+                        'biaya' => $row['F'],
+                        'level_pelatihan' => $row['G'],
+                        'vendor_id' => $row['H'],
+                        'jenis_id' => $row['I'],
+                        'mk_id' => $row['J'],
+                        'periode_id' => $row['K'],
+                        'created_at' => now()
                     ];
                 }
             }
@@ -288,22 +304,21 @@ class PelatihanController extends Controller
                 PelatihanModel::insertOrIgnore($insert);
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data pelatihan berhasil diimport.',
+                    'message' => 'Data user berhasil diimport'
                 ]);
             }
 
             return response()->json([
                 'status' => false,
-                'message' => 'Tidak ada data yang diimport.',
+                'message' => 'Tidak ada data yang diimport'
             ]);
         }
 
         return redirect('/');
     }
-
     public function export_excel()
     {
-        $pelatihan = PelatihanModel::all();
+        $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -312,11 +327,16 @@ class PelatihanController extends Controller
         $sheet->setCellValue('B1', 'Nama Pelatihan');
         $sheet->setCellValue('C1', 'Deskripsi');
         $sheet->setCellValue('D1', 'Tanggal');
-        $sheet->setCellValue('E1', 'Bidang');
-        $sheet->setCellValue('F1', 'Level Pelatihan');
-        $sheet->setCellValue('G1', 'Vendor');
+        $sheet->setCellValue('E1', 'Kuota');
+        $sheet->setCellValue('F1', 'Lokasi');
+        $sheet->setCellValue('G1', 'Biaya');
+        $sheet->setCellValue('H1', 'Level Pelatihan');
+        $sheet->setCellValue('I1', 'Vendor');
+        $sheet->setCellValue('J1', 'Jenis');
+        $sheet->setCellValue('K1', 'Mata Kuliah');
+        $sheet->setCellValue('L1', 'Periode');
 
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
 
         $row = 2;
         $no = 1;
@@ -326,15 +346,20 @@ class PelatihanController extends Controller
             $sheet->setCellValue('B' . $row, $p->nama_pelatihan);
             $sheet->setCellValue('C' . $row, $p->deskripsi);
             $sheet->setCellValue('D' . $row, $p->tanggal);
-            $sheet->setCellValue('E' . $row, $p->bidang->bidang_nama ?? '-');
-            $sheet->setCellValue('F' . $row, $p->level_pelatihan->level_pelatihan_nama ?? '-');
-            $sheet->setCellValue('G' . $row, $p->vendor->vendor_nama ?? '-');
-
+            $sheet->setCellValue('E' . $row, $p->kuota);
+            $sheet->setCellValue('F' . $row, $p->lokasi);
+            $sheet->setCellValue('G' . $row, $p->biaya);
+            $sheet->setCellValue('H' . $row, $p->level_pelatihan);
+            $sheet->setCellValue('I' . $row, $p->vendor->vendor_nama ?? '-');
+            $sheet->setCellValue('J' . $row, $p->jenis->jenis_nama ?? '-');
+            $sheet->setCellValue('K' . $row, $p->mata_kuliah->mk_nama ?? '-');
+            $sheet->setCellValue('L' . $row, $p->periode->periode_tahun ?? '-');
+            
             $row++;
             $no++;
         }
 
-        foreach (range('A', 'G') as $columnID) {
+        foreach (range('A', 'L') as $columnID) {
             $sheet->getColumnDimension($columnID)->setAutoSize(true);
         }
 
@@ -351,7 +376,7 @@ class PelatihanController extends Controller
     {
         $pelatihan = PelatihanModel::all();
         $pdf = Pdf::loadView('data_pelatihan.pelatihan.export_pdf', ['pelatihan' => $pelatihan]);
-        $pdf->setPaper('a4', 'portrait');
+        $pdf->setPaper('a4', 'landscape');
         $pdf->setOption('isRemoteEnabled', true); // Aktifkan akses remote untuk gambar
         return $pdf->stream('Data Pelatihan ' . date('Y-m-d H:i:s') . '.pdf');
 
@@ -362,15 +387,19 @@ class PelatihanController extends Controller
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Nama Pelatihan');
-        $sheet->setCellValue('C1', 'Deskripsi');
-        $sheet->setCellValue('D1', 'Tanggal');
-        $sheet->setCellValue('E1', 'Bidang');
-        $sheet->setCellValue('F1', 'Level Pelatihan');
-        $sheet->setCellValue('G1', 'Vendor');
+        $sheet->setCellValue('A1', 'Nama Pelatihan');
+        $sheet->setCellValue('B1', 'Deskripsi');
+        $sheet->setCellValue('C1', 'Tanggal (YYYY-MM-DD)');
+        $sheet->setCellValue('D1', 'Kuota');
+        $sheet->setCellValue('E1', 'Lokasi');
+        $sheet->setCellValue('F1', 'Biaya');
+        $sheet->setCellValue('G1', 'Level Pelatihan');
+        $sheet->setCellValue('H1', 'Vendor ID');
+        $sheet->setCellValue('I1', 'Jenis ID');
+        $sheet->setCellValue('J1', 'Mata Kuliah ID');
+        $sheet->setCellValue('K1', 'Periode ID');
 
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:K1')->getFont()->setBold(true);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $filename = 'Template_Pelatihan.xlsx';

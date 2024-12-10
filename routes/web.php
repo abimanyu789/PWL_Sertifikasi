@@ -139,7 +139,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_excel', [PelatihanController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [PelatihanController::class, 'export_pdf']);
         Route::get('/export_template', [PelatihanController::class, 'exportTemplate']);
-        Route::get('/{id}/dosenLayak', [PelatihanController::class, 'dosenLayak']);
     });
 
     Route::group(['prefix' => 'sertifikasi', 'middleware'=> 'authorize:ADM,PMN,DSN'], function(){

@@ -7,7 +7,7 @@
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/pelatihan/import_ajax') }}')" class="btn btn-sm btn-info mt-1">Import</button>
                 <a class="btn btn-sm btn-primary mt-1" h href="{{ url('/pelatihan/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export (Excel)</a>
-                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/pelatihan/export_pd') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+                <a class="btn btn-sm btn-warning mt-1" href="{{ url('/pelatihan/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
                 <button onclick="modalAction('{{ url('/pelatihan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
@@ -40,6 +40,7 @@
                         <th>Nama Pelatihan</th>
                         <th>Level Pelatihan</th>
                         <th>Tanggal</th>
+                        <th>Vendor</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -119,6 +120,10 @@
                 {
                     data: "tanggal",
                     name: "tanggal"
+                },
+                {
+                    data: "vendor.vendor_nama",
+                    name: "vendor.vendor_nama"
                 },
                 {
                     data: "aksi",

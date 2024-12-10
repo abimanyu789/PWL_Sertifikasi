@@ -18,6 +18,14 @@
                         </div>
                     </div>
                     
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Deskripsi</label>
+                            <textarea name="deskripsi" class="form-control" rows="5" required></textarea>
+                            <small class="text-danger" id="error-deskripsi"></small>
+                        </div>
+                    </div>                    
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Tanggal</label>
@@ -112,7 +120,7 @@
                             <select name="periode_id" class="form-control" required>
                                 <option value="">Pilih Periode</option>
                                 @foreach($periode as $p)
-                                    <option value="{{ $p->periode_id }}">{{ $p->periode_nama }}</option>
+                                    <option value="{{ $p->periode_id }}">{{ $p->periode_tahun }}</option>
                                 @endforeach
                             </select>
                             <small class="text-danger" id="error-periode_id"></small>
@@ -134,24 +142,28 @@
                 nama_pelatihan: {
                     required: true,
                     minlength: 3,
-                    maxlength: 100
+                    maxlength: 255
+                },
+                deskripsi: {
+                    required: false,
+                    maxlength: 255
                 },
                 tanggal: {
-                    required: true, 
+                    required: true,
                     date: true
                 },
                 kuota: {
                     required: true,
-                    number: true,
+                    digits: true,
                     min: 1
                 },
                 lokasi: {
                     required: true,
-                    minlength: 3
+                    maxlength: 255
                 },
                 biaya: {
                     required: true,
-                    number: true,
+                    digits: true,
                     min: 0
                 },
                 level_pelatihan: {
@@ -164,7 +176,7 @@
                     required: true
                 },
                 mk_id: {
-                    required: true  
+                    required: true
                 },
                 periode_id: {
                     required: true
@@ -183,11 +195,14 @@
                         } else {
                             if (response.msgField) {
                                 $.each(response.msgField, function(field, message) {
-                                    $('#error-' + field).text(message[0]); 
+                                    $('#error-' + field).text(message[0]);
                                 });
                             }
                             Swal.fire('Gagal', response.message, 'error');
                         }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
                     }
                 });
                 return false;

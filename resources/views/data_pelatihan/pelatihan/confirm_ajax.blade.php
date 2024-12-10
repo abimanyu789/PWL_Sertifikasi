@@ -64,19 +64,19 @@
                         </tr>
                         <tr>
                             <th class="text-right col-3">Vendor:</th>
-                            <td class="col-9">{{ $pelatihan->vendor_id }}</td>
+                            <td class="col-9">{{ $pelatihan->vendor->vendor_nama }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Jenis:</th>
-                            <td class="col-9">{{ $pelatihan->jenis_id }}</td>
+                            <td class="col-9">{{ $pelatihan->jenis->jenis_nama }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Mata Kuliah:</th>
-                            <td class="col-9">{{ $pelatihan->mk_id }}</td>
+                            <td class="col-9">{{ $pelatihan->mata_kuliah->mk_nama}}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Periode:</th>
-                            <td class="col-9">{{ $pelatihan->periode_id }}</td>
+                            <td class="col-9">{{ $pelatihan->periode->periode_tahun }}</td>
                         </tr>
                     </table>
                 </div>

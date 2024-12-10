@@ -11,4 +11,9 @@ class PeriodeModel extends Model
     protected $table = 'm_periode'; // Mendefinisikan nama tabel yang benar
     protected $primaryKey = 'periode_id'; // Mendefinisikan primary key dari tabel yang digunakan
     protected $fillable = ['periode_tahun','created_at', 'updated_at'];
+
+    public function getPeriodeTahunAttribute($value) 
+    {
+    return '20' . substr($value, 0, 2) . '/20' . substr($value, 2, 2);
+    }
 }
