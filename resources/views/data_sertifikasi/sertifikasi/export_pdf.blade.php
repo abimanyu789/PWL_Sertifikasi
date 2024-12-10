@@ -80,8 +80,6 @@
                     <th>Deskripsi</th>
                     <th>Tanggal</th>
                     <th>Kuota</th>
-                    <th>Lokasi</th>
-                    <th>Biaya</th>
                     <th>Level Sertifikasi</th>
                     <th>Vendor</th>
                     <th>Jenis</th>
