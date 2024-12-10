@@ -96,13 +96,11 @@
                         <td>{{ $s->deskripsi }}</td>
                         <td>{{ $s->tanggal }}</td>
                         <td>{{ $s->kuota }}</td>
-                        <td>{{ $s->lokasi }}</td>
-                        <td>{{ $s->biaya }}</td>
                         <td>{{ $s->level_sertifikasi }}</td>
                         <td>{{ $s->vendor->vendor_nama }}</td>
                         <td>{{ $s->jenis->jenis_nama }}</td>
                         <td>{{ $s->mata_kuliah->mk_nama }}</td>
-                        <td>{{ $p->periode->periode_tahun }}</td>
+                        <td>{{ $s->periode->periode_tahun }}</td>
                     </tr>
                 @endforeach 
         </tbody> 
