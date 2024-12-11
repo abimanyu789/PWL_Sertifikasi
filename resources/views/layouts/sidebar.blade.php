@@ -181,8 +181,8 @@
                 </li>
 
                 <!-- Data Section -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['pelatihan', 'sertifikasi']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['pelatihan', 'sertifikasi']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['pelatihan', 'sertifikasi', 'jenis', 'bidang', 'matkul', 'vendor', 'periode']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['pelatihan', 'sertifikasi', 'jenis', 'bidang', 'matkul', 'vendor', 'periode']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book"></i>
                         <p>Manage<i class="right fas fa-angle-left"></i></p>
                     </a>
