@@ -16,7 +16,7 @@
                             <input type="text" name="bidang_kode" class="form-control" required>
                             <small class="text-danger" id="error-bidang_kode"></small>
                         </div>
-                    </div>                   
+                    </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Nama Bidang</label>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Jenis</label>
+                            <label>Jenis Bidang Berkaitan</label>
                             <select name="jenis_id" class="form-control" required>
                                 <option value="">Pilih Jenis</option>
                                 @foreach($jenis as $j)
