@@ -281,20 +281,20 @@
             @elseif(auth()->user()->level_id == 3)
                 <!-- Menu Dosen -->
                 <!-- Daftar Manidir -->
-                <li class="nav-item has-treeview {{ in_array($activeMenu, ['mandiri_sertifikasi', 'mandiri_pelatihan']) ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ in_array($activeMenu, ['mandiri_sertifikasi', 'mandiri_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
+                <li class="nav-item has-treeview {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ in_array($activeMenu, ['upload_sertifikasi', 'upload_pelatihan']) ? 'bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="fas fa-pen nav-icon"></i>
                         <p>Upload Mandiri<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/mandiri_sertifikasi') }}" class="nav-link {{ $activeMenu == 'mandiri_sertifikasi' ? 'active' : '' }}">
+                            <a href="{{ url('/upload_sertifikasi') }}" class="nav-link {{ $activeMenu == 'upload_sertifikasi' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sertifikasi</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/mandiri_pelatihan') }}" class="nav-link {{ $activeMenu == 'mandiri_pelatihan' ? 'active' : '' }}">
+                            <a href="{{ url('/upload_pelatihan') }}" class="nav-link {{ $activeMenu == 'upload_pelatihan' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Pelatihan</p>
                             </a>
