@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\BidangController;
 use App\Http\Controllers\JenisController;
-use App\Http\Controllers\LevelPelatihanController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\SertifikasiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\DaftarDosenController;
 use App\Http\Controllers\MataKuliahController;
 use App\Http\Controllers\QuotaController;
@@ -83,6 +83,23 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [BidangController::class, 'export_pdf']);
     });
 
+    Route::group(['prefix' => 'periode', 'middleware'=> 'authorize:ADM,PMN,DSN'], function(){
+        Route::get('/', [PeriodeController::class, 'index']);
+        Route::post('/list', [PeriodeController::class, 'list']);
+        Route::get('/create_ajax', [PeriodeController::class, 'create_ajax']);
+        Route::post('/ajax', [PeriodeController::class, 'store_ajax']);
+        Route::get('/{id}/show_ajax', [PeriodeController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [PeriodeController::class, 'edit_ajax']);
+        Route::put('/{id}/update_ajax', [PeriodeController::class, 'update_ajax']);
+        Route::get('/{id}/delete_ajax', [PeriodeController::class, 'confirm_ajax']);
+        Route::delete('/{id}/delete_ajax', [PeriodeController::class, 'delete_ajax']);
+        Route::get('/import', [PeriodeController::class, 'import']); // Form import
+        Route::post('/import_ajax', [PeriodeController::class, 'import_ajax']); // Proses import
+        Route::get('/export_excel', [PeriodeController::class, 'export_excel']);          // ajax import excel
+        Route::get('/export_pdf', [PeriodeController::class, 'export_pdf']);
+        Route::get('/export_template', [PeriodeController::class, 'exportTemplate']);
+    });
+
     Route::group(['prefix' => 'matkul', 'middleware'=> 'authorize:ADM'], function(){
         Route::get('/', [MataKuliahController::class, 'index']);
         Route::post('/list', [MataKuliahController::class, 'list']);
@@ -113,15 +130,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/import_ajax', [JenisController::class, 'import_ajax']);           // ajax import excel
         Route::get('/export_excel', [JenisController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [JenisController::class, 'export_pdf']);
-    });
-
-    Route::group(['prefix' => 'level_pelatihan', 'middleware'=> 'authorize:ADM'], function(){
-        Route::get('/', [LevelPelatihanController::class, 'index']);
-        Route::post('/list', [LevelPelatihanController::class, 'list']);
-        Route::get('/import', [LevelPelatihanController::class, 'import']);                      // ajax form upload excel
-        Route::post('/import_ajax', [LevelPelatihanController::class, 'import_ajax']);           // ajax import excel
-        Route::get('/export_excel', [LevelPelatihanController::class, 'export_excel']);          // ajax import excel
-        Route::get('/export_pdf', [LevelPelatihanController::class, 'export_pdf']);
     });
 
     Route::group(['prefix' => 'pelatihan', 'middleware'=> 'authorize:ADM,PMN,DSN'], function(){
