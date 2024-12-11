@@ -245,7 +245,7 @@
 
                 <!-- Laporan Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+                    <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'surat_tugas' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>Draft Surat Tugas</p>
                     </a>
