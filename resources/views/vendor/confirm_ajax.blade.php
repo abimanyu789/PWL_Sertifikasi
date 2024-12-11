@@ -54,14 +54,6 @@
                             <th class="text-right col-3">Alamat Web:</th>
                             <td class="col-9">{{ $vendor->alamat_web }}</td>
                         </tr>
-                        <tr>
-                            <th class="text-right col-3">Tanggal Dibuat:</th>
-                            <td class="col-9">{{ $vendor->created_at }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Terakhir Diperbarui:</th>
-                            <td class="col-9">{{ $vendor->updated_at }}</td>
-                        </tr>
                     </table>
                 </div>
                 <div class="modal-footer">

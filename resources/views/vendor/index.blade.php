@@ -18,11 +18,11 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            
+
             <table class="table table-bordered table-striped table-hover table-sm" id="table_vendor">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>No</th>
                         <th>Nama Vendor</th>
                         <th>Alamat</th>
                         <th>Kota</th>
@@ -51,7 +51,7 @@
 
 $(document).ready(function() {
     // Kode lainnya
-    
+
     $('button[onclick^="modalAction"]').click(function() {
         var url = $(this).attr('onclick').split("'")[1];
         modalAction(url);

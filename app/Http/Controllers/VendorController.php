@@ -31,32 +31,32 @@ class VendorController extends Controller
         ]);
     }
 
-    // Ambil data user dalam bentuk json untuk datatables 
-    public function list(Request $request) 
-    { 
+    // Ambil data user dalam bentuk json untuk datatables
+    public function list(Request $request)
+    {
 
-        $vendor = VendorModel::select('vendor_id', 'vendor_nama', 'alamat', 'kota', 'no_telp', 'alamat_web'); 
-    
-        return DataTables::of($vendor) 
-            // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
-            ->addIndexColumn()  
-            ->addColumn('aksi', function ($vendor) {  // menambahkan kolom aksi 
+        $vendor = VendorModel::select('vendor_id', 'vendor_nama', 'alamat', 'kota', 'no_telp', 'alamat_web');
+
+        return DataTables::of($vendor)
+            // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($vendor) {  // menambahkan kolom aksi
                 $btn = '<button onclick="modalAction(\'' . url('/vendor/' . $vendor->vendor_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/vendor/' . $vendor->vendor_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/vendor/' . $vendor->vendor_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
-            }) 
-            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
-            ->make(true); 
-    } 
+            })
+            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
+            ->make(true);
+    }
 
     public function create_ajax()
     {
-        
+
         $data = [
             'vendor' => VendorModel::all(),
         ];
-            
+
         return view('vendor.create_ajax', $data);
     }
 
@@ -65,12 +65,12 @@ class VendorController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'vendor_nama' => 'required|string|max:100',
-                'alamat' => 'required|string|max:255',
-                'kota' => 'required|string|max:100',
-                'no_telp' => 'required|string|max:20',
-                'alamat_web' => 'required|string|max:100'
+                'alamat' => 'nullable|string|max:255',
+                'kota' => 'nullable|string|max:100',
+                'no_telp' => 'nullable|string|max:20',
+                'alamat_web' => 'nullable|string|max:100'
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -78,20 +78,20 @@ class VendorController extends Controller
                     'errors' => $validator->errors()
                 ]);
             }
-    
+
             VendorModel::create([
                 'vendor_nama' => $request->vendor_nama,
-                'alamat' => $request->alamat,
-                'kota' => $request->kota,
-                'no_telp' => $request->no_telp,
-                'alamat_web' => $request->alamat_web
+                'alamat' => $request->alamat ?? null,
+                'kota' => $request->kota ?? null,
+                'no_telp' => $request->no_telp ?? null,
+                'alamat_web' => $request->alamat_web ?? null
             ]);
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data vendor berhasil disimpan'
             ]);
-    
+
         } catch (\Exception $e) {
             Log::error('Error saving vendor: ' . $e->getMessage());
             return response()->json([

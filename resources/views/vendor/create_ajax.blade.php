@@ -16,34 +16,34 @@
                 </div>
                 <div class="form-group">
                     <label>Alamat</label>
-                    <input type="text" name="alamat" id="alamat" class="form-control" required>
+                    <input type="text" name="alamat" id="alamat" class="form-control">
                     <small id="error-alamat" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Kota</label>
-                    <input type="text" name="kota" id="kota" class="form-control" required>
+                    <input type="text" name="kota" id="kota" class="form-control">
                     <small id="error-kota" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>No. Telepon</label>
-                    <input type="text" name="no_telp" id="no_telp" class="form-control" required>
+                    <input type="text" name="no_telp" id="no_telp" class="form-control">
                     <small id="error-no_telp" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Alamat Web</label>
-                    <input type="text" name="alamat_web" id="alamat_web" class="form-control" required>
+                    <input type="text" name="alamat_web" id="alamat_web" class="form-control">
                     <small id="error-alamat_web" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary" id="btnSimpan">Simpan</button>        
+                <button type="submit" class="btn btn-primary" id="btnSimpan">Simpan</button>
             </div>
         </div>
     </div>
 </form>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $("#form-tambah").validate({
             rules: {
                 vendor_nama: {
@@ -52,63 +52,73 @@
                     maxlength: 100
                 },
                 alamat: {
-                    required: true,
+                    required: false,
                     minlength: 5,
                     maxlength: 255
                 },
                 kota: {
-                    required: true,
+                    required: false,
                     minlength: 3,
                     maxlength: 100
                 },
                 no_telp: {
-                    required: true,
+                    required: false,
                     minlength: 10,
                     maxlength: 20
                 },
                 alamat_web: {
-                    required: true,
+                    required: false,
                     maxlength: 100
                 }
             },
-            submitHandler: function(form) {
+            submitHandler: function (form) {
                 $.ajax({
                     url: form.action,
                     type: form.method,
                     data: $(form).serialize(),
-                    success: function(response) {
+                    success: function (response) {
                         if (response.status) {
-                            $('#myModal').modal('hide');
+                            $('#modal-master').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataVendor.ajax.reload();
+                            $('#form-tambah')[0].reset(); // Reset form setelah sukses
+                            dataVendor.ajax.reload(); // Reload datatable
                         } else {
                             $('.error-text').text('');
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
+                            if (response.errors) {
+                                $.each(response.errors, function (prefix, val) {
+                                    $('#error-' + prefix).text(val[0]);
+                                });
+                            }
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Terjadi Kesalahan',
                                 text: response.message
                             });
                         }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan',
+                            text: 'Gagal mengirim data.'
+                        });
                     }
                 });
-                return false;
+                return false; // Mencegah form submission default
             },
             errorElement: 'span',
-            errorPlacement: function(error, element) {
+            errorPlacement: function (error, element) {
                 error.addClass('invalid-feedback');
                 element.closest('.form-group').append(error);
             },
-            highlight: function(element, errorClass, validClass) {
+            highlight: function (element) {
                 $(element).addClass('is-invalid');
             },
-            unhighlight: function(element, errorClass, validClass) {
+            unhighlight: function (element) {
                 $(element).removeClass('is-invalid');
             }
         });
