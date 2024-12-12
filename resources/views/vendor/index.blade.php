@@ -73,10 +73,10 @@ $(document).ready(function() {
             },
             columns: [
                 {
-                    data: "vendor_id",
-                    className: "",
-                    orderable: true,
-                    searchable: true
+                    data: "DT_RowIndex",
+                    className: "text-center",
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: "vendor_nama",
