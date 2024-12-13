@@ -202,8 +202,18 @@ class DaftarDosenController extends Controller
 
     public function show_ajax(string $id)
     {
-        $daftar_dosen = UserModel::with(['level', 'upload_sertifikat'])->find($id);
-        return view('daftar_dosen.show_ajax', ['daftar_dosen' => $daftar_dosen]);
+        try {
+            $daftar_dosen = UserModel::with(['level', 'sertifikat', 'pelatihan'])
+                ->where('level_id', 3) // Memastikan hanya dosen
+                ->findOrFail($id);
+
+            return view('daftar_dosen.show_ajax', [
+                'daftar_dosen' => $daftar_dosen
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error showing dosen: ' . $e->getMessage());
+            return response()->view('daftar_dosen.show_ajax', [], 403);
+        }
     }
 
     // public function import()
