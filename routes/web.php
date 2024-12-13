@@ -11,9 +11,11 @@ use App\Http\Controllers\SertifikasiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\ValidasiController;
 use App\Http\Controllers\DaftarDosenController;
 use App\Http\Controllers\MataKuliahController;
 use App\Http\Controllers\UploadPelatihanController;
+use App\Models\NotifikasiModel;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -144,9 +146,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}/delete_ajax', [PelatihanController::class, 'delete_ajax']);
         Route::get('/import', [PelatihanController::class, 'import']); // Form import
         Route::post('/import_ajax', [PelatihanController::class, 'import_ajax']); // Proses import
+        Route::get('/export_template', [PelatihanController::class, 'exportTemplate']);
         Route::get('/export_excel', [PelatihanController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [PelatihanController::class, 'export_pdf']);
-        Route::get('/export_template', [PelatihanController::class, 'exportTemplate']);
+        Route::get('/{id}/tambah_peserta', [PelatihanController::class, 'tambah_peserta']);
+        Route::post('/{id}/kirim', [PelatihanController::class, 'kirim']);
+        Route::post('/{id}/surat_tugas', [PelatihanController::class, 'surat_tugas']);
+        
     });
 
     Route::group(['prefix' => 'sertifikasi', 'middleware'=> 'authorize:ADM,PMN,DSN'], function(){
@@ -160,11 +166,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/delete_ajax',[SertifikasiController::class, 'confirm_ajax']);
         Route::delete('/{id}/delete_ajax', [SertifikasiController::class, 'delete_ajax']);
         Route::get('/import', [SertifikasiController::class, 'import']); // ajax form upload excel
-        Route::post('/import_ajax', [SertifikasiController::class, 'import_ajax']); // ajax import excel         // ajax import excel
+        Route::post('/import_ajax', [SertifikasiController::class, 'import_ajax']);
+        Route::get('/export_template', [SertifikasiController::class, 'exportTemplate']); // ajax import excel         // ajax import excel
         Route::get('/export_excel', [SertifikasiController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [SertifikasiController::class, 'export_pdf']);
-        Route::get('/export_template', [SertifikasiController::class, 'exportTemplate']);
-        Route::get('/{id}/dosenLayak', [PelatihanController::class, 'dosenLayak']);
+        Route::get('/{id}/tambah_peserta', [SertifikasiController::class, 'tambah_peserta']);
+        Route::post('/{id}/kirim', [SertifikasiController::class, 'kirim']);
+        Route::post('/{id}/surat_tugas', [SertifikasiController::class, 'surat_tugas']);
     });
 
     Route::group(['prefix' => 'vendor', 'middleware'=> 'authorize:ADM'], function(){
@@ -184,7 +192,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_template', [VendorController::class, 'exportTemplate']);
     });
 
-    Route::group(['prefix' => 'view_dosen', 'middleware'=> 'authorize:PMN'], function(){
+    Route::group(['prefix' => 'view_dosen', 'middleware'=> 'authorize:ADM,PMN,DSN'], function(){
         Route::get('/', [DaftarDosenController::class, 'index']);
         Route::post('list', [DaftarDosenController::class, 'list']);
         Route::get('/create_ajax', [DaftarDosenController::class, 'create_ajax']);
@@ -209,6 +217,22 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/ajax', [UploadPelatihanController::class, 'store_ajax']);
     });
 
+    Route::group(['prefix' => 'acc_daftar', 'middleware'=> 'authorize:PMN'], function(){
+        Route::get('/', [ValidasiController::class, 'index']);
+        Route::get('/list', [ValidasiController::class, 'list']);
+        Route::get('/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
+        Route::post('/{id}/validasi', [ValidasiController::class, 'validasi']);
+    });
+
+    Route::post('/notifications/{id}/read', function($id) {
+        try {
+            NotifikasiModel::where('id', $id)->update(['is_read' => true]);
+            return response()->json(['status' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false]);
+        }
+    })->name('notifications.read');
+    
     Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 });

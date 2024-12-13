@@ -51,14 +51,6 @@
                         <th class="text-right">Email:</th>
                         <td>{{ $user->email }}</td>
                     </tr>
-                    <tr>
-                        <th class="text-right">Tanggal Dibuat:</th>
-                        <td>{{ $user->created_at }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right">Terakhir Diperbarui:</th>
-                        <td>{{ $user->updated_at }}</td>
-                    </tr>
                 </table>
             </div>
             <div class="modal-footer">
