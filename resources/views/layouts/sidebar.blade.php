@@ -241,8 +241,6 @@
                     </ul>
                 </li>
 
-
-
                 <!-- Laporan Section -->
                 <li class="nav-item">
                     <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'surat_tugas' ? 'active' : '' }}">
@@ -270,13 +268,13 @@
                 </li>
 
                 <!-- Data Sertifikasi Section -->
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="{{ url('/statistik') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-chart-pie"></i>
                             <p>Statistik</p>
                         </a>
                     </li>
-                </li>
+                </li> --}}
 
             @elseif(auth()->user()->level_id == 3)
                 <!-- Menu Dosen -->
@@ -304,7 +302,7 @@
 
                 <!-- Data Pelatihan Section -->
                 <li class="nav-item">
-                    <a href="{{ url('/list_pelatihan') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
+                    <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>Draf Surat Tugas </p>
                     </a>
