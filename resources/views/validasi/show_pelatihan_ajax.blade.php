@@ -1,4 +1,4 @@
-@empty($peserta)
+@empty($peserta_pelatihan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -84,7 +84,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($peserta as $index => $p)
+                        @foreach($peserta_pelatihan as $index => $p)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $p->user->nama }}</td>
@@ -94,55 +94,59 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" onclick="validasiPeserta('{{ url('/acc_daftar/' . $pelatihan->pelatihan_id . '/validasi') }}', 'Rejected')">Tidak Setuju</button>
-                <button type="button" class="btn btn-success" onclick="validasiPeserta('{{ url('/acc_daftar/' . $pelatihan->pelatihan_id . '/validasi') }}', 'Approved')">Setuju</button>
+                <button type="button" class="btn btn-danger" onclick="validasiPesertaPelatihan('{{ url('/acc_daftar/' . $pelatihan->pelatihan_id . '/validasi') }}', 'Rejected')">Tidak Setuju</button>
+                <button type="button" class="btn btn-success" onclick="validasiPesertaPelatihan('{{ url('/acc_daftar/' . $pelatihan->pelatihan_id . '/validasi') }}', 'Approved')">Setuju</button>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Kembali</button>
             </div>
         </div>
     </div>
 
     <script>
-        function validasiPeserta(url, status) {
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: `Apakah Anda yakin akan ${status === 'Approved' ? 'menyetujui' : 'menolak'} pengajuan ini?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: status === 'Approved' ? '#28a745' : '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: status === 'Approved' ? 'Ya, Setuju!' : 'Ya, Tolak!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            status: status
-                        },
-                        success: function(response) {
-                            if (response.status) {
-                                Swal.fire({
-                                    title: 'Berhasil!', 
-                                    text: response.message, 
-                                    icon: 'success'
-                                }).then(() => {
-                                    $('#modalAction').modal('hide');
-                                    $('.modal-backdrop').remove();
-                                    $('body').removeClass('modal-open');
-                                    dataValidasi.ajax.reload(null, false); // false agar tidak reset ke halaman pertama
-                                });
-                            } else {
-                                Swal.fire('Gagal!', response.message, 'error');
-                            }
-                        },
-                        error: function() {
-                            Swal.fire('Error!', 'Terjadi kesalahan sistem', 'error');
-                        }
-                    });
+        function validasiPesertaPelatihan(url, status) {
+    Swal.fire({
+        title: 'Konfirmasi',
+        text: `Apakah Anda yakin akan ${status === 'Approved' ? 'menyetujui' : 'menolak'} pengajuan ini?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: status === 'Approved' ? '#28a745' : '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: status === 'Approved' ? 'Ya, Setuju!' : 'Ya, Tolak!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    status: status,
+                    kegiatan: 'pelatihan'  // Tambahkan parameter kegiatan
+                },
+                success: function(response) {
+                    if (response.status) {
+                        Swal.fire({
+                            title: 'Berhasil!', 
+                            text: response.message, 
+                            icon: 'success'
+                        }).then(() => {
+                            // Perbaikan di sini
+                            $('#myModal').modal('hide');
+                            $('#modal-master').modal('hide');  // Tambahkan ini
+                            $('.modal-backdrop').remove();
+                            $('body').removeClass('modal-open');
+                            $('body').removeAttr('style');  // Tambahkan ini
+                            location.reload(); // Tambahkan ini untuk me-refresh halaman
+                        });
+                    } else {
+                        Swal.fire('Gagal!', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error!', 'Terjadi kesalahan sistem', 'error');
                 }
             });
         }
+    });
+}
     </script>
 @endempty

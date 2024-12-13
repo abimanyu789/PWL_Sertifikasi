@@ -21,15 +21,15 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group row">
-                        {{-- <label class="col-1 control-label col-form-label">Filter:</label>
-                        {{-- <div class="col-3"> --}}
-                            {{-- <select class="form-control" id="level_pelatihan" name="level_pelatihan">
+                        <label class="col-1 control-label col-form-label">Filter:</label>
+                         <div class="col-3">
+                            <select class="form-control" id="level_pelatihan" name="level_pelatihan">
                                 <option value="">- Semua -</option>
-                                <option value="Nasional">Nasional</option>
-                                <option value="Internasional">Internasional</option>
-                            </select>                             --}}
-                            {{-- <small class="form-text text-muted">Level Pelatihan</small> --}}
-                        {{-- </div> --}}
+                                <option value="pelatihan">Pelatihan</option>
+                                <option value="sertifikasi">Sertifikasi</option>
+                            </select>                             
+                            <small class="form-text text-muted">Level Pelatihan</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -37,7 +37,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Pelatihan</th>
+                        <th>Nama Kegiatan</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal ACC</th>
                         <th>Aksi</th>
@@ -69,12 +69,12 @@
 
     var dataValidasi;
 
-    $(document).ready(function() {
+$(document).ready(function() {
     dataValidasi = $('#table_validasi').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-            url: "{{ url('/acc_daftar/list') }}", // pastikan URL ini sesuai route
+            url: "{{ url('/acc_daftar/list') }}",
             type: "GET"
         },
         columns: [
@@ -83,8 +83,8 @@
                 name: "DT_RowIndex"
             },
             {
-                data: "nama_pelatihan",
-                name: "nama_pelatihan"
+                data: "nama_kegiatan",
+                name: "nama_kegiatan"
             },
             {
                 data: "tanggal",
@@ -102,7 +102,7 @@
             }
         ]
     });
-});
+
 
     function validasiPeserta(url) {
         Swal.fire({
@@ -136,7 +136,10 @@
                     }
                 });
             }
-        })
+        });
     }
+    
+});
+
 </script>
 @endpush

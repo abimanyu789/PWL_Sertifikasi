@@ -151,7 +151,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [PelatihanController::class, 'export_pdf']);
         Route::get('/{id}/tambah_peserta', [PelatihanController::class, 'tambah_peserta']);
         Route::post('/{id}/kirim', [PelatihanController::class, 'kirim']);
-        Route::post('/{id}/surat_tugas', [PelatihanController::class, 'surat_tugas']);
         
     });
 
@@ -172,7 +171,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [SertifikasiController::class, 'export_pdf']);
         Route::get('/{id}/tambah_peserta', [SertifikasiController::class, 'tambah_peserta']);
         Route::post('/{id}/kirim', [SertifikasiController::class, 'kirim']);
-        Route::post('/{id}/surat_tugas', [SertifikasiController::class, 'surat_tugas']);
     });
 
     Route::group(['prefix' => 'vendor', 'middleware'=> 'authorize:ADM'], function(){
@@ -220,7 +218,8 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['prefix' => 'acc_daftar', 'middleware'=> 'authorize:PMN'], function(){
         Route::get('/', [ValidasiController::class, 'index']);
         Route::get('/list', [ValidasiController::class, 'list']);
-        Route::get('/{id}/show_ajax', [ValidasiController::class, 'show_ajax']);
+        Route::get('/{id}/show_pelatihan_ajax', [ValidasiController::class, 'show_pelatihan_ajax']);
+        Route::get('/{id}/show_sertifikasi_ajax', [ValidasiController::class, 'show_sertifikasi_ajax']);
         Route::post('/{id}/validasi', [ValidasiController::class, 'validasi']);
     });
 
