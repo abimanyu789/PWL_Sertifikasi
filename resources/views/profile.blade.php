@@ -59,15 +59,16 @@
                             <div class="row mb-3">
                                 <label for="bidang_id" class="col-md-4 col-form-label text-md-end">{{ __('Bidang Keahlian') }}</label>
                                 <div class="col-md-8">
-                                    <select id="bidang_id" class="form-control select2 @error('bidang_id') is-invalid @enderror" 
-                                        name="bidang_id[]" multiple>
-                                        @foreach($bidang as $b)
-                                            <option value="{{ $b->bidang_id }}" 
-                                                {{ in_array($b->bidang_id, old('bidang_id', $user->bidang_id ? explode(',', $user->bidang_id) : [])) ? 'selected' : '' }}>
-                                                [{{ $b->bidang_kode }}] {{ $b->bidang_nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <!-- Bidang Keahlian -->
+<select id="bidang_id" class="form-control select2 @error('bidang_id') is-invalid @enderror" 
+name="bidang_id[]" multiple>
+@foreach($bidang as $b)
+    <option value="{{ $b->bidang_id }}" 
+        {{ in_array($b->bidang_id, $selectedBidang) ? 'selected' : '' }}>
+        [{{ $b->bidang_kode }}] {{ $b->bidang_nama }}
+    </option>
+@endforeach
+</select>
                                     @error('bidang_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -80,14 +81,14 @@
                                 <label for="mk_id" class="col-md-4 col-form-label text-md-end">{{ __('Mata Kuliah') }}</label>
                                 <div class="col-md-8">
                                     <select id="mk_id" class="form-control select2 @error('mk_id') is-invalid @enderror" 
-                                        name="mk_id[]" multiple>
-                                        @foreach($matkul as $mk)
-                                            <option value="{{ $mk->mk_id }}" 
-                                                {{ in_array($mk->mk_id, old('mk_id', $user->mk_id ? explode(',', $user->mk_id) : [])) ? 'selected' : '' }}>
-                                                [{{ $mk->mk_kode }}] {{ $mk->mk_nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+    name="mk_id[]" multiple>
+    @foreach($matkul as $mk)
+        <option value="{{ $mk->mk_id }}" 
+            {{ in_array($mk->mk_id, $selectedMatkul) ? 'selected' : '' }}>
+            [{{ $mk->mk_kode }}] {{ $mk->mk_nama }}
+        </option>
+    @endforeach
+</select>
                                     @error('mk_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
