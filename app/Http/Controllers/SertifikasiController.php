@@ -7,6 +7,9 @@ use App\Models\SertifikasiModel;
 use App\Models\MatkulModel;
 use App\Models\JenisModel;
 use App\Models\PeriodeModel;
+use App\Models\PesertaSertifikasiModel;
+use App\Models\DosenModel;
+use App\Models\UserModel;
 use App\Models\VendorModel;
 use App\Models\NotifikasiModel;
 use Yajra\DataTables\DataTables;
@@ -150,161 +153,113 @@ class SertifikasiController extends Controller
     {
         try {
             $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
-            
-            // Hitung jumlah peserta yang sudah terdaftar
-        $jumlah_peserta = DB::table('peserta_sertifikasi')
-            ->where('sertifikasi_id', $id)
-            ->count();
-
-        // Cek apakah kuota sudah penuh
-        if ($jumlah_peserta >= $sertifikasi->kuota) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Kuota sertifikasi sudah penuh!'
-            ]);
-        }
-
-        // 1. Cek dan create data dosen untuk user level 3 yang belum ada di t_dosen
-            $users = DB::table('m_user')
-                ->where('level_id', 3)
-                ->whereNotExists(function($query) {
-                    $query->select(DB::raw(1))
-                        ->from('t_dosen')
-                        ->whereRaw('t_dosen.user_id = m_user.user_id');
-                })
-                ->get();
-
-            // 2. Untuk setiap user level dosen yang belum ada di t_dosen
-            foreach($users as $user) {
-                // Cari bidang yang sesuai dengan jenis sertifikasi
-                $bidang = DB::table('m_bidang')
-                    ->where('jenis_id', $sertifikasi->jenis_id)
-                    ->first();
-
-                // Insert ke t_dosen dengan bidang dan mata kuliah yang sesuai
-                DB::table('t_dosen')->insert([
-                    'user_id' => $user->user_id,
-                    'bidang_id' => $bidang ? $bidang->bidang_id : null,
-                    'mk_id' => $sertifikasi->mk_id,
-                    'created_at' => now(),
-                    'updated_at' => now()
+    
+            // Hitung jumlah peserta
+            $jumlah_peserta = $sertifikasi->peserta_sertifikasi->count();
+    
+            if ($jumlah_peserta >= $sertifikasi->kuota) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Kuota sertifikasi sudah penuh!'
                 ]);
             }
-
-            // 3. Ambil daftar dosen yang eligible
+    
+            // Ambil daftar dosen yang eligible menggunakan join
             $dosen = DB::table('t_dosen as d')
+                ->join('m_user as u', 'd.user_id', '=', 'u.user_id')
+                ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+                ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
                 ->select(
+                    'u.nama',
                     'd.dosen_id',
-                    'm.user_id',
-                    'm.nama',
                     'b.bidang_nama',
-                    'mk.mk_nama as mata_kuliah',
-                    DB::raw('COUNT(DISTINCT ps.peserta_sertifikasi_id) as jumlah_sertifikasi')
+                    'mk.mk_nama',
+                    DB::raw('(SELECT COUNT(*) FROM peserta_sertifikasi ps WHERE ps.dosen_id = d.dosen_id) as jumlah_sertifikasi')
                 )
-                ->join('m_user as m', 'd.user_id', '=', 'm.user_id')
-                ->leftJoin('m_bidang as b', 'd.bidang_id', '=', 'b.bidang_id')
-                ->leftJoin('m_mata_kuliah as mk', 'd.mk_id', '=', 'mk.mk_id')
-                ->leftJoin('peserta_sertifikasi as ps', 'm.user_id', '=', 'ps.user_id')
-                ->where('m.level_id', 3)
-                ->where(function($query) use ($sertifikasi) {
-                    $query->where('b.jenis_id', $sertifikasi->jenis_id)
-                        ->orWhere('d.mk_id', $sertifikasi->mk_id);
-                })
+                ->where('u.level_id', 3)
+                ->where('b.jenis_id', $sertifikasi->jenis_id)
                 ->whereNotExists(function($query) use ($id) {
                     $query->select(DB::raw(1))
-                        ->from('peserta_sertifikasi as ps2')
-                        ->whereRaw('ps2.user_id = m.user_id')
-                        ->where('ps2.sertifikasi_id', $id);
+                          ->from('peserta_sertifikasi as ps')
+                          ->whereRaw('ps.dosen_id = d.dosen_id')
+                          ->where('ps.sertifikasi_id', $id);
                 })
-                ->groupBy('d.dosen_id', 'm.user_id', 'm.nama', 'b.bidang_nama', 'mk.mk_nama')
                 ->orderBy('jumlah_sertifikasi', 'asc')
                 ->get();
-
-                // Tambahkan informasi sisa kuota
-                $sisa_kuota = $sertifikasi->kuota - $jumlah_peserta;
-                $sertifikasi->sisa_kuota = $sisa_kuota;
-
-
+    
+            // Tambahkan informasi sisa kuota
+            $sisa_kuota = $sertifikasi->kuota - $jumlah_peserta;
+            $sertifikasi->sisa_kuota = $sisa_kuota;
+    
             return view('data_sertifikasi.sertifikasi.tambah_peserta', compact('sertifikasi', 'dosen'));
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
         }
-
     }
+
     public function kirim(Request $request, $id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            try {
-                DB::beginTransaction();
+        try {
+            DB::beginTransaction();
+            
+            $sertifikasi = SertifikasiModel::findOrFail($id);
+            $dosen_ids = $request->dosen_ids;
     
-                $sertifikasi = SertifikasiModel::findOrFail($id);
-    
-                // Validate request
-                $validator = Validator::make($request->all(), [
-                    'user_ids' => 'required|array|min:1',
-                    'user_ids.*' => 'required|exists:m_user,user_id'
-                ]);
-    
-                if ($validator->fails()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Validasi gagal.',
-                        'msgField' => $validator->errors()
-                    ]);
-                }
-    
-                // Check quota
-                if (count($request->user_ids) > $sertifikasi->kuota) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Jumlah peserta melebihi kuota sertifikasi.'
-                    ]);
-                }
-    
-                foreach ($request->user_ids as $user_id) {
-                    DB::table('peserta_sertifikasi')->insert([
-                        'sertifikasi_id' => $id,
-                        'user_id' => $user_id,
-                        'status' => 'Pending',
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-    
-                // Kirim notifikasi ke pimpinan (level_id = 2)
-                $pimpinan = DB::table('m_user')->where('level_id', 2)->first();
-                if ($pimpinan) {
-                    NotifikasiModel::create([
-                        'user_id' => $pimpinan->user_id,
-                        'title' => 'Pengajuan Peserta sertifikasi Baru',
-                        'message' => "Ada pengajuan peserta baru untuk sertifikasi {$sertifikasi->nama_sertifikasi}",
-                        'type' => 'pengajuan_peserta',
-                        'reference_id' => $id
-                    ]);
-                }
-    
-                DB::commit();
-    
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Peserta sertifikasi berhasil ditambahkan.'
-                ]);
-    
-            } catch (\Exception $e) {
-                DB::rollBack();
+            if (count($dosen_ids) === 0) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Gagal menambahkan peserta sertifikasi.'
+                    'message' => 'Pilih minimal satu dosen'
                 ]);
             }
-        }
     
-        return redirect('/');
+            $berhasil = 0;
+            foreach ($dosen_ids as $dosen_id) {
+                try {
+                    $peserta = new PesertaSertifikasiModel();
+                    $peserta->sertifikasi_id = $id;
+                    $peserta->dosen_id = $dosen_id;
+                    $peserta->status = 'Pending';
+                    $peserta->save();
+                
+                    if ($peserta->peserta_sertifikasi_id) {
+                        $berhasil++;
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error saat insert:', [
+                        'error' => $e->getMessage(),
+                        'dosen_id' => $dosen_id
+                    ]);
+                }
+            }
+    
+            if ($berhasil > 0) {
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => "Berhasil menambahkan $berhasil peserta sertifikasi"
+                ]);
+            }
+    
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada peserta yang berhasil ditambahkan'
+            ]);
+    
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal menambahkan peserta sertifikasi: ' . $e->getMessage()
+            ]);
+        }
     }
+
     public function edit_ajax(string $id)
     {
         $sertifikasi = SertifikasiModel::with('jenis', 'vendor', 'mata_kuliah', 'periode')->find($id);

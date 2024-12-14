@@ -17,14 +17,14 @@ class UserModel extends Authenticatable implements JWTSubject
     protected $primaryKey = 'user_id';  // mendefinisikan primary key dari tabel yang digunakan
     protected $fillable = [
         'level_id',
+        'bidang_id', 
+        'mk_id',   
         'nip', 
         'nama',
         'username',
         'email', 
         'password',
-        'avatar',
-        'bidang_id', 
-        'mk_id',     
+        'avatar',  
         'created_at',
         'updated_at'
     ];
@@ -39,6 +39,32 @@ class UserModel extends Authenticatable implements JWTSubject
     public function level(): BelongsTo
     {
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    }
+
+    public function bidang()
+    {
+        return $this->belongsTo(BidangModel::class, 'bidang_id', 'bidang_id');
+    }
+
+    public function mata_kuliah()
+    {
+        return $this->belongsTo(MatkulModel::class, 'mk_id', 'mk_id');
+    }
+
+        public function dosen()
+    {
+        return $this->hasOne(DosenModel::class, 'user_id', 'user_id');
+    }
+
+    // UserModel.php
+    public function peserta_pelatihan()
+    {
+        return $this->hasMany(PesertaPelatihanModel::class, 'user_id', 'user_id');
+    }
+
+    public function peserta_sertifikasi()
+    {
+        return $this->hasMany(PesertaSertifikasiModel::class, 'dosen_id', 'dosen_id');
     }
 
     // public function upload_sertifikat() 

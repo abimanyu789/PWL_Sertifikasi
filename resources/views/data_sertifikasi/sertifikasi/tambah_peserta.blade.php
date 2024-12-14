@@ -122,14 +122,15 @@
                                                     <td>
                                                         <div class="custom-control custom-checkbox">
                                                             <input type="checkbox" class="custom-control-input dosen-checkbox" 
-                                                                id="dosen{{ $d->dosen_id }}" name="user_ids[]" 
-                                                                value="{{ $d->user_id }}">
+                                                                id="dosen{{ $d->dosen_id }}" 
+                                                                name="dosen_ids[]" 
+                                                                value="{{ $d->dosen_id ?? '' }}"> <!-- Tambahkan fallback -->
                                                             <label class="custom-control-label" for="dosen{{ $d->dosen_id }}"></label>
                                                         </div>
                                                     </td>
                                                     <td>{{ $d->nama }}</td>
-                                                    <td>{{ $d->bidang_nama }}</td>
-                                                    <td>{{ $d->mata_kuliah }}</td>
+                                                    <td>{{ $d->bidang_nama ?? '-' }}</td>
+                                                    <td>{{ $d->mk_nama ?? '-' }}</td>
                                                     <td class="text-center">{{ $d->jumlah_sertifikasi }}</td>
                                                 </tr>
                                             @empty

@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PelatihanModel;
+use App\Models\BidangModel;
+use App\Models\UserModel;
 use App\Models\MatkulModel;
+use App\Models\PesertaPelatihanModel;
 use App\Models\JenisModel;
 use App\Models\PeriodeModel;
+use App\Models\DosenModel;
 use App\Models\NotifikasiModel;
 use App\Models\VendorModel;
 use Yajra\DataTables\DataTables;
@@ -131,165 +135,278 @@ class PelatihanController extends Controller
     
         return redirect('/');
     }
+    // public function tambah_peserta($id)
+    // {
+    //     try {
+    //         $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+    //         $dosen = DosenModel::findOrFail($id);
+    //         $peserta_pelatihan = PesertaPelatihanModel::findOrFail($dosen); //
+            
+    //         // Hitung jumlah peserta yang sudah terdaftar
+    //     $jumlah_peserta = DB::table('peserta_pelatihan')
+    //         ->where('pelatihan_id', $id)
+    //         ->count();
+
+    //     // Cek apakah kuota sudah penuh
+    //     if ($jumlah_peserta >= $pelatihan->kuota) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Kuota pelatihan sudah penuh!'
+    //         ]);
+    //     }
+
+    //     // 1. Cek dan create data dosen untuk user level 3 yang belum ada di t_dosen
+    //         $users = DB::table('m_user')
+    //             ->where('level_id', 3)
+    //             ->whereNotExists(function($query) {
+    //                 $query->select(DB::raw(1))
+    //                     ->from('t_dosen')
+    //                     ->whereRaw('t_dosen.user_id = m_user.user_id');
+    //             })
+    //             ->get();
+
+    //         // 2. Untuk setiap user level dosen yang belum ada di t_dosen
+    //         foreach($users as $user) {
+    //             // Cari bidang yang sesuai dengan jenis pelatihan
+    //             $bidang = DB::table('m_bidang')
+    //                 ->where('jenis_id', $pelatihan->jenis_id)
+    //                 ->first();
+
+    //             // Insert ke t_dosen dengan bidang dan mata kuliah yang sesuai
+    //             DB::table('t_dosen')->insert([
+    //                 'user_id' => $user->user_id,
+    //                 'bidang_id' => $bidang ? $bidang->bidang_id : null,
+    //                 'mk_id' => $pelatihan->mk_id,
+    //                 'created_at' => now(),
+    //                 'updated_at' => now()
+    //             ]);
+    //         }
+
+    //         // 3. Ambil daftar dosen yang eligible
+    //         $dosen = DB::table('t_dosen as d')
+    //             ->select(
+    //                 'd.dosen_id',
+    //                 'm.user_id',
+    //                 'm.nama',
+    //                 'b.bidang_nama',
+    //                 'mk.mk_nama as mata_kuliah',
+    //                 DB::raw('COUNT(DISTINCT pp.peserta_pelatihan_id) as jumlah_pelatihan')
+    //             )
+    //             ->join('m_user as m', 'd.user_id', '=', 'm.user_id')
+    //             ->leftJoin('m_bidang as b', 'd.bidang_id', '=', 'b.bidang_id')
+    //             ->leftJoin('m_mata_kuliah as mk', 'd.mk_id', '=', 'mk.mk_id')
+    //             ->leftJoin('peserta_pelatihan as pp', 'm.user_id', '=', 'pp.user_id')
+    //             ->where('m.level_id', 3)
+    //             ->where(function($query) use ($pelatihan) {
+    //                 $query->where('b.jenis_id', $pelatihan->jenis_id)
+    //                     ->orWhere('d.mk_id', $pelatihan->mk_id);
+    //             })
+    //             ->whereNotExists(function($query) use ($id) {
+    //                 $query->select(DB::raw(1))
+    //                     ->from('peserta_pelatihan as pp2')
+    //                     ->whereRaw('pp2.user_id = m.user_id')
+    //                     ->where('pp2.pelatihan_id', $id);
+    //             })
+    //             ->groupBy('d.dosen_id', 'm.user_id', 'm.nama', 'b.bidang_nama', 'mk.mk_nama')
+    //             ->orderBy('jumlah_pelatihan', 'asc')
+    //             ->get();
+
+    //             // Tambahkan informasi sisa kuota
+    //             $sisa_kuota = $pelatihan->kuota - $jumlah_peserta;
+    //             $pelatihan->sisa_kuota = $sisa_kuota;
+
+
+    //         return view('data_pelatihan.pelatihan.tambah_peserta', compact('pelatihan', 'dosen'));
+
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+    //         ]);
+    //     }
+
+    // }
+
     public function tambah_peserta($id)
     {
         try {
             $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
-            
-            // Hitung jumlah peserta yang sudah terdaftar
-        $jumlah_peserta = DB::table('peserta_pelatihan')
-            ->where('pelatihan_id', $id)
-            ->count();
-
-        // Cek apakah kuota sudah penuh
-        if ($jumlah_peserta >= $pelatihan->kuota) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Kuota pelatihan sudah penuh!'
-            ]);
-        }
-
-        // 1. Cek dan create data dosen untuk user level 3 yang belum ada di t_dosen
-            $users = DB::table('m_user')
-                ->where('level_id', 3)
-                ->whereNotExists(function($query) {
-                    $query->select(DB::raw(1))
-                        ->from('t_dosen')
-                        ->whereRaw('t_dosen.user_id = m_user.user_id');
-                })
-                ->get();
-
-            // 2. Untuk setiap user level dosen yang belum ada di t_dosen
-            foreach($users as $user) {
-                // Cari bidang yang sesuai dengan jenis pelatihan
-                $bidang = DB::table('m_bidang')
-                    ->where('jenis_id', $pelatihan->jenis_id)
-                    ->first();
-
-                // Insert ke t_dosen dengan bidang dan mata kuliah yang sesuai
-                DB::table('t_dosen')->insert([
-                    'user_id' => $user->user_id,
-                    'bidang_id' => $bidang ? $bidang->bidang_id : null,
-                    'mk_id' => $pelatihan->mk_id,
-                    'created_at' => now(),
-                    'updated_at' => now()
+    
+            // Hitung jumlah peserta
+            $jumlah_peserta = $pelatihan->peserta_pelatihan->count();
+    
+            if ($jumlah_peserta >= $pelatihan->kuota) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Kuota pelatihan sudah penuh!'
                 ]);
             }
-
-            // 3. Ambil daftar dosen yang eligible
+    
+            // Ambil daftar dosen yang eligible menggunakan join
             $dosen = DB::table('t_dosen as d')
+                ->join('m_user as u', 'd.user_id', '=', 'u.user_id')
+                ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+                ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
                 ->select(
+                    'u.nama',
                     'd.dosen_id',
-                    'm.user_id',
-                    'm.nama',
                     'b.bidang_nama',
-                    'mk.mk_nama as mata_kuliah',
-                    DB::raw('COUNT(DISTINCT pp.peserta_pelatihan_id) as jumlah_pelatihan')
+                    'mk.mk_nama',
+                    DB::raw('(SELECT COUNT(*) FROM peserta_pelatihan pp WHERE pp.dosen_id = d.dosen_id) as jumlah_pelatihan')
                 )
-                ->join('m_user as m', 'd.user_id', '=', 'm.user_id')
-                ->leftJoin('m_bidang as b', 'd.bidang_id', '=', 'b.bidang_id')
-                ->leftJoin('m_mata_kuliah as mk', 'd.mk_id', '=', 'mk.mk_id')
-                ->leftJoin('peserta_pelatihan as pp', 'm.user_id', '=', 'pp.user_id')
-                ->where('m.level_id', 3)
-                ->where(function($query) use ($pelatihan) {
-                    $query->where('b.jenis_id', $pelatihan->jenis_id)
-                        ->orWhere('d.mk_id', $pelatihan->mk_id);
-                })
+                ->where('u.level_id', 3)
+                ->where('b.jenis_id', $pelatihan->jenis_id)
                 ->whereNotExists(function($query) use ($id) {
                     $query->select(DB::raw(1))
-                        ->from('peserta_pelatihan as pp2')
-                        ->whereRaw('pp2.user_id = m.user_id')
-                        ->where('pp2.pelatihan_id', $id);
+                          ->from('peserta_pelatihan as pp')
+                          ->whereRaw('pp.dosen_id = d.dosen_id')
+                          ->where('pp.pelatihan_id', $id);
                 })
-                ->groupBy('d.dosen_id', 'm.user_id', 'm.nama', 'b.bidang_nama', 'mk.mk_nama')
                 ->orderBy('jumlah_pelatihan', 'asc')
                 ->get();
-
-                // Tambahkan informasi sisa kuota
-                $sisa_kuota = $pelatihan->kuota - $jumlah_peserta;
-                $pelatihan->sisa_kuota = $sisa_kuota;
-
-
+    
+            // Tambahkan informasi sisa kuota
+            $sisa_kuota = $pelatihan->kuota - $jumlah_peserta;
+            $pelatihan->sisa_kuota = $sisa_kuota;
+    
             return view('data_pelatihan.pelatihan.tambah_peserta', compact('pelatihan', 'dosen'));
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
         }
-
     }
+
     public function kirim(Request $request, $id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            try {
-                DB::beginTransaction();
+        try {
+            DB::beginTransaction();
+            
+            $pelatihan = PelatihanModel::findOrFail($id);
+            $dosen_ids = $request->dosen_ids;
     
-                $pelatihan = PelatihanModel::findOrFail($id);
-    
-                // Validate request
-                $validator = Validator::make($request->all(), [
-                    'user_ids' => 'required|array|min:1',
-                    'user_ids.*' => 'required|exists:m_user,user_id'
-                ]);
-    
-                if ($validator->fails()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Validasi gagal.',
-                        'msgField' => $validator->errors()
-                    ]);
-                }
-    
-                // Check quota
-                if (count($request->user_ids) > $pelatihan->kuota) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Jumlah peserta melebihi kuota pelatihan.'
-                    ]);
-                }
-    
-                foreach ($request->user_ids as $user_id) {
-                    DB::table('peserta_pelatihan')->insert([
-                        'pelatihan_id' => $id,
-                        'user_id' => $user_id,
-                        'status' => 'Pending',
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-    
-                // Kirim notifikasi ke pimpinan (level_id = 2)
-                $pimpinan = DB::table('m_user')->where('level_id', 2)->first();
-                if ($pimpinan) {
-                    NotifikasiModel::create([
-                        'user_id' => $pimpinan->user_id,
-                        'title' => 'Pengajuan Peserta Pelatihan Baru',
-                        'message' => "Ada pengajuan peserta baru untuk pelatihan {$pelatihan->nama_pelatihan}",
-                        'type' => 'pengajuan_peserta',
-                        'reference_id' => $id
-                    ]);
-                }
-    
-                DB::commit();
-    
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Peserta pelatihan berhasil ditambahkan.'
-                ]);
-    
-            } catch (\Exception $e) {
-                DB::rollBack();
+            if (count($dosen_ids) === 0) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Gagal menambahkan peserta pelatihan.'
+                    'message' => 'Pilih minimal satu dosen'
                 ]);
             }
-        }
     
-        return redirect('/');
+            $berhasil = 0;
+            foreach ($dosen_ids as $dosen_id) {
+                try {
+                    $peserta = new PesertaPelatihanModel();
+                    $peserta->pelatihan_id = $id;
+                    $peserta->dosen_id = $dosen_id;
+                    $peserta->status = 'Pending';
+                    $peserta->save();
+                
+                    if ($peserta->peserta_pelatihan_id) {
+                        $berhasil++;
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error saat insert:', [
+                        'error' => $e->getMessage(),
+                        'dosen_id' => $dosen_id
+                    ]);
+                }
+            }
+    
+            if ($berhasil > 0) {
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => "Berhasil menambahkan $berhasil peserta pelatihan"
+                ]);
+            }
+    
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada peserta yang berhasil ditambahkan'
+            ]);
+    
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal menambahkan peserta pelatihan: ' . $e->getMessage()
+            ]);
+        }
     }
+    // public function kirim(Request $request, $id)
+    // {
+    //     if ($request->ajax() || $request->wantsJson()) {
+    //         try {
+    //             DB::beginTransaction();
+    
+    //             $pelatihan = PelatihanModel::findOrFail($id);
+    
+    //             // Validate request
+    //             $validator = Validator::make($request->all(), [
+    //                 'user_ids' => 'required|array|min:1',
+    //                 'user_ids.*' => 'required|exists:m_user,user_id'
+    //             ]);
+    
+    //             if ($validator->fails()) {
+    //                 return response()->json([
+    //                     'status' => false,
+    //                     'message' => 'Validasi gagal.',
+    //                     'msgField' => $validator->errors()
+    //                 ]);
+    //             }
+    
+    //             // Check quota
+    //             if (count($request->user_ids) > $pelatihan->kuota) {
+    //                 return response()->json([
+    //                     'status' => false,
+    //                     'message' => 'Jumlah peserta melebihi kuota pelatihan.'
+    //                 ]);
+    //             }
+    
+    //             foreach ($request->user_ids as $user_id) {
+    //                 DB::table('peserta_pelatihan')->insert([
+    //                     'pelatihan_id' => $id,
+    //                     'user_id' => $user_id,
+    //                     'status' => 'Pending',
+    //                     'created_at' => now(),
+    //                     'updated_at' => now()
+    //                 ]);
+    //             }
+    
+    //             // Kirim notifikasi ke pimpinan (level_id = 2)
+    //             $pimpinan = DB::table('m_user')->where('level_id', 2)->first();
+    //             if ($pimpinan) {
+    //                 NotifikasiModel::create([
+    //                     'user_id' => $pimpinan->user_id,
+    //                     'title' => 'Pengajuan Peserta Pelatihan Baru',
+    //                     'message' => "Ada pengajuan peserta baru untuk pelatihan {$pelatihan->nama_pelatihan}",
+    //                     'type' => 'pengajuan_peserta',
+    //                     'reference_id' => $id
+    //                 ]);
+    //             }
+    
+    //             DB::commit();
+    
+    //             return response()->json([
+    //                 'status' => true,
+    //                 'message' => 'Peserta pelatihan berhasil ditambahkan.'
+    //             ]);
+    
+    //         } catch (\Exception $e) {
+    //             DB::rollBack();
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Gagal menambahkan peserta pelatihan.'
+    //             ]);
+    //         }
+    //     }
+    
+    //     return redirect('/');
+    // }
     public function edit_ajax(string $id)
     {
         $pelatihan = PelatihanModel::with('jenis', 'vendor', 'mata_kuliah', 'periode')->find($id);

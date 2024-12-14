@@ -41,4 +41,9 @@ class SertifikasiModel extends Model
     {
         return $this->belongsTo(PeriodeModel::class, 'periode_id', 'periode_id');
     }
+
+    public function peserta_sertifikasi()
+    {
+        return $this->hasMany(PesertaSertifikasiModel::class, 'dosen_id', 'dosen_id');
+    }
 }

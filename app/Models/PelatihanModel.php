@@ -41,4 +41,9 @@ class PelatihanModel extends Model
         return $this->belongsTo(PeriodeModel::class, 'periode_id', 'periode_id');
     }
 
+    // PelatihanModel.php
+    public function peserta_pelatihan()
+    {
+        return $this->hasMany(PesertaPelatihanModel::class, 'pelatihan_id', 'pelatihan_id');
+    }
 }
