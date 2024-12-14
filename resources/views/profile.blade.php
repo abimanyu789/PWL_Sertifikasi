@@ -59,16 +59,15 @@
                             <div class="row mb-3">
                                 <label for="bidang_id" class="col-md-4 col-form-label text-md-end">{{ __('Bidang Keahlian') }}</label>
                                 <div class="col-md-8">
-                                    <!-- Bidang Keahlian -->
-<select id="bidang_id" class="form-control select2 @error('bidang_id') is-invalid @enderror" 
-name="bidang_id[]" multiple>
-@foreach($bidang as $b)
-    <option value="{{ $b->bidang_id }}" 
-        {{ in_array($b->bidang_id, $selectedBidang) ? 'selected' : '' }}>
-        [{{ $b->bidang_kode }}] {{ $b->bidang_nama }}
-    </option>
-@endforeach
-</select>
+                                    <select id="bidang_id" class="form-control select2 @error('bidang_id') is-invalid @enderror" 
+                                        name="bidang_id[]" multiple>
+                                        @foreach($bidang as $b)
+                                            <option value="{{ $b->bidang_id }}" 
+                                                {{ in_array($b->bidang_id, old('bidang_id', $user->bidang_id ? explode(',', $user->bidang_id) : [])) ? 'selected' : '' }}>
+                                                [{{ $b->bidang_kode }}] {{ $b->bidang_nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                     @error('bidang_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -76,19 +75,18 @@ name="bidang_id[]" multiple>
                                     @enderror
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 <label for="mk_id" class="col-md-4 col-form-label text-md-end">{{ __('Mata Kuliah') }}</label>
                                 <div class="col-md-8">
                                     <select id="mk_id" class="form-control select2 @error('mk_id') is-invalid @enderror" 
-    name="mk_id[]" multiple>
-    @foreach($matkul as $mk)
-        <option value="{{ $mk->mk_id }}" 
-            {{ in_array($mk->mk_id, $selectedMatkul) ? 'selected' : '' }}>
-            [{{ $mk->mk_kode }}] {{ $mk->mk_nama }}
-        </option>
-    @endforeach
-</select>
+                                        name="mk_id[]" multiple>
+                                        @foreach($matkul as $mk)
+                                            <option value="{{ $mk->mk_id }}" 
+                                                {{ in_array($mk->mk_id, old('mk_id', $user->mk_id ? explode(',', $user->mk_id) : [])) ? 'selected' : '' }}>
+                                                [{{ $mk->mk_kode }}] {{ $mk->mk_nama }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                     @error('mk_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -97,7 +95,6 @@ name="bidang_id[]" multiple>
                                 </div>
                             </div>
                         @endif
-
                         <div class="row mb-3">
                             <label for="avatar" class="col-md-4 col-form-label text-md-end">{{ __('Foto Profil') }}</label>
                             <div class="col-md-8">
@@ -176,7 +173,7 @@ name="bidang_id[]" multiple>
     .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
         color: #fff;
         position: absolute;
-        left: 5px;
+        left: 0px;
         top: 50%;
         transform: translateY(-50%);
         margin-right: 0;
@@ -189,7 +186,6 @@ name="bidang_id[]" multiple>
     }
 </style>
 @endpush
-
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
@@ -200,7 +196,6 @@ name="bidang_id[]" multiple>
             width: '100%'
         });
     });
-
     document.getElementById('avatar').addEventListener('change', function(e) {
         const fileName = e.target.files[0] ? e.target.files[0].name : 'Belum ada file yang dipilih';
         document.getElementById('file-name').textContent = fileName;
