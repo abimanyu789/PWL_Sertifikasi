@@ -44,25 +44,24 @@
         }
     });
 
-    function modalAction(url = '') {
+    function modalAction(url) {
         $('#myModal').load(url, function() {
-            $('#myModal').modal('show');
+            $(this).modal('show');
         });
     }
 
     var dataPelatihan;
 
     $(document).ready(function() {
-        dataPelatihan = $('#table_upload_pelatihan').DataTable({
-            serverSide: true,
-            ajax: {
-                url: "{{ url('upload_pelatihan/list') }}",
-                dataType: "json",
-                type: "POST",
-                data: function(d) {
-                    
-                }
-            },
+        dataPelatihan = $('#table_pelatihan').DataTable({ // Sesuaikan dengan ID tabel
+    serverSide: true,
+    ajax: {
+        url: "{{ url('upload_pelatihan/list') }}",
+        type: "POST",
+        data: function(d) {
+            d._token = "{{ csrf_token() }}";
+        }
+    },
             columns: [
                 {
                     data: "DT_RowIndex",

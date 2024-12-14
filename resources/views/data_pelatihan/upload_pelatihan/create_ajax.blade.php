@@ -80,30 +80,33 @@
                 }
             },
             submitHandler: function(form) {
-                $.ajax({
-                    url: $(form).attr('action'),
-                    method: 'POST',
-                    data: $(form).serialize(),
-                    success: function(response) {
-                        if (response.status) {
-                            $('#myModal').modal('hide');
-                            Swal.fire('Berhasil', response.message, 'success');
-                            dataPelatihan.ajax.reload();
-                        } else {
-                            if (response.msgField) {
-                                $.each(response.msgField, function(field, message) {
-                                    $('#error-' + field).text(message[0]);
-                                });
-                            }
-                            Swal.fire('Gagal', response.message, 'error');
-                        }
-                    },
-                    error: function(xhr) {
-                        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+        var formData = new FormData(form);
+        $.ajax({
+            url: $(form).attr('action'),
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.status) {
+                    $('#myModal').modal('hide');
+                    Swal.fire('Berhasil', response.message, 'success');
+                    dataPelatihan.ajax.reload();
+                } else {
+                    if (response.msgField) {
+                        $.each(response.msgField, function(field, message) {
+                            $('#error-' + field).text(message[0]);
+                        });
                     }
-                });
-                return false;
+                    Swal.fire('Gagal', response.message, 'error');
+                }
+            },
+            error: function(xhr) {
+                Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
             }
         });
+        return false;
+    }
+});
     });
 </script>

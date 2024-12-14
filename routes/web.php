@@ -215,7 +215,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('list', [UploadPelatihanController::class, 'list']);
         Route::get('/create_ajax', [UploadPelatihanController::class, 'create_ajax']);
         Route::post('/ajax', [UploadPelatihanController::class, 'store_ajax']);
-    });
+        Route::get('/{id}/show_ajax', [UploadPelatihanController::class, 'show_ajax']); // route untuk detail
+        Route::get('/{id}/edit_ajax', [UploadPelatihanController::class, 'edit_ajax']);
+        Route::put('/{id}/update_ajax', [UploadPelatihanController::class, 'update_ajax']);
+        Route::get('/{id}/delete_ajax', [UploadPelatihanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [UploadPelatihanController::class, 'delete_ajax']);
+});
 
     Route::group(['prefix' => 'acc_daftar', 'middleware'=> 'authorize:PMN'], function(){
         Route::get('/', [ValidasiController::class, 'index']);
