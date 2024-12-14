@@ -71,15 +71,25 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th width="50">No</th>
+                            <th >No</th>
                             <th>Nama Peserta</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($peserta_sertifikasi as $index => $p)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $p->user->nama }}</td>
+                            <td>{{ $p->dosen->user->nama ?? 'Nama tidak tersedia' }}</td>
+                            <td>
+                                @if($p->status == 'Approved')
+                                    <span class="badge badge-success">Disetujui</span>
+                                @elseif($p->status == 'Rejected')
+                                    <span class="badge badge-danger">Ditolak</span>
+                                @else
+                                    <span class="badge badge-warning">Pending</span>
+                                @endif
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>

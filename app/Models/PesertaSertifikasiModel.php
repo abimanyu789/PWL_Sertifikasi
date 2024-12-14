@@ -19,7 +19,7 @@ class PesertaSertifikasiModel extends Model
    
     public function dosen()
     {
-        return $this->hasOne(DosenModel::class, 'dosen_id', 'dosen_id');
+        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
     }
 
     public function sertifikasi()

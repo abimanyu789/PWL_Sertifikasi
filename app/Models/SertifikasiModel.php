@@ -44,6 +44,6 @@ class SertifikasiModel extends Model
 
     public function peserta_sertifikasi()
     {
-        return $this->hasMany(PesertaSertifikasiModel::class, 'dosen_id', 'dosen_id');
+        return $this->hasMany(PesertaSertifikasiModel::class, 'sertifikasi_id', 'sertifikasi_id');
     }
 }
