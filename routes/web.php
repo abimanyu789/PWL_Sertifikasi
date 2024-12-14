@@ -10,6 +10,8 @@ use App\Http\Controllers\PelatihanController;
 use App\Http\Controllers\SertifikasiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\SuratController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\ValidasiController;
 use App\Http\Controllers\DaftarDosenController;
@@ -222,6 +224,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/show_sertifikasi_ajax', [ValidasiController::class, 'show_sertifikasi_ajax']);
         Route::post('/{id}/validasi', [ValidasiController::class, 'validasi']);
     });
+
+    Route::group(['prefix' => 'surat_tugas', 'middleware'=> 'authorize:ADM,DSN'], function(){
+        Route::get('/', [SuratController::class, 'index']);
+        Route::get('/list', [SuratController::class, 'list']);
+        Route::get('/{id}/show_pelatihan_ajax', [SuratController::class, 'show_pelatihan_ajax']);
+        Route::get('/{id}/show_sertifikasi_ajax', [SuratController::class, 'show_sertifikasi_ajax']);
+        Route::post('/store', [SuratController::class, 'store']);
+        Route::post('/{id}/validasi', [SuratController::class, 'validasi']);
+        Route::get('/download/{id}', [SuratController::class, 'download']); // Pastikan path ini benar
+    });
+
 
     Route::post('/notifications/{id}/read', function($id) {
         try {

@@ -290,7 +290,7 @@ class PelatihanController extends Controller
     
         return redirect('/');
     }
-        public function edit_ajax(string $id)
+    public function edit_ajax(string $id)
     {
         $pelatihan = PelatihanModel::with('jenis', 'vendor', 'mata_kuliah', 'periode')->find($id);
         $jenis = JenisModel::all();
