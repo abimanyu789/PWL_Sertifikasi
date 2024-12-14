@@ -64,7 +64,7 @@
                                         @foreach($bidang as $b)
                                             <option value="{{ $b->bidang_id }}" 
                                                 {{ in_array($b->bidang_id, old('bidang_id', $user->bidang_id ? explode(',', $user->bidang_id) : [])) ? 'selected' : '' }}>
-                                                [{{ $b->bidang_kode }}] {{ $b->bidang_nama }}
+                                                 {{ $b->bidang_nama }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -83,7 +83,7 @@
                                         @foreach($matkul as $mk)
                                             <option value="{{ $mk->mk_id }}" 
                                                 {{ in_array($mk->mk_id, old('mk_id', $user->mk_id ? explode(',', $user->mk_id) : [])) ? 'selected' : '' }}>
-                                                [{{ $mk->mk_kode }}] {{ $mk->mk_nama }}
+                                                 {{ $mk->mk_nama }}
                                             </option>
                                         @endforeach
                                     </select>
