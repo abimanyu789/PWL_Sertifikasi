@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserModel;
+use App\Models\BidangModel;
+use App\Models\MatkulModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,53 +12,61 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
-    // Fungsi untuk menampilkan halaman profile
     public function index()
     {
-        // Dapatkan user berdasarkan ID yang sedang login
-    $user = UserModel::findOrFail(Auth::id());
+        $user = UserModel::findOrFail(Auth::id());
+        $breadcrumb = (object) [
+            'title' => 'Data Profile',
+            'list' => [
+                ['name' => 'Home', 'url' => url('/')],
+                ['name' => 'Profile', 'url' => url('/profile')]
+            ]
+        ];
 
-    // Breadcrumb dan active menu
-    $breadcrumb = (object) [
-        'title' => 'Data Profile',
-        'list' => [
-            ['name' => 'Home', 'url' => url('/')],
-            ['name' => 'Profile', 'url' => url('/profile')]
-        ]
-    ];
+        $activeMenu = 'profile';
 
-    $activeMenu = 'profile';
+        // Ambil data bidang dan mata kuliah jika user adalah dosen
+        $bidang = [];
+        $matkul = [];
+        if ($user->level_id == 3) { // level_id 3 adalah dosen
+            $bidang = BidangModel::all();
+            $matkul = MatKulModel::all();
+        }
 
-    // Pastikan data user dikirim ke view
-    return view('profile', compact('user'), [
-        'breadcrumb' => $breadcrumb, 
-        'activeMenu' => $activeMenu
-    ]);
+        return view('profile', compact('user', 'bidang', 'matkul'), [
+            'breadcrumb' => $breadcrumb, 
+            'activeMenu' => $activeMenu
+        ]);
     }
 
-    // Fungsi untuk memperbarui profile
     public function update(Request $request, $id)
     {
-        // Validasi input dari form
-        request()->validate([
+        $user = UserModel::find($id);
+        
+        $rules = [
             'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id', 
-            'nama'     => 'required|string|max:100',
+            'nama' => 'required|string|max:100',
             'old_password' => 'nullable|string',
             'password' => 'nullable|min:6',
-        ]);
+        ];
 
-        $user = UserModel::find($id);
+        // Fitur Bidang minat dan mata kuliah khusus Dosen
+if ($user->level_id == 3) {
+    // Cek apakah ada data yang dipilih
+    $user->bidang_id = $request->has('bidang_id') ? implode(',', $request->bidang_id) : null;
+    $user->mk_id = $request->has('mk_id') ? implode(',', $request->mk_id) : null;
+}
 
-        // Update username dan nama
+        request()->validate($rules);
+
+        // Update data user
         $user->username = $request->username;
         $user->nama = $request->nama;
 
-        // Update password jika ada input password lama
+        // Update password jika diisi
         if ($request->filled('old_password')) {
             if (Hash::check($request->old_password, $user->password)) {
-                $user->update([
-                    'password' => Hash::make($request->password)
-                ]);
+                $user->password = Hash::make($request->password);
             } else {
                 return back()
                     ->withErrors(['old_password' => __('Password lama salah')])
@@ -64,7 +74,7 @@ class ProfileController extends Controller
             }
         }
 
-        // Upload avatar baru jika ada file yang di-upload
+        // Handle upload avatar
         if (request()->hasFile('avatar')) {
             if ($user->avatar && file_exists(storage_path('app/public/photos/' . $user->avatar))) {
                 Storage::delete('app/public/photos/'.$user->avatar);
@@ -76,7 +86,12 @@ class ProfileController extends Controller
             $user->avatar = $fileName;
         }
 
-        // Simpan perubahan
+        // // Update bidang dan mata kuliah untuk dosen
+        // if ($user->level_id == 3) {
+        //     $user->bidang_id = implode(',', $request->bidang_id);
+        //     $user->mk_id = implode(',', $request->mk_id);
+        // }
+
         $user->save();
 
         return back()->with('status', 'Profile berhasil diperbarui');

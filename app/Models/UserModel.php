@@ -23,6 +23,8 @@ class UserModel extends Authenticatable implements JWTSubject
         'email', 
         'password',
         'avatar',
+        'bidang_id', 
+        'mk_id',     
         'created_at',
         'updated_at'
     ];
@@ -39,10 +41,10 @@ class UserModel extends Authenticatable implements JWTSubject
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
     }
 
-    public function upload_sertifikat() 
-    {
-        return $this->hasMany(UploadSertifModel::class, 'user_id', 'user_id');
-    }
+    // public function upload_sertifikat() 
+    // {
+    //     return $this->hasMany(UploadSertifModel::class, 'user_id', 'user_id');
+    // }
 
     //nama role
     public function getRoleName(): string{
