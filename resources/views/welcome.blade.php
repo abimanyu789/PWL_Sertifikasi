@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
  }
  </style>
 
-
+{{-- <!-- Montly Contribution -->
 <div class="col-md-4 mb-4">
     <div class="card h-100 rounded-lg">
         <div class="card-body p-4">
@@ -343,43 +343,47 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
-@endsection
+@endsection --}}
 
-{{-- @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Pie Chart
-    const ctx = document.getElementById('yearlyChart').getContext('2d');
-new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ['Tahun {{ $currentYear }}', 'Tahun {{ $lastYear }}'],
-        datasets: [{
-            data: [{{ $percentThisYear }}, {{ $percentLastYear }}],
-            backgroundColor: ['#1e40af', '#93c5fd'],
-            borderWidth: 0
-        }]
-    },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-});
-</script>
-@endpush  --}}
+<!-- Perbandingan Tahunan Card -->
+<div class="col-md-4 mb-4">
+    <div class="card h-50 rounded-lg">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column">
+                <h5 class="font-weight-bold mb-4">Perbandingan Tahunan</h5>
+                <div class="contribution-list">
+                    <!-- Current Year -->
+                    <div class="contribution-item d-flex align-items-center mb-4">
+                        <div class="year-label">
+                            {{ $currentYear }}
+                        </div>
+                        <div class="progress flex-grow-1 mx-2">
+                            <div class="progress-bar bg-primary" 
+                                role="progressbar" 
+                                style="width: 100%">
+                            </div>
+                        </div>
+                        <div class="count-label">
+                            {{ $totalThisYear }}
+                        </div>
+                    </div>
 
- {{-- <!-- Monthly Contribution -->
- <div class="col-md-4 mb-4">
-    <div class="card h-100">
-        <div class="card-body">
-            <h5 class="card-title">Tingkat Kontribusi Per Bulan</h5>
-            <div class="progress-list">
+                    <!-- Last Year -->
+                    <div class="contribution-item d-flex align-items-center">
+                        <div class="year-label">
+                            {{ $lastYear }}
+                        </div>
+                        <div class="progress flex-grow-1 mx-2">
+                            <div class="progress-bar bg-primary" 
+                                role="progressbar" 
+                                style="width: {{ $totalLastYear > 0 ? ($totalLastYear / $totalThisYear * 100) : 0 }}%">
+                            </div>
+                        </div>
+                        <div class="count-label">
+                            {{ $totalLastYear }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -388,31 +392,47 @@ new Chart(ctx, {
 </div>
 @endsection
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-// Pie Chart
-const ctx = document.getElementById('yearlyChart').getContext('2d');
-new Chart(ctx, {
-type: 'pie',
-data: {
-labels: ['Tahun {{ $currentYear }}', 'Tahun {{ $lastYear }}'],
-datasets: [{
-    data: [{{ $percentThisYear }}, {{ $percentLastYear }}],
-    backgroundColor: ['#1e40af', '#93c5fd'],
-    borderWidth: 0
-}]
-},
-options: {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'bottom'
-        }
-    }
+@push('css')
+<style>
+.year-label {
+width: 60px;
+font-size: 0.875rem;
+font-weight: 600;
+color: #374151;
 }
-});
-});
-</script>
-@endpush  --}}
+
+.progress {
+height: 12px;
+background-color: #E5E7EB;
+border-radius: 6px;
+}
+
+.progress-bar {
+background-color: #1e40af;
+transition: width 0.3s ease;
+border-radius: 6px;
+}
+
+.count-label {
+width: 40px;
+font-size: 0.875rem;
+font-weight: 600;
+color: #374151;
+text-align: right;
+margin-left: 10px;
+}
+
+.contribution-list {
+margin-top: 20px;
+}
+
+.contribution-item {
+margin-bottom: 20px;
+}
+
+.card {
+border: none;
+box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+</style>
+@endpush
