@@ -212,7 +212,7 @@ $(document).ready(function() {
             <!-- Header with description -->
             <div class="mb-4">
                 <h5 class="font-weight-bold mb-1">Persentase Tahunan</h5>
-                <small class="text-muted d-block mt-2">Perbandingan Jumlah Total sertifikat dan pelatihan yang telah dosen upload berdasarkan tahun lalu dan tahun ini.</small>
+                <small class="text-muted d-block mt-2">Perbandingan Persentase Total sertifikat dan pelatihan yang telah dosen upload berdasarkan tahun lalu dan tahun ini.</small>
             </div>
                 {{-- <div class="d-flex"> --}}
                 
@@ -350,7 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="card h-50 rounded-lg">
         <div class="card-body p-4">
             <div class="d-flex flex-column">
-                <h5 class="font-weight-bold mb-4">Perbandingan Tahunan</h5>
+                <h5 class="font-weight-bold mb-1">Perbandingan Tahunan</h5>
+                <small class="text-muted d-block mt-2 mb-2">Perbandingan Jumlah Total sertifikat dan pelatihan yang telah dosen upload berdasarkan tahun lalu dan tahun ini.</small>
                 <div class="contribution-list">
                     <!-- Current Year -->
                     <div class="contribution-item d-flex align-items-center mb-4">
