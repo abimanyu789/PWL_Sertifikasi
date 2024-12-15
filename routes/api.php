@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\PelatihanController;
+use App\Http\Controllers\Api\SertifikatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,8 +81,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
 
-Route::get("sertifikasi", [SertifikasiController::class, "index"]);
-Route::get("sertifikasi/{id}", [SertifikasiController::class, "show"]);
+Route::get("/sertifikasi", [SertifikasiController::class, "index"]);
+Route::get("/sertifikasi/{id}", [SertifikasiController::class, "show"]);
 
-Route::get("pelatihan", [PelatihanController::class, "index"]);
-Route::get("pelatihan/{id}", [PelatihanController::class, "show"]);
+Route::get("/pelatihan", [PelatihanController::class, "index"]);
+Route::get("/pelatihan/{id}", [PelatihanController::class, "show"]);
+
+Route::get("/sertifikat", [SertifikatController::class, "index"]);
+Route::get("/sertifikat/{id}", [SertifikatController::class, "show"]);
+Route::get('/jumlah-sertifikat', [SertifikatController::class, 'hitungSertifikat']);
