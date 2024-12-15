@@ -17,6 +17,7 @@ use App\Http\Controllers\ValidasiController;
 use App\Http\Controllers\DaftarDosenController;
 use App\Http\Controllers\MataKuliahController;
 use App\Http\Controllers\UploadPelatihanController;
+use App\Http\Controllers\UploadSertifikasiController;
 use App\Models\NotifikasiModel;
 use Illuminate\Support\Facades\Route;
 
@@ -220,6 +221,18 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{id}/update_ajax', [UploadPelatihanController::class, 'update_ajax']);
         Route::get('/{id}/delete_ajax', [UploadPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [UploadPelatihanController::class, 'delete_ajax']);
+});
+
+Route::group(['prefix' => 'upload_sertifikasi', 'middleware'=> 'authorize:DSN'], function(){
+    Route::get('/', [UploadSertifikasiController::class, 'index']);
+    Route::post('list', [UploadSertifikasiController::class, 'list']);
+    Route::get('/create_ajax', [UploadSertifikasiController::class, 'create_ajax']);
+    Route::post('/ajax', [UploadSertifikasiController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [UploadSertifikasiController::class, 'show_ajax']); // route untuk detail
+    Route::get('/{id}/edit_ajax', [UploadSertifikasiController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [UploadSertifikasiController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [UploadSertifikasiController::class, 'confirm_ajax']);
+Route::delete('/{id}/delete_ajax', [UploadSertifikasiController::class, 'delete_ajax']);
 });
 
     Route::group(['prefix' => 'acc_daftar', 'middleware'=> 'authorize:PMN'], function(){
