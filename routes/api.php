@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\StatistikController;
-use App\Http\Controllers\PelatihanController;
+use App\Http\Controllers\Api\PelatihanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,4 +84,4 @@ Route::get("sertifikasi", [SertifikasiController::class, "index"]);
 Route::get("sertifikasi/{id}", [SertifikasiController::class, "show"]);
 
 Route::get("pelatihan", [PelatihanController::class, "index"]);
-Route::get("pelatihan/{id}", [PelatihanController::class, "show"]); 
+Route::get("pelatihan/{id}", [PelatihanController::class, "show"]);
