@@ -1,3 +1,4 @@
+@extends('layouts.template')
 <html> 
 <head> 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
@@ -99,7 +100,7 @@
     <!-- Header/Kop Surat -->
     <div class="header-container">
         <div class="logo-container">
-            <img src="{{ asset('logo_polinema.png') }}" class="logo" alt="Logo Polinema">
+            <img src="{{ public_path('logo_polinema.png') }}" class="logo" alt="Logo Polinema">
         </div>
         <div class="text-container">
             <p class="institution-name">KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</p>
@@ -113,7 +114,7 @@
     <!-- Judul Surat -->
     <div class="title">
         <h3>SURAT TUGAS</h3>
-        <p>Nomor: {{ $nomor_surat }}</p>
+        <p>Nomor: </p>
     </div>
 
     <!-- Isi Surat -->
@@ -140,19 +141,17 @@
         <p>Dengan ini menugaskan kepada anggota pada lampiran. Untuk melaksanakan kegiatan sebagai berikut:</p>
         <table class="data">
             <tr>
-                <td width="100">Nama Kegiatan</td>
+                <td width="100">Nama Kegiatan : </td>
                 <td width="10">:</td>
-                <td>{{ $nama_kegiatan }}</td>
+                
             </tr>
             <tr>
-                <td>Hari/Tanggal</td>
-                <td>:</td>
-                <td>{{ \Carbon\Carbon::parse($kegiatan->tanggal)->locale('id')->isoFormat('dddd, D MMMM Y') }}</td>
+                <td>Hari/Tanggal  : </td>            
+                
             </tr>
             <tr>
-                <td>Tempat</td>
-                <td>:</td>
-                <td>{{ $kegiatan->lokasi }}</td>
+                <td>Tempat        : </td>
+                
             </tr>
         </table>
 
@@ -161,7 +160,7 @@
 
     <!-- Tanda Tangan -->
     <div class="signature">
-        <p>{{ \Carbon\Carbon::parse($tgl_surat)->locale('id')->isoFormat('D MMMM Y') }}</p>
+        <p>........., ................</p>
         <p>Ketua Jurusan Teknologi Informasi,</p>
         <br><br><br>
         <p><u>Dr.Eng. Rosa Andrie Asmara, ST, MT</u></p>
@@ -187,7 +186,7 @@
 
         
         <h3 style="text-align: center; margin: 20px 0;">DAFTAR PESERTA</h3>
-        <h3 style="text-align: center; margin: 20px 0;">{{ strtoupper($kegiatan->nama_kegiatan) }}</h3>
+        <h3 style="text-align: center; margin: 20px 0;"></h3>
 
         <table class="peserta">
             <thead>
@@ -200,8 +199,8 @@
             <tbody>
                 <tr>
                     <td>1</td>
-                    <td>{{ $nip }}</td>
-                    <td>{{ $nama }}</td>
+                    <td> </td>
+                    <td> </td>
                 </tr>
             </tbody>
         </table>

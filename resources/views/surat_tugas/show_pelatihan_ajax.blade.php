@@ -1,4 +1,4 @@
-@empty($kegiatas_pelatihan)
+@if(empty($pelatihan))
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data pengajuan pelatihan yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/acc_daftar') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/surat_tugas') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -64,16 +64,13 @@
 
             </div>
             <div class="modal-footer">
-               
-                <button type="button" class="btn btn-success" onclick="validasiPeserta('{{ route('surat_tugas.validasi', ['id' => $pelatihan->pelatihan_id]) }}', 'Approved')">Setuju</button>
-                <button type="button" class="btn btn-success" onclick="validasiPeserta('{{ route('surat_tugas.validasi', ['id' => $pelatihan->pelatihan_id]) }}', 'Rejected')">Tidak Setuju</button>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Kembali</button>
             </div>
         </div>
     </div>
 
     <script>
-       function validasiPeserta(url, status) {
+        function validasiPeserta(url, status) {
     Swal.fire({
         title: 'Konfirmasi',
         text: `Apakah Anda yakin akan ${status === 'Approved' ? 'menyetujui' : 'menolak'} pengajuan ini?`,
@@ -90,23 +87,26 @@
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    status: status
+                    status: status,
+                    jenis: 'pelatihan'  // atau sesuaikan dengan jenis yang sedang diproses
                 },
                 success: function(response) {
                     if (response.status) {
                         Swal.fire('Berhasil', response.message, 'success').then(() => {
-                            location.reload();
+                            $('#myModal').modal('hide');
+                            dataValidasi.ajax.reload();
                         });
                     } else {
                         Swal.fire('Gagal', response.message, 'error');
                     }
                 },
-                error: function() {
+                error: function(xhr) {
+                    console.error('Error:', xhr); // Tambahkan untuk debug
                     Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
                 }
             });
         }
     });
 }
-    </script>
+        </script>
 @endempty
