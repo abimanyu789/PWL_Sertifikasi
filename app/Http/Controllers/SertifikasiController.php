@@ -52,6 +52,8 @@ class SertifikasiController extends Controller
         if ($request->level_sertifikasi) {
             $sertifikasi->where('level_sertifikasi', $request->level_sertifikasi);
         }
+
+        Log::info('Jumlah data sertifikasi: ' . $sertifikasi->count());
     
         return DataTables::of($sertifikasi) 
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
@@ -62,9 +64,7 @@ class SertifikasiController extends Controller
                 $btn .= '<button onclick="modalAction(\'' . url('/sertifikasi/' . $sertifikasi->sertifikasi_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 
                 // Hitung jumlah peserta yang sudah terdaftar
-                $jumlah_peserta = DB::table('peserta_sertifikasi')
-                ->where('sertifikasi_id', $sertifikasi->sertifikasi_id)
-                ->count();
+                $jumlah_peserta = PesertaSertifikasiModel::where('sertifikasi_id', $sertifikasi->sertifikasi_id)->count();
 
                 // Tampilkan tombol tambah peserta hanya jika kuota belum penuh
                 if ($jumlah_peserta < $sertifikasi->kuota) {
@@ -164,16 +164,19 @@ class SertifikasiController extends Controller
                 ]);
             }
 
-            // Ambil daftar user (dosen)
+            // Ambil daftar user (dosen) dengan jumlah sertifikasi dari upload_sertifikasi
             $users = DB::table('m_user as u')
                 ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
                 ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->leftJoin('upload_sertifikasi as up', function($join) {
+                    $join->on('u.user_id', '=', 'up.user_id');
+                })
                 ->select(
                     'u.user_id',
                     'u.nama',
                     'b.bidang_nama',
                     'mk.mk_nama',
-                    DB::raw('(SELECT COUNT(*) FROM peserta_sertifikasi ps WHERE ps.user_id = u.user_id) as jumlah_sertifikasi')
+                    DB::raw('COUNT(DISTINCT up.upload_id) as jumlah_sertifikasi') // Hitung dari upload_sertifikasi
                 )
                 ->where('u.level_id', 3)
                 ->where('b.jenis_id', $sertifikasi->jenis_id)
@@ -183,16 +186,24 @@ class SertifikasiController extends Controller
                         ->whereRaw('ps.user_id = u.user_id')
                         ->where('ps.sertifikasi_id', $id);
                 })
+                ->groupBy('u.user_id', 'u.nama', 'b.bidang_nama', 'mk.mk_nama')
                 ->orderBy('jumlah_sertifikasi', 'asc')
                 ->get();
 
-            // Tambahkan informasi sisa kuota
+            // Log untuk debugging
+            Log::info('Users Query:', [
+                'count' => $users->count(),
+                'data' => $users->toArray()
+            ]);
+
+            // informasi sisa kuota
             $sisa_kuota = $sertifikasi->kuota - $jumlah_peserta;
             $sertifikasi->sisa_kuota = $sisa_kuota;
 
             return view('data_sertifikasi.sertifikasi.tambah_peserta', compact('sertifikasi', 'users'));
 
         } catch (\Exception $e) {
+            Log::error('Error in tambah_peserta: ' . $e->getMessage());
             return view('data_sertifikasi.sertifikasi.tambah_peserta', [
                 'error' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
