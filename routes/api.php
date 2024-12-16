@@ -87,6 +87,8 @@ Route::get("/sertifikasi/{id}", [SertifikasiController::class, "show"]);
 Route::get("/pelatihan", [PelatihanController::class, "index"]);
 Route::get("/pelatihan/{id}", [PelatihanController::class, "show"]);
 
-Route::get("/sertifikat", [SertifikatController::class, "index"]);
-Route::get("/sertifikat/{id}", [SertifikatController::class, "show"]);
-Route::get('/jumlah-sertifikat', [SertifikatController::class, 'hitungSertifikat']);
+Route::middleware('auth:api')->group(function () {
+    Route::get("/sertifikat", [SertifikatController::class, "index"]);
+    Route::get("/sertifikat/{id}", [SertifikatController::class, "show"]);
+    Route::get('/jumlah-sertifikat', [SertifikatController::class, 'hitungSertifikat']);
+});

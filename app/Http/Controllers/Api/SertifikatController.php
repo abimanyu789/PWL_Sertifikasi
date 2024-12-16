@@ -6,14 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\UploadPelatihanModel;
 use App\Models\UploadSertifikasiModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class SertifikatController extends Controller
 {
     public function index()
     {
-        // Ambil data dari tabel upload_pelatihan
+        // Ambil data dari tabel upload_pelatihan hanya untuk user yang sedang login
         $dataPelatihan = UploadPelatihanModel::with(['user', 'jenis'])
+            ->where('user_id', Auth::id()) // Filter berdasarkan user yang sedang login
             ->get()
             ->map(function ($pelatihan) {
                 return [
@@ -32,7 +34,8 @@ class SertifikatController extends Controller
                 ];
             });
 
-        $dataSertifikasi = UploadSertifikasiModel::with(['user', 'jenis']) 
+        $dataSertifikasi = UploadSertifikasiModel::with(['user', 'jenis'])
+            ->where('user_id', Auth::id()) // Filter berdasarkan user yang sedang login
             ->get()
             ->map(function ($sertifikasi) {
                 return [
@@ -60,8 +63,15 @@ class SertifikatController extends Controller
 
     public function show($id)
     {
-        $pelatihan = UploadPelatihanModel::with(['user', 'jenis'])->find($id);
-        $sertifikasi = UploadSertifikasiModel::with(['user', 'jenis'])->find($id);
+        $userId = Auth::id();
+
+        $pelatihan = UploadPelatihanModel::with(['user', 'jenis'])
+            ->where('user_id', $userId)
+            ->find($id);
+
+        $sertifikasi = UploadSertifikasiModel::with(['user', 'jenis'])
+            ->where('user_id', $userId)
+            ->find($id);
 
         if (!$pelatihan && !$sertifikasi) {
             return response()->json([
@@ -109,8 +119,10 @@ class SertifikatController extends Controller
 
     public function hitungSertifikat()
     {
-        $jumlahPelatihan = DB::table('upload_pelatihan')->count();
-        $jumlahSertifikasi = DB::table('upload_sertifikasi')->count();
+        $userId = Auth::id();
+
+        $jumlahPelatihan = DB::table('upload_pelatihan')->where('user_id', $userId)->count();
+        $jumlahSertifikasi = DB::table('upload_sertifikasi')->where('user_id', $userId)->count();
 
         // Menjumlahkan keduanya untuk mendapatkan jumlah sertifikat total
         $jumlahSertifikat = $jumlahPelatihan + $jumlahSertifikasi;
