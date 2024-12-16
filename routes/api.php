@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\SertifikasiController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BidangController;
+use App\Http\Controllers\Api\DosenController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\PelatihanController;
@@ -92,3 +93,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get("/sertifikat/{id}", [SertifikatController::class, "show"]);
     Route::get('/jumlah-sertifikat', [SertifikatController::class, 'hitungSertifikat']);
 });
+
+Route::get('/dosen', [DosenController::class, 'index']);
+Route::get('/dosen/{id}', [DosenController::class, 'show']);
