@@ -117,21 +117,21 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse($dosen as $index => $d)
+                                            @forelse($users as $index => $user)
                                                 <tr>
                                                     <td>
                                                         <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input dosen-checkbox" 
-                                                                id="dosen{{ $d->dosen_id }}" 
-                                                                name="dosen_ids[]" 
-                                                                value="{{ $d->dosen_id ?? '' }}"> <!-- Tambahkan fallback -->
-                                                            <label class="custom-control-label" for="dosen{{ $d->dosen_id }}"></label>
+                                                            <input type="checkbox" class="custom-control-input user-checkbox" 
+                                                                id="user{{ $user->user_id }}" 
+                                                                name="user_ids[]" 
+                                                                value="{{ $user->user_id }}">
+                                                            <label class="custom-control-label" for="user{{ $user->user_id }}"></label>
                                                         </div>
                                                     </td>
-                                                    <td>{{ $d->nama }}</td>
-                                                    <td>{{ $d->bidang_nama ?? '-' }}</td>
-                                                    <td>{{ $d->mk_nama ?? '-' }}</td>
-                                                    <td class="text-center">{{ $d->jumlah_pelatihan }}</td>
+                                                    <td>{{ $user->nama }}</td>
+                                                    <td>{{ $user->bidang_nama ?? '-' }}</td>
+                                                    <td>{{ $user->mk_nama ?? '-' }}</td>
+                                                    <td class="text-center">{{ $user->jumlah_pelatihan }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>
@@ -159,12 +159,12 @@
         $(document).ready(function() {
             // Handle check all functionality
             $("#checkAll").change(function() {
-                $(".dosen-checkbox").prop('checked', $(this).prop('checked'));
+                $(".user-checkbox").prop('checked', $(this).prop('checked'));
                 updateSelectedCount();
             });
 
             // Handle individual checkbox changes
-            $(".dosen-checkbox").change(function() {
+            $(".user-checkbox").change(function() {
                 updateSelectedCount();
                 if (!$(this).prop('checked')) {
                     $("#checkAll").prop('checked', false);
@@ -173,7 +173,7 @@
 
             // Update selected count
             function updateSelectedCount() {
-                const selectedCount = $(".dosen-checkbox:checked").length;
+                const selectedCount = $(".user-checkbox:checked").length;
                 const kuota = {{ $pelatihan->kuota }};
                 
                 if (selectedCount > kuota) {
@@ -189,7 +189,7 @@
             $("#form-peserta-pelatihan").submit(function(e) {
                 e.preventDefault();
                 
-                const selectedCount = $(".dosen-checkbox:checked").length;
+                const selectedCount = $(".user-checkbox:checked").length;
                 if (selectedCount === 0) {
                     Swal.fire('Peringatan', 'Pilih minimal satu dosen', 'warning');
                     return;
@@ -197,7 +197,7 @@
 
                  // Debug data form
                 console.log('Form data:', $(this).serialize());
-                console.log('Selected dosen:', $(".dosen-checkbox:checked").map(function() {
+                console.log('Selected dosen:', $(".user-checkbox:checked").map(function() {
                     return $(this).val();
                 }).get());
 

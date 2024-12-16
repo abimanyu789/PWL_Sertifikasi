@@ -117,21 +117,21 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse($dosen as $index => $d)
+                                            @forelse($users as $index => $user)
                                                 <tr>
                                                     <td>
                                                         <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input dosen-checkbox" 
-                                                                id="dosen{{ $d->dosen_id }}" 
-                                                                name="dosen_ids[]" 
-                                                                value="{{ $d->dosen_id ?? '' }}"> <!-- Tambahkan fallback -->
-                                                            <label class="custom-control-label" for="dosen{{ $d->dosen_id }}"></label>
+                                                            <input type="checkbox" class="custom-control-input user-checkbox" 
+                                                                id="user{{ $user->user_id }}" 
+                                                                name="user_ids[]" 
+                                                                value="{{ $user->user_id }}">
+                                                            <label class="custom-control-label" for="user{{ $user->user_id }}"></label>
                                                         </div>
                                                     </td>
-                                                    <td>{{ $d->nama }}</td>
-                                                    <td>{{ $d->bidang_nama ?? '-' }}</td>
-                                                    <td>{{ $d->mk_nama ?? '-' }}</td>
-                                                    <td class="text-center">{{ $d->jumlah_sertifikasi }}</td>
+                                                    <td>{{ $user->nama }}</td>
+                                                    <td>{{ $user->bidang_nama ?? '-' }}</td>
+                                                    <td>{{ $user->mk_nama ?? '-' }}</td>
+                                                    <td class="text-center">{{ $user->jumlah_sertifikasi }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>
