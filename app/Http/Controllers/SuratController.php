@@ -6,17 +6,11 @@ use App\Models\SuratModel;
 use App\Models\PelatihanModel;
 use App\Models\SertifikasiModel;
 use App\Models\PesertaPelatihanModel;
-use App\Models\BidangModel;
-use App\Models\UserModel;
-use App\Models\MatkulModel;
-use App\Models\JenisModel;
-use App\Models\PeriodeModel;
-use App\Models\DosenModel;
+use App\Models\NotifikasiModel;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\IOFactory;
-use App\Models\NotifikasiModel;
 use Illuminate\Support\Facades\Hash;
 use App\Models\PesertaSertifikasiModel;
 use Illuminate\Support\Facades\Validator;
@@ -57,7 +51,7 @@ class SuratController extends Controller
             // Query untuk pelatihan
             $pelatihan = DB::table('peserta_pelatihan as pp')
                 ->join('m_pelatihan as p', 'pp.pelatihan_id', '=', 'p.pelatihan_id')
-                ->join('t_dosen as d', 'pp.dosen_id', '=', 'd.dosen_id')
+                ->join('m_user as u', 'pp.user_id', '=', 'u.user_id')
                 ->leftJoin('surat_tugas as st', function($join) {
                     $join->on('pp.peserta_pelatihan_id', '=', 'st.peserta_pelatihan_id');
                 })
@@ -75,7 +69,7 @@ class SuratController extends Controller
             // Query untuk sertifikasi
             $sertifikasi = DB::table('peserta_sertifikasi as ps')
                 ->join('m_sertifikasi as s', 'ps.sertifikasi_id', '=', 's.sertifikasi_id')
-                ->join('t_dosen as d', 'ps.dosen_id', '=', 'd.dosen_id')
+                ->join('m_user as u', 'ps.user_id', '=', 'u.user_id')
                 ->leftJoin('surat_tugas as st', function($join) {
                     $join->on('ps.peserta_sertifikasi_id', '=', 'st.peserta_sertifikasi_id');
                 })
@@ -91,9 +85,9 @@ class SuratController extends Controller
                 );
 
             if ($isDosen) {
-                $dosenId = $user->dosen->dosen_id;
-                $pelatihan->where('pp.dosen_id', $dosenId);
-                $sertifikasi->where('ps.dosen_id', $dosenId);
+                $userId = $user->user_id;
+                $pelatihan->where('pp.user_id', $userId);
+                $sertifikasi->where('ps.user_id', $userId);
             }
 
             $query = $request->jenis_kegiatan ? 
@@ -138,25 +132,16 @@ class SuratController extends Controller
             
             // Cek jika user adalah admin atau dosen
             if (auth()->user()->level_id == 1) { // Admin
-                $peserta_sertifikasi = PesertaSertifikasiModel::with(['dosen.user'])
+                $peserta_sertifikasi = PesertaSertifikasiModel::with(['user']) // Pastikan relasi user dimuat
                     ->where('sertifikasi_id', $id)
                     ->where('status', 'Approved')
                     ->get();
             } else { // Dosen
-                $peserta_sertifikasi = PesertaSertifikasiModel::with(['dosen.user'])
+                $peserta_sertifikasi = PesertaSertifikasiModel::with(['user']) // Pastikan relasi user dimuat
                     ->where('sertifikasi_id', $id)
-                    ->where('dosen_id', auth()->user()->dosen->dosen_id)
+                    ->where('user_id', auth()->user()->user_id)
                     ->first();
             }
-
-            // Debug log
-            Log::info('Data sertifikasi:', [
-                'id' => $id,
-                'sertifikasi' => $sertifikasi,
-                'peserta' => $peserta_sertifikasi,
-                'user' => auth()->user(),
-                'level_id' => auth()->user()->level_id
-            ]);
 
             return view('surat_tugas.show_sertifikasi_ajax', [
                 'sertifikasi' => $sertifikasi,
@@ -165,7 +150,6 @@ class SuratController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Error show sertifikasi: ' . $e->getMessage());
-            Log::error('Error trace: ' . $e->getTraceAsString());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -177,25 +161,16 @@ class SuratController extends Controller
             
             // Cek jika user adalah admin atau dosen
             if (auth()->user()->level_id == 1) { // Admin
-                $peserta_pelatihan = PesertaPelatihanModel::with(['dosen.user'])
+                $peserta_pelatihan = PesertaPelatihanModel::with(['user']) // Pastikan relasi user dimuat
                     ->where('pelatihan_id', $id)
                     ->where('status', 'Approved')
                     ->get();
             } else { // Dosen
-                $peserta_pelatihan = PesertaPelatihanModel::with(['dosen.user'])
+                $peserta_pelatihan = PesertaPelatihanModel::with(['user']) // Pastikan relasi user dimuat
                     ->where('pelatihan_id', $id)
-                    ->where('dosen_id', auth()->user()->dosen->dosen_id)
+                    ->where('user_id', auth()->user()->user_id)
                     ->first();
             }
-
-            // Debug log
-            Log::info('Data Pelatihan:', [
-                'id' => $id,
-                'pelatihan' => $pelatihan,
-                'peserta' => $peserta_pelatihan,
-                'user' => auth()->user(),
-                'level_id' => auth()->user()->level_id
-            ]);
 
             return view('surat_tugas.show_pelatihan_ajax', [
                 'pelatihan' => $pelatihan,
@@ -204,7 +179,6 @@ class SuratController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Error show pelatihan: ' . $e->getMessage());
-            Log::error('Error trace: ' . $e->getTraceAsString());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -252,10 +226,16 @@ class SuratController extends Controller
     
             DB::beginTransaction();
     
+            // Buat direktori jika belum ada
+            $uploadPath = public_path('uploads/surat');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+    
             // Simpan file
             $file = $request->file('file_surat');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/surat'), $fileName);
+            $file->move($uploadPath, $fileName);
     
             // Simpan ke database
             if ($request->jenis == 'pelatihan') {
@@ -263,20 +243,40 @@ class SuratController extends Controller
                     ->where('status', 'Approved')
                     ->first();
     
+                if (!$peserta) {
+                    throw new \Exception('Data peserta pelatihan tidak ditemukan');
+                }
+    
                 $surat = new SuratModel;
                 $surat->peserta_pelatihan_id = $peserta->peserta_pelatihan_id;
+                $surat->user_id = $peserta->user_id;
                 $surat->file_surat = $fileName;
                 $surat->save();
+    
             } else {
                 $peserta = PesertaSertifikasiModel::where('sertifikasi_id', $request->kegiatan_id)
                     ->where('status', 'Approved')
                     ->first();
     
+                if (!$peserta) {
+                    throw new \Exception('Data peserta sertifikasi tidak ditemukan');
+                }
+    
                 $surat = new SuratModel;
                 $surat->peserta_sertifikasi_id = $peserta->peserta_sertifikasi_id;
+                $surat->user_id = $peserta->user_id;
                 $surat->file_surat = $fileName;
                 $surat->save();
             }
+    
+            // Kirim notifikasi ke peserta
+            // NotifikasiModel::create([
+            //     'user_id' => $peserta->user_id,
+            //     'title' => 'Surat Tugas',
+            //     'message' => 'Surat tugas telah diunggah untuk kegiatan ' . 
+            //                 ($request->jenis == 'pelatihan' ? 'pelatihan' : 'sertifikasi'),
+            //     'type' => 'surat_tugas'
+            // ]);
     
             DB::commit();
     
@@ -293,6 +293,54 @@ class SuratController extends Controller
             ], 500);
         }
     }
+
+    // Modifikasi fungsi export_template yang sudah ada
+    public function export_template(Request $request)
+    {
+        try {
+            // Definisikan path ke file template
+            $templatePath = public_path('template/Surat_Tugas.docx');
+            
+            // Cek apakah file ada
+            if (!file_exists($templatePath)) {
+                throw new \Exception('Template surat tidak ditemukan');
+            }
+
+            // Return file untuk didownload
+            return response()->download($templatePath, 'Surat_Tugas_Template.docx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error download template: ' . $e->getMessage());
+            return back()->with('error', 'Gagal mendownload template: ' . $e->getMessage());
+        }
+    }
+
+    // View untuk menampilkan form upload dan download template
+    public function export_pdf($id)
+{
+    try {
+        Log::info('Attempting to download file with ID: ' . $id);
+        
+        $surat = SuratModel::findOrFail($id);
+        Log::info('Surat found:', $surat->toArray());
+        
+        $path = public_path('uploads/surat/' . $surat->file_surat);
+        Log::info('File path: ' . $path);
+        
+        if (!file_exists($path)) {
+            Log::error('File not found at path: ' . $path);
+            throw new \Exception('File tidak ditemukan di lokasi: ' . $path);
+        }
+
+        return response()->download($path);
+
+    } catch (\Exception $e) {
+        Log::error('Error downloading file: ' . $e->getMessage());
+        return back()->with('error', 'Gagal mendownload surat: ' . $e->getMessage());
+    }
+}
 
     // public function export_template(Request $request)
     // {
@@ -360,217 +408,163 @@ class SuratController extends Controller
 
     
     // Tambahkan fungsi untuk upload template
-public function upload_template(Request $request)
-{
-    try {
-        $validator = Validator::make($request->all(), [
-            'file_template' => 'required|mimes:docx|max:2048',
-        ]);
+    // public function upload_template(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'file_template' => 'required|mimes:docx|max:2048',
+    //         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ]);
-        }
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Validasi gagal',
+    //                 'errors' => $validator->errors()
+    //             ]);
+    //         }
 
-        // Simpan file
-        $file = $request->file('file_template');
-        $fileName = 'surat_tugas_template.docx';
-        $file->move(public_path('template'), $fileName);
+    //         // Simpan file
+    //         $file = $request->file('file_template');
+    //         $fileName = 'surat_tugas_template.docx';
+    //         $file->move(public_path('template'), $fileName);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Template berhasil diupload'
-        ]);
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Template berhasil diupload'
+    //         ]);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-        ], 500);
-    }
-}
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 
-// Modifikasi fungsi export_template yang sudah ada
-public function export_template(Request $request)
-{
-    try {
-        $templatePath = public_path('template/surat_tugas_template.docx');
-        
-        // Cek apakah file template ada
-        if (!file_exists($templatePath)) {
-            throw new \Exception('Template surat tidak ditemukan');
-        }
-
-        // Set nama file untuk download
-        $fileName = 'Surat_Tugas_' . date('Y-m-d') . '.docx';
-        
-        // Return file untuk didownload
-        return response()->download($templatePath, $fileName, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => $e->getMessage()
-        ], 500);
-    }
-}
-
-// View untuk menampilkan form upload dan download template
-public function template()
-{
-    $breadcrumb = (object) [
-        'title' => 'Template Surat Tugas',
-        'list' => ['Home', 'Surat Tugas', 'Template']
-    ];
-
-    $activeMenu = 'surat_tugas';
-
-    return view('surat_tugas.template', [
-        'breadcrumb' => $breadcrumb,
-        'activeMenu' => $activeMenu
-    ]);
-}
-     public function export_pdf($id)
-    {
-        try {
-            $surat = SuratModel::findOrFail($id);
-            $path = public_path('uploads/surat/' . $surat->file_surat);
-            
-            return response()->file($path);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal mendownload surat');
-        }
-    }
-
-//     public function store(Request $request)
-//     {
-//         try {
-//             DB::beginTransaction();
-            
-//             // Tambahkan logging untuk melihat data yang diterima
-//             Log::info('Data yang diterima:', $request->all());
-            
-//             // Buat surat tugas baru
-//             $surat = new SuratModel();
-//             $surat->user_id = auth()->id();
-            
-//             // Ambil data peserta berdasarkan jenis kegiatan
-//             if ($request->jenis === 'sertifikasi') {
-//                 $peserta = PesertaSertifikasiModel::where('sertifikasi_id', $request->kegiatan_id)
-//                     ->where('user_id', auth()->id())
-//                     ->first();
-                    
-//                 if (!$peserta) {
-//                     throw new \Exception('Data peserta sertifikasi tidak ditemukan');
-//                 }
+    //     public function store(Request $request)
+    //     {
+    //         try {
+    //             DB::beginTransaction();
                 
-//                 $surat->peserta_sertifikasi_id = $peserta->peserta_sertifikasi_id;
-//             } else {
-//                 $peserta = PesertaModel::where('pelatihan_id', $request->kegiatan_id)
-//                     ->where('user_id', auth()->id())
-//                     ->first();
-                    
-//                 if (!$peserta) {
-//                     throw new \Exception('Data peserta pelatihan tidak ditemukan');
-//                 }
+    //             // Tambahkan logging untuk melihat data yang diterima
+    //             Log::info('Data yang diterima:', $request->all());
                 
-//                 $surat->peserta_pelatihan_id = $peserta->peserta_pelatihan_id;
-//             }
-            
-//             $surat->save();
-            
-//             // Log ID surat yang dibuat
-//             Log::info('Surat berhasil dibuat dengan ID:', ['surat_id' => $surat->surat_tugas_id]);
-            
-//             DB::commit();
-            
-//             return response()->json([
-//                 'status' => true,
-//                 'message' => 'Surat tugas berhasil dibuat',
-//                 'surat_id' => $surat->surat_tugas_id
-//             ]);
+    //             // Buat surat tugas baru
+    //             $surat = new SuratModel();
+    //             $surat->user_id = auth()->id();
+                
+    //             // Ambil data peserta berdasarkan jenis kegiatan
+    //             if ($request->jenis === 'sertifikasi') {
+    //                 $peserta = PesertaSertifikasiModel::where('sertifikasi_id', $request->kegiatan_id)
+    //                     ->where('user_id', auth()->id())
+    //                     ->first();
+                        
+    //                 if (!$peserta) {
+    //                     throw new \Exception('Data peserta sertifikasi tidak ditemukan');
+    //                 }
+                    
+    //                 $surat->peserta_sertifikasi_id = $peserta->peserta_sertifikasi_id;
+    //             } else {
+    //                 $peserta = PesertaModel::where('pelatihan_id', $request->kegiatan_id)
+    //                     ->where('user_id', auth()->id())
+    //                     ->first();
+                        
+    //                 if (!$peserta) {
+    //                     throw new \Exception('Data peserta pelatihan tidak ditemukan');
+    //                 }
+                    
+    //                 $surat->peserta_pelatihan_id = $peserta->peserta_pelatihan_id;
+    //             }
+                
+    //             $surat->save();
+                
+    //             // Log ID surat yang dibuat
+    //             Log::info('Surat berhasil dibuat dengan ID:', ['surat_id' => $surat->surat_tugas_id]);
+                
+    //             DB::commit();
+                
+    //             return response()->json([
+    //                 'status' => true,
+    //                 'message' => 'Surat tugas berhasil dibuat',
+    //                 'surat_id' => $surat->surat_tugas_id
+    //             ]);
 
-//         } catch (\Exception $e) {
-//             DB::rollBack();
-//             Log::error('Error store surat tugas: ' . $e->getMessage());
-//             Log::error('Stack trace: ' . $e->getTraceAsString());
-//             return response()->json([
-//                 'status' => false,
-//                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-//             ], 500);
-//         }
-//     }
+    //         } catch (\Exception $e) {
+    //             DB::rollBack();
+    //             Log::error('Error store surat tugas: ' . $e->getMessage());
+    //             Log::error('Stack trace: ' . $e->getTraceAsString());
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+    //             ], 500);
+    //         }
+    //     }
 
-//     public function download($id)
-//     {
-//         try {
-//             Log::info('Mencoba download surat ID: ' . $id);
+    //     public function download($id)
+    //     {
+    //         try {
+    //             Log::info('Mencoba download surat ID: ' . $id);
 
-//             // Cek apakah view ada
-//             if (!view()->exists('surat_tugas.dwonload')) {
-//                 Log::error('View tidak ditemukan: surat_tugas.dwonload');
-//                 throw new \Exception('Template surat tidak ditemukan');
-//             }
-//             Log::info('View ditemukan');
+    //             // Cek apakah view ada
+    //             if (!view()->exists('surat_tugas.dwonload')) {
+    //                 Log::error('View tidak ditemukan: surat_tugas.dwonload');
+    //                 throw new \Exception('Template surat tidak ditemukan');
+    //             }
+    //             Log::info('View ditemukan');
 
-//             $surat = SuratModel::where('surat_tugas_id', $id)
-//                 ->where('user_id', auth()->id())
-//                 ->firstOrFail();
-//             Log::info('Data surat:', $surat->toArray());
+    //             $surat = SuratModel::where('surat_tugas_id', $id)
+    //                 ->where('user_id', auth()->id())
+    //                 ->firstOrFail();
+    //             Log::info('Data surat:', $surat->toArray());
 
-//             // Ambil data kegiatan
-//             $kegiatan = null;
-//             $nama_kegiatan = '';
+    //             // Ambil data kegiatan
+    //             $kegiatan = null;
+    //             $nama_kegiatan = '';
 
-//             if ($surat->peserta_sertifikasi_id) {
-//                 $peserta = PesertaSertifikasiModel::with('sertifikasi')->find($surat->peserta_sertifikasi_id);
-//                 $kegiatan = $peserta->sertifikasi;
-//                 $nama_kegiatan = $kegiatan->nama_sertifikasi;
-//             } elseif ($surat->peserta_pelatihan_id) {
-//                 $peserta = PesertaModel::with('pelatihan')->find($surat->peserta_pelatihan_id);
-//                 $kegiatan = $peserta->pelatihan;
-//                 $nama_kegiatan = $kegiatan->nama_pelatihan;
-//             }
-            
-//             Log::info('Data kegiatan:', [
-//                 'nama_kegiatan' => $nama_kegiatan,
-//                 'kegiatan' => $kegiatan
-//             ]);
+    //             if ($surat->peserta_sertifikasi_id) {
+    //                 $peserta = PesertaSertifikasiModel::with('sertifikasi')->find($surat->peserta_sertifikasi_id);
+    //                 $kegiatan = $peserta->sertifikasi;
+    //                 $nama_kegiatan = $kegiatan->nama_sertifikasi;
+    //             } elseif ($surat->peserta_pelatihan_id) {
+    //                 $peserta = PesertaModel::with('pelatihan')->find($surat->peserta_pelatihan_id);
+    //                 $kegiatan = $peserta->pelatihan;
+    //                 $nama_kegiatan = $kegiatan->nama_pelatihan;
+    //             }
+                
+    //             Log::info('Data kegiatan:', [
+    //                 'nama_kegiatan' => $nama_kegiatan,
+    //                 'kegiatan' => $kegiatan
+    //             ]);
 
-//             $data = [
-//                 'surat' => $surat,
-//                 'kegiatan' => $kegiatan,
-//                 'nama_kegiatan' => $nama_kegiatan, // Teruskan variabel $nama_kegiatan ke view
-//                 'nama' => auth()->user()->nama,
-//                 'nip' => auth()->user()->nip,
-//                 'jabatan' => 'Teknologi Informasi',
-//                 'nomor_surat' => 'XX/XX/XX/'.date('Y'),
-//                 'tgl_surat' => date('d F Y')
-//             ];
-//             Log::info('Data untuk PDF:', $data);
-            
-//             // Coba render view dulu untuk debugging
-//             $view = view('surat_tugas.dwonload', $data)->render();
-//             Log::info('View berhasil di-render');
+    //             $data = [
+    //                 'surat' => $surat,
+    //                 'kegiatan' => $kegiatan,
+    //                 'nama_kegiatan' => $nama_kegiatan, // Teruskan variabel $nama_kegiatan ke view
+    //                 'nama' => auth()->user()->nama,
+    //                 'nip' => auth()->user()->nip,
+    //                 'jabatan' => 'Teknologi Informasi',
+    //                 'nomor_surat' => 'XX/XX/XX/'.date('Y'),
+    //                 'tgl_surat' => date('d F Y')
+    //             ];
+    //             Log::info('Data untuk PDF:', $data);
+                
+    //             // Coba render view dulu untuk debugging
+    //             $view = view('surat_tugas.dwonload', $data)->render();
+    //             Log::info('View berhasil di-render');
 
-//             $pdf = PDF::loadView('surat_tugas.dwonload', $data);
-//             $pdf->setPaper('a4', 'portrait');
-            
-//             return $pdf->stream('surat_tugas_'.$id.'.pdf');
+    //             $pdf = PDF::loadView('surat_tugas.dwonload', $data);
+    //             $pdf->setPaper('a4', 'portrait');
+                
+    //             return $pdf->stream('surat_tugas_'.$id.'.pdf');
 
-//         } catch (\Exception $e) {
-//             Log::error('Error download surat: ' . $e->getMessage());
-//             Log::error('Stack trace: ' . $e->getTraceAsString());
-            
-//             return response()->json([
-//                 'error' => true,
-//                 'message' => 'Gagal mengunduh surat: ' . $e->getMessage()
-//             ], 404);
-//         }
-//     }
+    //         } catch (\Exception $e) {
+    //             Log::error('Error download surat: ' . $e->getMessage());
+    //             Log::error('Stack trace: ' . $e->getTraceAsString());
+                
+    //             return response()->json([
+    //                 'error' => true,
+    //                 'message' => 'Gagal mengunduh surat: ' . $e->getMessage()
+    //             ], 404);
+    //         }
+    //     }
 }

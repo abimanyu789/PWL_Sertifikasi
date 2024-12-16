@@ -13,12 +13,13 @@ class SuratModel extends Model
     protected $fillable = [
         'peserta_sertifikasi_id', 
         'peserta_pelatihan_id', 
-        'user_id'
+        'user_id',
+        'file_surat'
     ];
 
     public function peserta_pelatihan()
     {
-        return $this->belongsTo(PesertaModel::class, 'peserta_pelatihan_id', 'peserta_pelatihan_id');
+        return $this->belongsTo(PesertaPelatihanModel::class, 'peserta_pelatihan_id', 'peserta_pelatihan_id');
     }
 
     public function peserta_sertifikasi()

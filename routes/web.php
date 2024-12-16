@@ -253,11 +253,11 @@ Route::delete('/{id}/delete_ajax', [UploadSertifikasiController::class, 'delete_
         Route::get('/{id}/show_pelatihan_ajax', [SuratController::class, 'show_pelatihan_ajax']);
         Route::get('/{id}/show_sertifikasi_ajax', [SuratController::class, 'show_sertifikasi_ajax']);
         Route::get('/upload/{id}', [SuratController::class, 'upload']); // ajax form upload excel
-        Route::post('/upload_ajax', [SuratController::class, 'upload_ajax']);
+        Route::post('/upload_ajax/{id}', [SuratController::class, 'upload_ajax']);
         Route::get('/export_template', [SuratController::class, 'export_template']);
-        Route::get('/template', [SuratController::class, 'export_template']);      
-        Route::post('/upload-template', [SuratController::class, 'upload_template']);         
-        Route::get('/export_pdf', [SuratController::class, 'export_pdf']);
+        // Route::get('/template', [SuratController::class, 'export_template']);      
+        // Route::post('/upload_template', [SuratController::class, 'upload_template']);         
+        Route::get('/export_pdf/{if}', [SuratController::class, 'export_pdf']);
     });
 
 

@@ -5,7 +5,9 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/surat_tugas/export_template') }}')" class="btn btn-sm btn-primary mt-1">Dwonload Format</button>        
+                <a href="{{ url('/surat_tugas/export_template') }}" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download Template
+                </a>
             </div>
         </div>
         <div class="card-body">
