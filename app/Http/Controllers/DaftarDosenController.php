@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\LevelModel;
 use App\Models\UserModel;
+use App\Models\MatkulModel;
+use App\Models\BidangModel;
+use App\Models\JenisModel;
+use App\Models\UploadSertifikasiModel;
+use App\Models\UploadPelatihanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -43,23 +48,62 @@ class DaftarDosenController extends Controller
     {
         $users = UserModel::select('user_id', 'nip', 'nama', 'email', 'username', 'level_id')
             ->with('level')
-            ->where('level_id', 3); // Filter hanya untuk level_id = 3
-
-        if ($request->level_id) {
-            $users->where('level_id', $request->level_id);
-        }
-
+            ->where('level_id', 3);
+    
         return DataTables::of($users)
             ->addIndexColumn()
             ->addColumn('aksi', function ($user) {
-                $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/view_dosen/' . $user->user_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/view_dosen/' . $user->user_id . '/sertifikasi') . '\')" class="btn btn-primary btn-sm">Lihat Sertifikasi</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/view_dosen/' . $user->user_id . '/pelatihan') . '\')" class="btn btn-success btn-sm">Lihat Pelatihan</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
+
+    public function pelatihan($user_id)
+{
+    $dosen = UserModel::findOrFail($user_id);
+    $pelatihan = UploadPelatihanModel::with('jenis')
+        ->where('user_id', $user_id)
+        ->get();
+    
+    return view('daftar_dosen.list_pelatihan', [
+        'dosen' => $dosen,
+        'pelatihan' => $pelatihan
+    ]);
+}
+
+public function detail_pelatihan($id)
+{
+    $pelatihan = UploadPelatihanModel::with('jenis')->findOrFail($id);
+    return view('daftar_dosen.detail_pelatihan', compact('pelatihan'));
+}
+
+    public function sertifikasi($user_id)
+{
+    $dosen = UserModel::findOrFail($user_id);
+    $sertifikasi = UploadSertifikasiModel::with('jenis')
+        ->where('user_id', $user_id)
+        ->get();
+    
+    return view('daftar_dosen.list_sertifikasi', [
+        'dosen' => $dosen,
+        'sertifikasi' => $sertifikasi
+    ]);
+}
+
+public function detail_sertifikasi($id)
+{
+    $sertifikasi = UploadSertifikasiModel::with('jenis')->findOrFail($id);
+    return view('daftar_dosen.detail_sertifikasi', compact('sertifikasi'));
+}
+
+public function jenis()
+{
+    return $this->belongsTo(JenisModel::class, 'jenis_id', 'jenis_id');
+}
 
     // public function create_ajax()
     // {
@@ -201,20 +245,34 @@ class DaftarDosenController extends Controller
     }
 
     public function show_ajax(string $id)
-    {
-        try {
-            $daftar_dosen = UserModel::with(['level', 'sertifikat', 'pelatihan'])
-                ->where('level_id', 3) // Memastikan hanya dosen
-                ->findOrFail($id);
+{
+    try {
+        $daftar_dosen = UserModel::with(['level'])
+            ->where('level_id', 3) // Filter hanya dosen
+            ->findOrFail($id);
 
-            return view('daftar_dosen.show_ajax', [
-                'daftar_dosen' => $daftar_dosen
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error showing dosen: ' . $e->getMessage());
-            return response()->view('daftar_dosen.show_ajax', [], 403);
+        // Load relasi bidang jika ada bidang_id
+        if ($daftar_dosen->bidang_id) {
+            $bidangIds = explode(',', $daftar_dosen->bidang_id);
+            $bidang = BidangModel::whereIn('bidang_id', $bidangIds)->get();
+            $daftar_dosen->bidang = $bidang;
         }
+
+        // Load relasi mata kuliah jika ada mk_id
+        if ($daftar_dosen->mk_id) {
+            $mkIds = explode(',', $daftar_dosen->mk_id);
+            $matkul = MatkulModel::whereIn('mk_id', $mkIds)->get();
+            $daftar_dosen->matkul = $matkul;
+        }
+
+        return view('daftar_dosen.show_ajax', [
+            'daftar_dosen' => $daftar_dosen
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error showing dosen: ' . $e->getMessage());
+        return response()->view('daftar_dosen.show_ajax', [], 403);
     }
+}
 
     // public function import()
     // {

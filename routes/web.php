@@ -208,6 +208,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_excel', [DaftarDosenController::class, 'export_excel']);          // ajax import excel
         Route::get('/export_pdf', [DaftarDosenController::class, 'export_pdf']);
         Route::get('/export_template', [DaftarDosenController::class, 'exportTemplate']);
+        Route::get('/{user_id}/sertifikasi', [DaftarDosenController::class, 'sertifikasi']);
+Route::get('/sertifikasi/{id}/detail', [DaftarDosenController::class, 'detail_sertifikasi']);
+Route::get('/{user_id}/pelatihan', [DaftarDosenController::class, 'pelatihan']);
+Route::get('/pelatihan/{id}/detail', [DaftarDosenController::class, 'detail_pelatihan']);
     });
 
 
