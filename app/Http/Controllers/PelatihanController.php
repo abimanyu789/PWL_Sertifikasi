@@ -228,114 +228,123 @@ class PelatihanController extends Controller
     // }
 
     public function tambah_peserta($id)
-{
-    try {
-        $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+    {
+        try {
+            $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
 
-        // Hitung jumlah peserta
-        $jumlah_peserta = $pelatihan->peserta_pelatihan->count();
+            // Hitung jumlah peserta
+            $jumlah_peserta = $pelatihan->peserta_pelatihan->count();
 
-        if ($jumlah_peserta >= $pelatihan->kuota) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Kuota pelatihan sudah penuh!'
-            ]);
-        }
-
-        // Ambil daftar user (dosen) yang eligible menggunakan join
-        $users = DB::table('m_user as u')
-            ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
-            ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
-            ->select(
-                'u.user_id',
-                'u.nama',
-                'b.bidang_nama',
-                'mk.mk_nama',
-                DB::raw('(SELECT COUNT(*) FROM peserta_pelatihan pp WHERE pp.dosen_id = u.user_id) as jumlah_pelatihan')
-            )
-            ->where('u.level_id', 3) // Assuming level_id 3 is for dosen
-            ->where('b.jenis_id', $pelatihan->jenis_id)
-            ->whereNotExists(function($query) use ($id) {
-                $query->select(DB::raw(1))
-                      ->from('peserta_pelatihan as pp')
-                      ->whereRaw('pp.dosen_id = u.user_id')
-                      ->where('pp.pelatihan_id', $id);
-            })
-            ->orderBy('jumlah_pelatihan', 'asc')
-            ->get();
-
-        // Tambahkan informasi sisa kuota
-        $sisa_kuota = $pelatihan->kuota - $jumlah_peserta;
-        $pelatihan->sisa_kuota = $sisa_kuota;
-
-        return view('data_pelatihan.pelatihan.tambah_peserta', compact('pelatihan', 'users'));
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-        ]);
-    }
-}
-
-public function kirim(Request $request, $id)
-{
-    try {
-        DB::beginTransaction();
-        
-        $pelatihan = PelatihanModel::findOrFail($id);
-        $user_ids = $request->user_ids;
-
-        if (empty($user_ids)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Pilih minimal satu dosen'
-            ]);
-        }
-
-        $berhasil = 0;
-        foreach ($user_ids as $user_id) {
-            try {
-                $peserta = new PesertaPelatihanModel();
-                $peserta->pelatihan_id = $id;
-                $peserta->dosen_id = $user_id; // Using dosen_id as it exists in the database
-                $peserta->status = 'Pending';
-                $peserta->save();
-            
-                if ($peserta->peserta_pelatihan_id) {
-                    $berhasil++;
-                }
-            } catch (\Exception $e) {
-                Log::error('Error saat insert:', [
-                    'error' => $e->getMessage(),
-                    'user_id' => $user_id
+            if ($jumlah_peserta >= $pelatihan->kuota) {
+                return view('data_pelatihan.pelatihan.tambah_peserta', [
+                    'pelatihan' => $pelatihan,
+                    'error' => 'Kuota pelatihan sudah penuh!'
                 ]);
             }
-        }
 
-        if ($berhasil > 0) {
-            DB::commit();
-            return response()->json([
-                'status' => true,
-                'message' => "Berhasil menambahkan $berhasil peserta pelatihan"
+            // Ambil daftar user (dosen)
+            $users = DB::table('m_user as u')
+                ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+                ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->select(
+                    'u.user_id',
+                    'u.nama',
+                    'b.bidang_nama',
+                    'mk.mk_nama',
+                    DB::raw('(SELECT COUNT(*) FROM peserta_pelatihan pp WHERE pp.user_id = u.user_id) as jumlah_pelatihan')
+                )
+                ->where('u.level_id', 3)
+                ->where('b.jenis_id', $pelatihan->jenis_id)
+                ->whereNotExists(function($query) use ($id) {
+                    $query->select(DB::raw(1))
+                        ->from('peserta_pelatihan as pp')
+                        ->whereRaw('pp.user_id = u.user_id')
+                        ->where('pp.pelatihan_id', $id);
+                })
+                ->orderBy('jumlah_pelatihan', 'asc')
+                ->get();
+
+            // Tambahkan informasi sisa kuota
+            $sisa_kuota = $pelatihan->kuota - $jumlah_peserta;
+            $pelatihan->sisa_kuota = $sisa_kuota;
+
+            return view('data_pelatihan.pelatihan.tambah_peserta', compact('pelatihan', 'users'));
+
+        } catch (\Exception $e) {
+            return view('data_pelatihan.pelatihan.tambah_peserta', [
+                'error' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
         }
-
-        DB::rollback();
-        return response()->json([
-            'status' => false,
-            'message' => 'Tidak ada peserta yang berhasil ditambahkan'
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollback();
-        
-        return response()->json([
-            'status' => false,
-            'message' => 'Gagal menambahkan peserta pelatihan: ' . $e->getMessage()
-        ]);
     }
-}
+
+    public function kirim(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            // Validasi input
+            if (!$request->has('user_ids')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pilih minimal satu dosen'
+                ]);
+            }
+
+            $pelatihan = PelatihanModel::findOrFail($id);
+            $user_ids = $request->user_ids;
+
+            // Validasi kuota
+            $existing_count = PesertaPelatihanModel::where('pelatihan_id', $id)->count();
+            $new_total = $existing_count + count($user_ids);
+            
+            if ($new_total > $pelatihan->kuota) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Jumlah peserta melebihi kuota yang tersedia'
+                ]);
+            }
+
+            $berhasil = 0;
+            foreach ($user_ids as $user_id) {
+                // Cek duplikasi
+                $exists = PesertaPelatihanModel::where('pelatihan_id', $id)
+                    ->where('user_id', $user_id)
+                    ->exists();
+                
+                if (!$exists) {
+                    $peserta = new PesertaPelatihanModel();
+                    $peserta->pelatihan_id = $id;
+                    $peserta->user_id = $user_id;
+                    $peserta->status = 'Pending';
+                    $peserta->save();
+                
+                    $berhasil++;
+                }
+            }
+
+            if ($berhasil > 0) {
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => "Berhasil menambahkan $berhasil peserta pelatihan"
+                ]);
+            }
+
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada peserta yang berhasil ditambahkan'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal menambahkan peserta pelatihan: ' . $e->getMessage()
+            ]);
+        }
+    }
     // public function kirim(Request $request, $id)
     // {
     //     if ($request->ajax() || $request->wantsJson()) {

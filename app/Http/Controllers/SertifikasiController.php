@@ -150,114 +150,123 @@ class SertifikasiController extends Controller
     }
 
     public function tambah_peserta($id)
-{
-    try {
-        $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+    {
+        try {
+            $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
 
-        // Hitung jumlah peserta
-        $jumlah_peserta = $sertifikasi->peserta_sertifikasi->count();
+            // Hitung jumlah peserta
+            $jumlah_peserta = $sertifikasi->peserta_sertifikasi->count();
 
-        if ($jumlah_peserta >= $sertifikasi->kuota) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Kuota sertifikasi sudah penuh!'
-            ]);
-        }
-
-        // Ambil daftar user (dosen) yang eligible menggunakan join
-        $users = DB::table('m_user as u')
-            ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
-            ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
-            ->select(
-                'u.user_id',
-                'u.nama',
-                'b.bidang_nama',
-                'mk.mk_nama',
-                DB::raw('(SELECT COUNT(*) FROM peserta_sertifikasi ps WHERE ps.dosen_id = u.user_id) as jumlah_sertifikasi')
-            )
-            ->where('u.level_id', 3) // Assuming level_id 3 is for dosen
-            ->where('b.jenis_id', $sertifikasi->jenis_id)
-            ->whereNotExists(function($query) use ($id) {
-                $query->select(DB::raw(1))
-                      ->from('peserta_sertifikasi as ps')
-                      ->whereRaw('ps.dosen_id = u.user_id')
-                      ->where('ps.sertifikasi_id', $id);
-            })
-            ->orderBy('jumlah_sertifikasi', 'asc')
-            ->get();
-
-        // Tambahkan informasi sisa kuota
-        $sisa_kuota = $sertifikasi->kuota - $jumlah_peserta;
-        $sertifikasi->sisa_kuota = $sisa_kuota;
-
-        return view('data_sertifikasi.sertifikasi.tambah_peserta', compact('sertifikasi', 'users'));
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-        ]);
-    }
-}
-
-public function kirim(Request $request, $id)
-{
-    try {
-        DB::beginTransaction();
-        
-        $sertifikasi = SertifikasiModel::findOrFail($id);
-        $user_ids = $request->user_ids;
-
-        if (empty($user_ids)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Pilih minimal satu dosen'
-            ]);
-        }
-
-        $berhasil = 0;
-        foreach ($user_ids as $user_id) {
-            try {
-                $peserta = new PesertaSertifikasiModel();
-                $peserta->sertifikasi_id = $id;
-                $peserta->dosen_id = $user_id; // Using dosen_id as it exists in the database
-                $peserta->status = 'Pending';
-                $peserta->save();
-            
-                if ($peserta->peserta_sertifikasi_id) {
-                    $berhasil++;
-                }
-            } catch (\Exception $e) {
-                Log::error('Error saat insert:', [
-                    'error' => $e->getMessage(),
-                    'user_id' => $user_id
+            if ($jumlah_peserta >= $sertifikasi->kuota) {
+                return view('data_sertifikasi.sertifikasi.tambah_peserta', [
+                    'sertifikasi' => $sertifikasi,
+                    'error' => 'Kuota sertifikasi sudah penuh!'
                 ]);
             }
-        }
 
-        if ($berhasil > 0) {
-            DB::commit();
-            return response()->json([
-                'status' => true,
-                'message' => "Berhasil menambahkan $berhasil peserta sertifikasi"
+            // Ambil daftar user (dosen)
+            $users = DB::table('m_user as u')
+                ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+                ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->select(
+                    'u.user_id',
+                    'u.nama',
+                    'b.bidang_nama',
+                    'mk.mk_nama',
+                    DB::raw('(SELECT COUNT(*) FROM peserta_sertifikasi ps WHERE ps.user_id = u.user_id) as jumlah_sertifikasi')
+                )
+                ->where('u.level_id', 3)
+                ->where('b.jenis_id', $sertifikasi->jenis_id)
+                ->whereNotExists(function($query) use ($id) {
+                    $query->select(DB::raw(1))
+                        ->from('peserta_sertifikasi as ps')
+                        ->whereRaw('ps.user_id = u.user_id')
+                        ->where('ps.sertifikasi_id', $id);
+                })
+                ->orderBy('jumlah_sertifikasi', 'asc')
+                ->get();
+
+            // Tambahkan informasi sisa kuota
+            $sisa_kuota = $sertifikasi->kuota - $jumlah_peserta;
+            $sertifikasi->sisa_kuota = $sisa_kuota;
+
+            return view('data_sertifikasi.sertifikasi.tambah_peserta', compact('sertifikasi', 'users'));
+
+        } catch (\Exception $e) {
+            return view('data_sertifikasi.sertifikasi.tambah_peserta', [
+                'error' => 'Terjadi kesalahan: ' . $e->getMessage()
             ]);
         }
-
-        DB::rollback();
-        return response()->json([
-            'status' => false,
-            'message' => 'Tidak ada peserta yang berhasil ditambahkan'
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollback();
-        
-        return response()->json([
-            'status' => false,
-            'message' => 'Gagal menambahkan peserta sertifikasi: ' . $e->getMessage()
-        ]);
     }
-}
+
+    public function kirim(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            // Validasi input
+            if (!$request->has('user_ids')) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pilih minimal satu dosen'
+                ]);
+            }
+
+            $sertifikasi = SertifikasiModel::findOrFail($id);
+            $user_ids = $request->user_ids;
+
+            // Validasi kuota
+            $existing_count = PesertaSertifikasiModel::where('sertifikasi_id', $id)->count();
+            $new_total = $existing_count + count($user_ids);
+            
+            if ($new_total > $sertifikasi->kuota) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Jumlah peserta melebihi kuota yang tersedia'
+                ]);
+            }
+
+            $berhasil = 0;
+            foreach ($user_ids as $user_id) {
+                // Cek duplikasi
+                $exists = PesertaSertifikasiModel::where('sertifikasi_id', $id)
+                    ->where('user_id', $user_id)
+                    ->exists();
+                
+                if (!$exists) {
+                    $peserta = new PesertaSertifikasiModel();
+                    $peserta->sertifikasi_id = $id;
+                    $peserta->user_id = $user_id;
+                    $peserta->status = 'Pending';
+                    $peserta->save();
+                
+                    $berhasil++;
+                }
+            }
+
+            if ($berhasil > 0) {
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => "Berhasil menambahkan $berhasil peserta sertifikasi"
+                ]);
+            }
+
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada peserta yang berhasil ditambahkan'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal menambahkan peserta sertifikasi: ' . $e->getMessage()
+            ]);
+        }
+    }
 
     public function edit_ajax(string $id)
     {

@@ -159,12 +159,12 @@
         $(document).ready(function() {
             // Handle check all functionality
             $("#checkAll").change(function() {
-                $(".dosen-checkbox").prop('checked', $(this).prop('checked'));
+                $(".user-checkbox").prop('checked', $(this).prop('checked'));
                 updateSelectedCount();
             });
 
             // Handle individual checkbox changes
-            $(".dosen-checkbox").change(function() {
+            $(".user-checkbox").change(function() {
                 updateSelectedCount();
                 if (!$(this).prop('checked')) {
                     $("#checkAll").prop('checked', false);
@@ -173,7 +173,7 @@
 
             // Update selected count
             function updateSelectedCount() {
-                const selectedCount = $(".dosen-checkbox:checked").length;
+                const selectedCount = $(".user-checkbox:checked").length;
                 const kuota = {{ $sertifikasi->kuota }};
                 
                 if (selectedCount > kuota) {
@@ -189,17 +189,34 @@
             $("#form-peserta-sertifikasi").submit(function(e) {
                 e.preventDefault();
                 
-                const selectedCount = $(".dosen-checkbox:checked").length;
+                const selectedCount = $(".user-checkbox:checked").length;
                 if (selectedCount === 0) {
-                    Swal.fire('Peringatan', 'Pilih minimal satu dosen', 'warning');
+                    Swal.fire({
+                        title: 'Peringatan!',
+                        text: 'Pilih minimal satu dosen',
+                        icon: 'warning'
+                    });
                     return;
                 }
 
                 const kuota = {{ $sertifikasi->kuota }};
                 if (selectedCount > kuota) {
-                    Swal.fire('Peringatan', 'Jumlah peserta melebihi kuota', 'warning');
+                    Swal.fire({
+                        title: 'Peringatan!',
+                        text: 'Jumlah peserta melebihi kuota',
+                        icon: 'warning'
+                    });
                     return;
                 }
+
+                // Show loading
+                Swal.fire({
+                    title: 'Memproses...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
                 // Submit form via AJAX
                 $.ajax({
@@ -209,30 +226,26 @@
                     success: function(response) {
                         if (response.status) {
                             Swal.fire({
-                                title: 'Berhasil',
+                                title: 'Berhasil!',
                                 text: response.message,
-                                icon: 'success',
-                                allowOutsideClick: false
-                            }).then((result) => {
-                                // Tutup modal
-                                $('#modalAction').modal('hide');
-                                $('.modal-backdrop').remove();
-                                $('body').removeClass('modal-open');
-                                
-                                // Refresh DataTable
-                                $('.data-table').DataTable().ajax.reload(null, false);
-                                
-                                // Redirect ke halaman index setelah delay singkat
-                                setTimeout(function() {
-                                    window.location.href = "{{ url('/sertifikasi') }}";
-                                }, 500);
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.reload();
                             });
                         } else {
-                            Swal.fire('Gagal', response.message, 'error');
+                            Swal.fire({
+                                title: 'Gagal!',
+                                text: response.message,
+                                icon: 'error'
+                            });
                         }
                     },
                     error: function() {
-                        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan sistem',
+                            icon: 'error'
+                        });
                     }
                 });
             });
