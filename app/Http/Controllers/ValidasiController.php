@@ -31,12 +31,12 @@ class ValidasiController extends Controller
         $activeMenu = 'pengajuan'; 
         
         // Data peserta pelatihan
-        $peserta_pelatihan = PesertaPelatihanModel::with(['dosen', 'pelatihan'])
+        $peserta_pelatihan = PesertaPelatihanModel::with(['user', 'pelatihan'])
             ->where('status', 'Pending')
             ->get();
             
         // Data peserta sertifikasi
-        $peserta_sertifikasi = PesertaSertifikasiModel::with(['dosen', 'sertifikasi'])
+        $peserta_sertifikasi = PesertaSertifikasiModel::with(['user', 'sertifikasi'])
             ->where('status', 'Pending')
             ->get();
      
@@ -53,7 +53,7 @@ class ValidasiController extends Controller
 {
     try {
         // Ambil data pelatihan
-        $peserta_pelatihan = PesertaPelatihanModel::with(['pelatihan', 'dosen'])
+        $peserta_pelatihan = PesertaPelatihanModel::with(['pelatihan', 'user'])
             ->select(
                 'pelatihan_id as id',
                 DB::raw('(SELECT nama_pelatihan FROM m_pelatihan WHERE pelatihan_id = peserta_pelatihan.pelatihan_id) as nama_kegiatan'),
@@ -65,7 +65,7 @@ class ValidasiController extends Controller
             ->groupBy('pelatihan_id');
 
         // Ambil data sertifikasi
-        $peserta_sertifikasi = PesertaSertifikasiModel::with(['sertifikasi', 'dosen'])
+        $peserta_sertifikasi = PesertaSertifikasiModel::with(['sertifikasi', 'user'])
             ->select(
                 'sertifikasi_id as id',
                 DB::raw('(SELECT nama_sertifikasi FROM m_sertifikasi WHERE sertifikasi_id = peserta_sertifikasi.sertifikasi_id) as nama_kegiatan'),
@@ -122,7 +122,7 @@ class ValidasiController extends Controller
         $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
         
         $peserta_sertifikasi = $sertifikasi->peserta_sertifikasi()
-            ->with(['dosen', 'dosen.user'])
+            ->with(['user'])
             // Hapus where status Pending agar semua data tampil
             ->get();
         
@@ -145,7 +145,7 @@ public function show_pelatihan_ajax(string $id)
         $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
         
         $peserta_pelatihan = $pelatihan->peserta_pelatihan()
-            ->with(['dosen', 'dosen.user'])
+            ->with(['user'])
             // Hapus where status Pending agar semua data tampil
             ->get();
         
@@ -240,13 +240,13 @@ public function show_pelatihan_ajax(string $id)
 
                     if ($request->status === 'Approved') {
                         $peserta = $pelatihan->peserta_pelatihan()
-                            ->with('dosen.user')
+                            ->with('user')
                             ->where('status', 'Approved')
                             ->get();
 
                         foreach ($peserta as $p) {
                             NotifikasiModel::create([
-                                'user_id' => $p->dosen->user->user_id,
+                                'user_id' => $p->user->user_id,
                                 'title' => 'Pelatihan Disetujui',
                                 'message' => "Pengajuan pelatihan {$pelatihan->nama_pelatihan} telah disetujui",
                                 'type' => 'approval_pelatihan',
@@ -268,13 +268,13 @@ public function show_pelatihan_ajax(string $id)
 
                     if ($request->status === 'Approved') {
                         $peserta = $sertifikasi->peserta_sertifikasi()
-                            ->with('dosen.user')
+                            ->with('user')
                             ->where('status', 'Approved')
                             ->get();
 
                         foreach ($peserta as $p) {
                             NotifikasiModel::create([
-                                'user_id' => $p->dosen->user->user_id,
+                                'user_id' => $p->user->user_id,
                                 'title' => 'Sertifikasi Disetujui',
                                 'message' => "Pengajuan sertifikasi {$sertifikasi->nama_sertifikasi} telah disetujui",
                                 'type' => 'approval_sertifikasi',

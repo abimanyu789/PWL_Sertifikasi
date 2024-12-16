@@ -80,7 +80,7 @@
                         @foreach($peserta_sertifikasi as $index => $p)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $p->dosen->user->nama ?? 'Nama tidak tersedia' }}</td>
+                            <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
                             <td>
                                 @if($p->status == 'Approved')
                                     <span class="badge badge-success">Disetujui</span>

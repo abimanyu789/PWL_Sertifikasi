@@ -11,15 +11,15 @@ class PesertaSertifikasiModel extends Model
     protected $table = 'peserta_sertifikasi';
     protected $primaryKey = 'peserta_sertifikasi_id';
     protected $fillable = [
-        'dosen_id', 
+        'user_id', 
         'sertifikasi_id', 
         'status'
     ];
 
    
-    public function dosen()
+    public function user()
     {
-        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+        return $this->belongsTo(UserModel::class, 'user_id', 'user_id');
     }
 
     public function sertifikasi()

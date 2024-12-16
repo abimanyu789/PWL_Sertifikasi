@@ -12,15 +12,15 @@ class PesertaPelatihanModel extends Model
     protected $table = 'peserta_pelatihan';
     protected $primaryKey = 'peserta_pelatihan_id';
     protected $fillable = [
-        'dosen_id', 
+        'user_id', 
         'pelatihan_id', 
         'status'
     ];
 
    
-    public function dosen()
+    public function user()
     {
-        return $this->belongsTo(DosenModel::class, 'dosen_id', 'dosen_id');
+        return $this->belongsTo(UserModel::class, 'user_id', 'user_id');
     }
 
     public function pelatihan()
