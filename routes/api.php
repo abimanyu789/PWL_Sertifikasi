@@ -5,12 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\SertifikasiController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\BidangController;
 use App\Http\Controllers\Api\DosenController;
-use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\PelatihanController;
 use App\Http\Controllers\Api\SertifikatController;
+use App\Http\Controllers\Api\UploadPelatihanController;
+use App\Http\Controllers\Api\UploadSertifikasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,43 +23,7 @@ use App\Http\Controllers\Api\SertifikatController;
 |
 */
 
-// Route::post('/login', [LoginController::class, 'login'])->name('login');
-
-// Route::middleware('auth:api')->group(function () {
-//     // User profile routes
-//     Route::get('/user', [UserController::class, 'profile']);
-//     Route::post('/user/update', [UserController::class, 'update']);
-    
-//     // Bidang routes
-//     Route::get('/bidang', [BidangController::class, 'index']);
-//     Route::post('/bidang', [BidangController::class, 'store']);
-
-//     // Vendor routes
-//     Route::get('/vendor', [VendorController::class, 'index']);
-//     Route::post('/vendor', [VendorController::class, 'store']);
-
-//     // Sertifikasi routes
-//     Route::post('/uploads', [SertifikasiController::class, 'store']);
-
-// Route::get('/statistics', [StatistikController::class, 'getStatistics']);
-// });
-
 Route::post('/login', LoginController::class)->name('login');
-Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-// Bidang routes
-Route::get('/bidang', [BidangController::class, 'index']);
-Route::post('/bidang', [BidangController::class, 'store']);
-
-// Vendor routes
-Route::get('/vendor', [VendorController::class, 'index']);
-Route::post('/vendor', [VendorController::class, 'store']);
-
-// Sertifikasi routes
-Route::post('/uploads', [SertifikasiController::class, 'store']);
 
 Route::get('/statistics', [StatistikController::class, 'getStatistics']);
 
@@ -80,8 +44,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     ]);
 });
 
-// Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
-
 Route::get("/sertifikasi", [SertifikasiController::class, "index"]);
 Route::get("/sertifikasi/{id}", [SertifikasiController::class, "show"]);
 
@@ -96,3 +58,12 @@ Route::middleware('auth:api')->group(function () {
 
 Route::get('/dosen', [DosenController::class, 'index']);
 Route::get('/dosen/{id}', [DosenController::class, 'show']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/upload_pelatihan', [UploadPelatihanController::class, 'store']);
+});
+Route::get('/getJenis', [UploadPelatihanController::class, 'getJenis']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/upload_sertifikasi', [UploadSertifikasiController::class, 'store']);
+});
