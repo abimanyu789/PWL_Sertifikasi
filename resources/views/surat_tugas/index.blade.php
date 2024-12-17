@@ -5,9 +5,11 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <a href="{{ url('/surat_tugas/export_template') }}" class="btn btn-primary">
-                    <i class="fas fa-download"></i> Download Template
-                </a>
+                @if(auth()->user()->level_id == 1)
+                    <a href="{{ url('/surat_tugas/export_template') }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-download"></i> Download Template
+                    </a>
+                @endif
             </div>
         </div>
         <div class="card-body">
