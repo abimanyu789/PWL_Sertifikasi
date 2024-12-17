@@ -211,13 +211,13 @@ public function update(Request $request)
                     ->first();
 
                 if ($currentUser && $currentUser->avatar) {
-                    Storage::disk('public')->delete('avatars/' . $currentUser->avatar);
+                    Storage::disk('public')->delete('photos/' . $currentUser->avatar);
                     Log::info('Old avatar deleted:', ['filename' => $currentUser->avatar]);
                 }
 
                 // Upload avatar baru
                 $fileName = time() . '.' . $request->avatar->extension();
-                $uploadPath = $request->avatar->storeAs('public/avatars', $fileName);
+                $uploadPath = $request->avatar->storeAs('public/photos', $fileName);
                 
                 Log::info('Avatar upload result:', [
                     'path' => $uploadPath,
@@ -263,7 +263,7 @@ public function update(Request $request)
                     (array) $updatedUser,
                     [
                         'avatar_url' => $updatedUser->avatar 
-                            ? url('storage/avatars/' . $updatedUser->avatar) 
+                            ? url('storage/photos/' . $updatedUser->avatar) 
                             : null
                     ]
                 )
