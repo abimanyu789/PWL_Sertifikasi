@@ -201,7 +201,7 @@
                         </li>
                         <!-- Jenis -->
                         <li class="nav-item">
-                            <a href="{{ url('/jenis') }}" class="nav-link {{ $activeMenu == 'data_jenis' ? 'active' : '' }}">
+                            <a href="{{ url('/jenis') }}" class="nav-link {{ $activeMenu == 'jenis' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i> <!-- Ikon untuk bidang minat -->
                                 <p>Data Jenis</p>
                             </a>

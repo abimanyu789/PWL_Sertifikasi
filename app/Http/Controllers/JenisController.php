@@ -155,6 +155,60 @@ class JenisController extends Controller
         return redirect('/');
     }
 
+    public function import()
+    {
+        return view('jenis.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_jenis' => ['required', 'mimes:xlsx', 'max:1024'],
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal.',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $file = $request->file('file_jenis');
+            $reader = IOFactory::createReader('Xlsx');
+            $spreadsheet = $reader->load($file->getRealPath());
+            $data = $spreadsheet->getActiveSheet()->toArray(null, false, true, true);
+
+            $insert = [];
+            foreach ($data as $key => $row) {
+                if ($key > 1) {
+                    $insert[] = [
+                        'jenis_nama' => $row['A'],
+                        'jenis_kode' => $row['B'],
+                    ];
+                }
+            }
+
+            if (count($insert) > 0) {
+                JenisModel::insertOrIgnore($insert);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data jenis berhasil diimport.',
+                ]);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Tidak ada data yang diimport.',
+            ]);
+        }
+
+        return redirect('/');
+    }
+
     public function show_ajax(string $id){
         $jenis = JenisModel::find($id);
 
