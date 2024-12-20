@@ -27,82 +27,108 @@
             </div>
             <div class="modal-body">
                 <!-- Informasi Pelatihan -->
-                <table class="table table-bordered table-striped table-hover table-sm">
-                    <tr>
-                        <th>Nama Pelatihan</th>
-                        <td>{{ $pelatihan->nama_pelatihan }}</td>
-                    </tr>
-                    <tr>
-                        <th>Deskripsi</th>
-                        <td>{{ $pelatihan->deskripsi }}</td>
-                    </tr>
-                    <tr>
-                        <th>Tanggal</th>
-                        <td>{{ $pelatihan->tanggal }}</td>
-                    </tr>
-                    <tr>
-                        <th>Kuota</th>
-                        <td>{{ $pelatihan->kuota}}</td>
-                    </tr>
-                    <tr>
-                        <th>Lokasi</th>
-                        <td>{{ $pelatihan->lokasi}}</td>
-                    </tr>
-                    <tr>
-                        <th>Biaya</th>
-                        <td>{{ number_format($pelatihan->biaya, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Level Pelatihan</th>
-                        <td>{{ $pelatihan->level_pelatihan}}</td>
-                    </tr>
-                    <tr>
-                        <th>Vendor</th>
-                        <td>{{ $pelatihan->vendor->vendor_nama ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Jenis</th>
-                        <td>{{ $pelatihan->jenis->jenis_nama ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Mata Kuliah</th>
-                        <td>{{ $pelatihan->mata_kuliah->mk_nama ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Periode</th>
-                        <td>{{ $pelatihan->periode->periode_tahun ?? '-' }}</td>
-                    </tr>
-                </table>
-
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Informasi Pelatihan</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Kolom Kiri -->
+                            <div class="col-md-6">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <th width="130">Nama Pelatihan</th>
+                                        <td>: {{ $pelatihan->nama_pelatihan }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Deskripsi</th>
+                                        <td>: {{ $pelatihan->deskripsi }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <td>: {{ \Carbon\Carbon::parse($pelatihan->tanggal)->format('d/m/Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Kuota</th>
+                                        <td>: {{ $pelatihan->kuota }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Lokasi</th>
+                                        <td>: {{ $pelatihan->lokasi }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Biaya</th>
+                                        <td>: Rp {{ number_format($pelatihan->biaya, 0, ',', '.') }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <!-- Kolom Kanan -->
+                            <div class="col-md-6">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <th width="130">Level Pelatihan</th>
+                                        <td>: {{ $pelatihan->level_pelatihan }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Vendor</th>
+                                        <td>: {{ $pelatihan->vendor->vendor_nama ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Jenis</th>
+                                        <td>: {{ $pelatihan->jenis->jenis_nama ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Mata Kuliah</th>
+                                        <td>: {{ $pelatihan->mata_kuliah->mk_nama ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Periode</th>
+                                        <td>: {{ $pelatihan->periode->periode_tahun ?? '-' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
                 <!-- Daftar Peserta -->
-                <h5>Daftar Peserta</h5>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th >No</th>
-                            <th>Nama Peserta</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($peserta_pelatihan as $index => $p)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
-                            <td>
-                                @if($p->status == 'Approved')
-                                    <span class="badge badge-success">Disetujui</span>
-                                @elseif($p->status == 'Rejected')
-                                    <span class="badge badge-danger">Ditolak</span>
-                                @else
-                                    <span class="badge badge-warning">Pending</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Daftar Peserta</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="60" class="text-center">No</th>
+                                        <th>Nama Peserta</th>
+                                        <th width="150" class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($peserta_pelatihan as $index => $p)
+                                    <tr>
+                                        <td class="text-center">{{ $index + 1 }}</td>
+                                        <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
+                                        <td class="text-center">
+                                            @if($p->status == 'Approved')
+                                                <span class="badge badge-success px-3">Disetujui</span>
+                                            @elseif($p->status == 'Rejected')
+                                                <span class="badge badge-danger px-3">Ditolak</span>
+                                            @else
+                                                <span class="badge badge-warning px-3">Pending</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" onclick="validasiPesertaPelatihan('{{ url('/acc_daftar/' . $pelatihan->pelatihan_id . '/validasi') }}', 'Rejected')">Tidak Setuju</button>
                 <button type="button" class="btn btn-success" onclick="validasiPesertaPelatihan('{{ url('/acc_daftar/' . $pelatihan->pelatihan_id . '/validasi') }}', 'Approved')">Setuju</button>
