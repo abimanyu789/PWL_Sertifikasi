@@ -129,8 +129,26 @@
                                                         </div>
                                                     </td>
                                                     <td>{{ $user->nama }}</td>
-                                                    <td>{{ $user->bidang_nama ?? '-' }}</td>
-                                                    <td>{{ $user->mk_nama ?? '-' }}</td>
+                                                    <td>
+                                                        @php
+                                                            $bidangs = explode(',', $user->bidang_names ?? '');
+                                                        @endphp
+                                                        @foreach($bidangs as $bidang)
+                                                            @if(!empty($bidang))
+                                                                <span class="badge badge-info">{{ $bidang }}</span>
+                                                            @endif
+                                                        @endforeach
+                                                    </td>
+                                                    <td>
+                                                        @php
+                                                            $mks = explode(',', $user->mk_names ?? '');
+                                                        @endphp
+                                                        @foreach($mks as $mk)
+                                                            @if(!empty($mk))
+                                                                <span class="badge badge-secondary">{{ $mk }}</span>
+                                                            @endif
+                                                        @endforeach
+                                                    </td>
                                                     <td class="text-center">{{ $user->jumlah_pelatihan }}</td>
                                                 </tr>
                                             @empty
@@ -148,7 +166,7 @@
                         <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Kirim</button>
                     </div>
                 </form>

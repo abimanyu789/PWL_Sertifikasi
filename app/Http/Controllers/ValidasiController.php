@@ -7,6 +7,7 @@ use App\Models\PelatihanModel;
 use App\Models\NotifikasiModel;
 use App\Models\PesertaPelatihanModel;
 use App\Models\SertifikasiModel;
+use App\Models\userModel;
 use App\Models\PesertaSertifikasiModel;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -227,61 +228,112 @@ public function show_pelatihan_ajax(string $id)
                 DB::beginTransaction();
 
                 $kegiatan = $request->input('kegiatan', 'pelatihan');
+                $status = $request->status;
 
                 if ($kegiatan === 'pelatihan') {
                     $pelatihan = PelatihanModel::findOrFail($id);
                     
-                    $pelatihan->peserta_pelatihan()
-                        ->where('status', 'Pending')
-                        ->update([
-                            'status' => $request->status,
-                            'updated_at' => now()
-                        ]);
-
-                    if ($request->status === 'Approved') {
-                        $peserta = $pelatihan->peserta_pelatihan()
+                    if ($status === 'Rejected') {
+                        // Ambil data peserta yang akan ditolak
+                        $pesertaDitolak = $pelatihan->peserta_pelatihan()
                             ->with('user')
-                            ->where('status', 'Approved')
+                            ->where('status', 'Pending')
                             ->get();
-
-                        foreach ($peserta as $p) {
+    
+                        // Kirim notifikasi ke admin
+                        $admin = UserModel::where('level_id', 1)->first();
+                        if ($admin) {
                             NotifikasiModel::create([
-                                'user_id' => $p->user->user_id,
-                                'title' => 'Pelatihan Disetujui',
-                                'message' => "Pengajuan pelatihan {$pelatihan->nama_pelatihan} telah disetujui",
-                                'type' => 'approval_pelatihan',
-                                'reference_id' => $id,
-                                'created_at' => now(),
-                                'updated_at' => now()
+                                'user_id' => $admin->user_id,
+                                'title' => 'Pengajuan Peserta Ditolak',
+                                'message' => "Pengajuan peserta untuk pelatihan {$pelatihan->nama_pelatihan} ditolak. Peserta telah dikembalikan ke daftar.",
+                                'type' => 'pengajuan_ditolak',
+                                'reference_id' => $id
                             ]);
                         }
-                    }
-                } else {
-                    $sertifikasi = SertifikasiModel::findOrFail($id);
-                    
-                    $sertifikasi->peserta_sertifikasi()
-                        ->where('status', 'Pending')
-                        ->update([
-                            'status' => $request->status,
-                            'updated_at' => now()
-                        ]);
-
-                    if ($request->status === 'Approved') {
-                        $peserta = $sertifikasi->peserta_sertifikasi()
-                            ->with('user')
-                            ->where('status', 'Approved')
-                            ->get();
-
-                        foreach ($peserta as $p) {
-                            NotifikasiModel::create([
-                                'user_id' => $p->user->user_id,
-                                'title' => 'Sertifikasi Disetujui',
-                                'message' => "Pengajuan sertifikasi {$sertifikasi->nama_sertifikasi} telah disetujui",
-                                'type' => 'approval_sertifikasi',
-                                'reference_id' => $id,
-                                'created_at' => now(),
+    
+                        // Kembalikan nilai peserta dengan mengupdate status jadi Rejected
+                        $pelatihan->peserta_pelatihan()
+                            ->where('status', 'Pending')
+                            ->update([
+                                'status' => 'Rejected',
                                 'updated_at' => now()
                             ]);
+    
+                    } else {
+                        // Jika disetujui, update status
+                        $pelatihan->peserta_pelatihan()
+                            ->where('status', 'Pending')
+                            ->update([
+                                'status' => $status,
+                                'updated_at' => now()
+                            ]);
+                    }
+    
+                    // Update jumlah peserta di tabel pelatihan
+                    $jumlahPesertaApproved = $pelatihan->peserta_pelatihan()
+                        ->where('status', 'Approved')
+                        ->count();
+    
+                    $pelatihan->update([
+                        'sisa_kuota' => $pelatihan->kuota - $jumlahPesertaApproved
+                    ]);
+    
+                } else { // Sertifikasi
+                    $sertifikasi = SertifikasiModel::findOrFail($id);
+                    
+                    if ($status === 'Rejected') {
+                        // Ambil data peserta yang akan ditolak
+                        $pesertaDitolak = $sertifikasi->peserta_sertifikasi()
+                            ->with('user')
+                            ->where('status', 'Pending')
+                            ->get();
+    
+                        // Kirim notifikasi ke admin
+                        $admin = UserModel::where('level_id', 1)->first();
+                        if ($admin) {
+                            NotifikasiModel::create([
+                                'user_id' => $admin->user_id,
+                                'title' => 'Pengajuan Peserta Sertifikasi Ditolak',
+                                'message' => "Pengajuan peserta untuk sertifikasi {$sertifikasi->nama_sertifikasi} ditolak. Peserta telah dikembalikan ke daftar.",
+                                'type' => 'pengajuan_sertifikasi_ditolak',
+                                'reference_id' => $id
+                            ]);
+                        }
+    
+                        // Kembalikan nilai peserta dengan mengupdate status jadi Rejected
+                        $sertifikasi->peserta_sertifikasi()
+                            ->where('status', 'Pending')
+                            ->update([
+                                'status' => 'Rejected',
+                                'updated_at' => now()
+                            ]);
+    
+                    } else {
+                        // Jika disetujui, update status
+                        $sertifikasi->peserta_sertifikasi()
+                            ->where('status', 'Pending')
+                            ->update([
+                                'status' => $status,
+                                'updated_at' => now()
+                            ]);
+    
+                        // Kirim notifikasi ke peserta yang disetujui
+                        if ($status === 'Approved') {
+                            $peserta = $sertifikasi->peserta_sertifikasi()
+                                ->with('user')
+                                ->where('status', 'Approved')
+                                ->get();
+    
+                            foreach ($peserta as $p) {
+                                NotifikasiModel::create([
+                                    'user_id' => $p->user->user_id,
+                                    'title' => 'Sertifikasi Disetujui',
+                                    'message' => "Pengajuan sertifikasi {$sertifikasi->nama_sertifikasi} telah disetujui",
+                                    'type' => 'approval_sertifikasi',
+                                    'reference_id' => $id
+                                ]);
+                            }
                         }
                     }
                 }

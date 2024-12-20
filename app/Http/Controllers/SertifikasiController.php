@@ -164,30 +164,54 @@ class SertifikasiController extends Controller
                 ]);
             }
 
-            // Ambil daftar user (dosen) dengan jumlah sertifikasi dari upload_sertifikasi
+            // Subquery untuk mendapatkan semua bidang dan mata kuliah per dosen
+            $dosenInfo = DB::table('m_user as u')
+                ->select(
+                    'u.user_id',
+                    DB::raw('GROUP_CONCAT(DISTINCT b.bidang_id) as bidang_ids'),
+                    DB::raw('GROUP_CONCAT(DISTINCT mk.mk_id) as mk_ids'),
+                    DB::raw('GROUP_CONCAT(DISTINCT b.bidang_nama) as bidang_names'),
+                    DB::raw('GROUP_CONCAT(DISTINCT mk.mk_nama) as mk_names')
+                )
+                ->leftJoin('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+                ->leftJoin('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->where('u.level_id', 3)
+                ->groupBy('u.user_id');
+
+            // Query utama
             $users = DB::table('m_user as u')
-                ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
-                ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->joinSub($dosenInfo, 'dosen_info', function($join) {
+                    $join->on('u.user_id', '=', 'dosen_info.user_id');
+                })
                 ->leftJoin('upload_sertifikasi as up', function($join) {
                     $join->on('u.user_id', '=', 'up.user_id');
+                        
                 })
                 ->select(
                     'u.user_id',
                     'u.nama',
-                    'b.bidang_nama',
-                    'mk.mk_nama',
-                    DB::raw('COUNT(DISTINCT up.upload_id) as jumlah_sertifikasi') // Hitung dari upload_sertifikasi
+                    'dosen_info.bidang_names',
+                    'dosen_info.mk_names',
+                    DB::raw('COUNT(DISTINCT up.upload_id) as jumlah_sertifikasi'),
+                    DB::raw('CASE 
+                        WHEN FIND_IN_SET(' . $sertifikasi->jenis_id . ', (
+                            SELECT GROUP_CONCAT(jenis_id) 
+                            FROM m_bidang 
+                            WHERE FIND_IN_SET(bidang_id, dosen_info.bidang_ids)
+                        )) THEN 1 
+                        ELSE 0 
+                    END as is_matching_bidang')
                 )
                 ->where('u.level_id', 3)
-                ->where('b.jenis_id', $sertifikasi->jenis_id)
                 ->whereNotExists(function($query) use ($id) {
                     $query->select(DB::raw(1))
                         ->from('peserta_sertifikasi as ps')
                         ->whereRaw('ps.user_id = u.user_id')
                         ->where('ps.sertifikasi_id', $id);
                 })
-                ->groupBy('u.user_id', 'u.nama', 'b.bidang_nama', 'mk.mk_nama')
-                ->orderBy('jumlah_sertifikasi', 'asc')
+                ->groupBy('u.user_id', 'u.nama', 'dosen_info.bidang_names', 'dosen_info.mk_names', 'dosen_info.bidang_ids')
+                ->orderByDesc('jumlah_sertifikasi')  // Kemudian berdasarkan jumlah sertifikasi
+                ->orderByDesc('is_matching_bidang')
                 ->get();
 
             // Log untuk debugging

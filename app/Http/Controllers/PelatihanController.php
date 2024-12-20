@@ -49,7 +49,7 @@ class PelatihanController extends Controller
     { 
 
         $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode']);
-        
+    
         if ($request->level_pelatihan) {
             $pelatihan->where('level_pelatihan', $request->level_pelatihan);
         }
@@ -57,17 +57,18 @@ class PelatihanController extends Controller
         Log::info('Jumlah data pelatihan: ' . $pelatihan->count());
     
         return DataTables::of($pelatihan) 
-            // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
             ->addIndexColumn()  
-            ->addColumn('aksi', function ($pelatihan) {  // menambahkan kolom aksi 
+            ->addColumn('aksi', function ($pelatihan) {  
                 $btn = '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 
-                // Hitung jumlah peserta yang sudah terdaftar
-                $jumlah_peserta = PesertaPelatihanModel::where('pelatihan_id', $pelatihan->pelatihan_id)->count();
+                // Hitung jumlah peserta yang aktif (Approved atau Pending)
+                $jumlah_peserta = PesertaPelatihanModel::where('pelatihan_id', $pelatihan->pelatihan_id)
+                    ->whereIn('status', ['Approved', 'Pending'])
+                    ->count();
 
-                // Tampilkan tombol tambah peserta hanya jika kuota belum penuh
+                // Tampilkan tombol tambah peserta jika kuota belum penuh
                 if ($jumlah_peserta < $pelatihan->kuota) {
                     $btn .= '<button onclick="modalAction(\'' . url('/pelatihan/' . $pelatihan->pelatihan_id . '/tambah_peserta') . '\')" class="btn btn-success btn-sm">Tambah Peserta</button>';
                 } else {
@@ -75,7 +76,7 @@ class PelatihanController extends Controller
                 }
                 return $btn;
             }) 
-            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
+            ->rawColumns(['aksi']) 
             ->make(true); 
     }
     
@@ -136,6 +137,67 @@ class PelatihanController extends Controller
         return redirect('/');
     }
     
+    // public function tambah_peserta($id)
+    // {
+    //     try {
+    //         $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+
+    //         // Hitung jumlah peserta
+    //         $jumlah_peserta = $pelatihan->peserta_pelatihan->count();
+
+    //         if ($jumlah_peserta >= $pelatihan->kuota) {
+    //             return view('data_pelatihan.pelatihan.tambah_peserta', [
+    //                 'pelatihan' => $pelatihan,
+    //                 'error' => 'Kuota pelatihan sudah penuh!'
+    //             ]);
+    //         }
+
+    //         // Ambil daftar user (dosen) dengan jumlah pelatihan dari upload_pelatihan
+    //         $users = DB::table('m_user as u')
+    //             ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+    //             ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+    //             ->leftJoin('upload_pelatihan as up', function($join) {
+    //                 $join->on('u.user_id', '=', 'up.user_id');
+    //             })
+    //             ->select(
+    //                 'u.user_id',
+    //                 'u.nama',
+    //                 'b.bidang_nama',
+    //                 'mk.mk_nama',
+    //                 DB::raw('COUNT(DISTINCT up.upload_id) as jumlah_pelatihan') // Hitung dari upload_pelatihan
+    //             )
+    //             ->where('u.level_id', 3)
+    //             ->where('b.jenis_id', $pelatihan->jenis_id)
+    //             ->whereNotExists(function($query) use ($id) {
+    //                 $query->select(DB::raw(1))
+    //                     ->from('peserta_pelatihan as pp')
+    //                     ->whereRaw('pp.user_id = u.user_id')
+    //                     ->where('pp.pelatihan_id', $id);
+    //             })
+    //             ->groupBy('u.user_id', 'u.nama', 'b.bidang_nama', 'mk.mk_nama')
+    //             ->orderBy('jumlah_pelatihan', 'asc')
+    //             ->get();
+
+    //         // Log untuk debugging
+    //         Log::info('Users Query:', [
+    //             'count' => $users->count(),
+    //             'data' => $users->toArray()
+    //         ]);
+
+    //         // informasi sisa kuota
+    //         $sisa_kuota = $pelatihan->kuota - $jumlah_peserta;
+    //         $pelatihan->sisa_kuota = $sisa_kuota;
+
+    //         return view('data_pelatihan.pelatihan.tambah_peserta', compact('pelatihan', 'users'));
+
+    //     } catch (\Exception $e) {
+    //         Log::error('Error in tambah_peserta: ' . $e->getMessage());
+    //         return view('data_pelatihan.pelatihan.tambah_peserta', [
+    //             'error' => 'Terjadi kesalahan: ' . $e->getMessage()
+    //         ]);
+    //     }
+    // }
+
     public function tambah_peserta($id)
     {
         try {
@@ -151,30 +213,54 @@ class PelatihanController extends Controller
                 ]);
             }
 
-            // Ambil daftar user (dosen) dengan jumlah pelatihan dari upload_pelatihan
+            // Subquery untuk mendapatkan semua bidang dan mata kuliah per dosen
+            $dosenInfo = DB::table('m_user as u')
+                ->select(
+                    'u.user_id',
+                    DB::raw('GROUP_CONCAT(DISTINCT b.bidang_id) as bidang_ids'),
+                    DB::raw('GROUP_CONCAT(DISTINCT mk.mk_id) as mk_ids'),
+                    DB::raw('GROUP_CONCAT(DISTINCT b.bidang_nama) as bidang_names'),
+                    DB::raw('GROUP_CONCAT(DISTINCT mk.mk_nama) as mk_names')
+                )
+                ->leftJoin('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
+                ->leftJoin('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->where('u.level_id', 3)
+                ->groupBy('u.user_id');
+
+            // Query utama
             $users = DB::table('m_user as u')
-                ->join('m_bidang as b', 'u.bidang_id', '=', 'b.bidang_id')
-                ->join('m_mata_kuliah as mk', 'u.mk_id', '=', 'mk.mk_id')
+                ->joinSub($dosenInfo, 'dosen_info', function($join) {
+                    $join->on('u.user_id', '=', 'dosen_info.user_id');
+                })
                 ->leftJoin('upload_pelatihan as up', function($join) {
                     $join->on('u.user_id', '=', 'up.user_id');
+                        
                 })
                 ->select(
                     'u.user_id',
                     'u.nama',
-                    'b.bidang_nama',
-                    'mk.mk_nama',
-                    DB::raw('COUNT(DISTINCT up.upload_id) as jumlah_pelatihan') // Hitung dari upload_pelatihan
+                    'dosen_info.bidang_names',
+                    'dosen_info.mk_names',
+                    DB::raw('COUNT(DISTINCT up.upload_id) as jumlah_pelatihan'),
+                    DB::raw('CASE 
+                        WHEN FIND_IN_SET(' . $pelatihan->jenis_id . ', (
+                            SELECT GROUP_CONCAT(jenis_id) 
+                            FROM m_bidang 
+                            WHERE FIND_IN_SET(bidang_id, dosen_info.bidang_ids)
+                        )) THEN 1 
+                        ELSE 0 
+                    END as is_matching_bidang')
                 )
                 ->where('u.level_id', 3)
-                ->where('b.jenis_id', $pelatihan->jenis_id)
                 ->whereNotExists(function($query) use ($id) {
                     $query->select(DB::raw(1))
                         ->from('peserta_pelatihan as pp')
                         ->whereRaw('pp.user_id = u.user_id')
                         ->where('pp.pelatihan_id', $id);
                 })
-                ->groupBy('u.user_id', 'u.nama', 'b.bidang_nama', 'mk.mk_nama')
-                ->orderBy('jumlah_pelatihan', 'asc')
+                ->groupBy('u.user_id', 'u.nama', 'dosen_info.bidang_names', 'dosen_info.mk_names', 'dosen_info.bidang_ids')
+                ->orderByDesc('jumlah_pelatihan')  // Kemudian berdasarkan jumlah pelatihan
+                ->orderByDesc('is_matching_bidang')
                 ->get();
 
             // Log untuk debugging
