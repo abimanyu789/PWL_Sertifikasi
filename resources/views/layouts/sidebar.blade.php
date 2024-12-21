@@ -245,7 +245,7 @@
                 <li class="nav-item">
                     <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'surat_tugas' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-book-open"></i>
-                        <p>Draft Surat Tugas</p>
+                        <p>Draf Surat Tugas</p>
                     </a>
                 </li>
 
@@ -304,7 +304,7 @@
                 <li class="nav-item">
                     <a href="{{ url('/surat_tugas') }}" class="nav-link {{ $activeMenu == 'list_pelatihan' ? 'active bg-blue-600 text-white' : 'text-gray-300' }}">
                         <i class="nav-icon fas fa-book-open"></i>
-                        <p>Draf Surat Tugas </p>
+                        <p>Draf Kegiatan</p>
                     </a>
                 </li>
             @endif

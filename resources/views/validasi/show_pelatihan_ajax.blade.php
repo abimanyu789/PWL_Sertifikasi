@@ -102,24 +102,16 @@
                                 <thead>
                                     <tr>
                                         <th width="60" class="text-center">No</th>
+                                        <th>NIP</th>
                                         <th>Nama Peserta</th>
-                                        <th width="150" class="text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($peserta_pelatihan as $index => $p)
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
+                                        <td>{{ $p->user->nip ?? 'NIP tidak tersedia' }}</td>
                                         <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
-                                        <td class="text-center">
-                                            @if($p->status == 'Approved')
-                                                <span class="badge badge-success px-3">Disetujui</span>
-                                            @elseif($p->status == 'Rejected')
-                                                <span class="badge badge-danger px-3">Ditolak</span>
-                                            @else
-                                                <span class="badge badge-warning px-3">Pending</span>
-                                            @endif
-                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
