@@ -133,23 +133,45 @@ class SuratController extends Controller
     }
 }
 
-    public function show_sertifikasi_ajax($id)
+//     public function show_sertifikasi_ajax($id)
+// {
+//     try {
+//         $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+        
+//         // Cek jika user adalah admin atau dosen
+//         if (auth()->user()->level_id == 1) { // Admin
+//             $peserta_sertifikasi = PesertaSertifikasiModel::with('user')
+//                 ->where('sertifikasi_id', $id)
+//                 ->whereIn('status', ['Approved', 'Rejected']) // Tambahkan ini untuk menampilkan yang approved dan rejected
+//                 ->get();
+//         } else { // Dosen
+//             $peserta_sertifikasi = PesertaSertifikasiModel::with('user')
+//                 ->where('sertifikasi_id', $id)
+//                 ->where('user_id', auth()->user()->user_id)
+//                 ->first();
+//         }
+
+//         return view('surat_tugas.show_sertifikasi_ajax', [
+//             'sertifikasi' => $sertifikasi,
+//             'peserta' => $peserta_sertifikasi
+//         ]);
+
+//     } catch (\Exception $e) {
+//         Log::error('Error show sertifikasi: ' . $e->getMessage());
+//         return response()->json(['error' => $e->getMessage()], 500);
+//     }
+// }
+
+public function show_sertifikasi_ajax($id)
 {
     try {
         $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
         
-        // Cek jika user adalah admin atau dosen
-        if (auth()->user()->level_id == 1) { // Admin
-            $peserta_sertifikasi = PesertaSertifikasiModel::with('user')
-                ->where('sertifikasi_id', $id)
-                ->whereIn('status', ['Approved', 'Rejected']) // Tambahkan ini untuk menampilkan yang approved dan rejected
-                ->get();
-        } else { // Dosen
-            $peserta_sertifikasi = PesertaSertifikasiModel::with('user')
-                ->where('sertifikasi_id', $id)
-                ->where('user_id', auth()->user()->user_id)
-                ->first();
-        }
+        // Get all participants regardless of user level
+        $peserta_sertifikasi = PesertaSertifikasiModel::with(['user'])
+            ->where('sertifikasi_id', $id)
+            ->where('status', 'Approved')
+            ->get();
 
         return view('surat_tugas.show_sertifikasi_ajax', [
             'sertifikasi' => $sertifikasi,
@@ -161,7 +183,6 @@ class SuratController extends Controller
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
-
     // public function show_pelatihan_ajax($id)
     // {
     //     try {

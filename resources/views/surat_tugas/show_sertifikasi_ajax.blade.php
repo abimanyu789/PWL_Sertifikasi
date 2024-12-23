@@ -1,4 +1,4 @@
-@if(empty($sertifikasi))
+{{-- @if(empty($sertifikasi))
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -135,4 +135,118 @@
                 });
             }
         </script>
-@endempty
+@endempty --}}
+
+@if(empty($sertifikasi))
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
+                    Data pengajuan sertifikasi yang Anda cari tidak ditemukan.
+                </div>
+                <a href="{{ url('/surat_tugas') }}" class="btn btn-warning">Kembali</a>
+            </div>
+        </div>
+    </div>
+@else
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detail Rekap Pengajuan Sertifikasi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Informasi Sertifikasi -->
+                <h6 class="mt-1">Detail Kegiatan</h6>
+                <table class="table table-bordered table-striped table-hover table-sm">
+                    <tr>
+                        <th>Nama Sertifikasi</th>
+                        <td>{{ $sertifikasi->nama_sertifikasi }}</td>
+                    </tr>
+                    <tr>
+                        <th>Deskripsi</th>
+                        <td>{{ $sertifikasi->deskripsi }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tanggal</th>
+                        <td>{{ $sertifikasi->tanggal }}</td>
+                    </tr>
+                    <tr>
+                        <th>Lokasi</th>
+                        <td>{{ $sertifikasi->lokasi}}</td>
+                    </tr>
+                    <tr>
+                        <th>Level Sertifikasi</th>
+                        <td>{{ $sertifikasi->level_sertifikasi}}</td>
+                    </tr>
+                    <tr>
+                        <th>Vendor</th>
+                        <td>{{ $sertifikasi->vendor->vendor_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jenis</th>
+                        <td>{{ $sertifikasi->jenis->jenis_nama ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Periode</th>
+                        <td>{{ $sertifikasi->periode->periode_tahun ?? '-' }}</td>
+                    </tr>
+                </table>
+                <!-- Informasi Peserta -->
+                <h6 class="mt-4">Daftar Peserta</h6>
+                <table class="table table-bordered table-striped table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NIP</th>
+                            <th>Nama Peserta</th>
+                            @if(auth()->user()->level_id == 3)
+                            <th>Status</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(auth()->user()->level_id == 1)
+                            <!-- Untuk Admin: Tampilkan semua peserta -->
+                            @foreach($peserta as $key => $p)
+                            <tr>
+                                <td>{{ $key + 1 }}</td>
+                                <td>{{ $p->user->nip ?? 'NIP tidak tersedia' }}</td>
+                                <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
+                            </tr>
+                            @endforeach
+                        @else
+                            <!-- Untuk Dosen: Tampilkan semua peserta dengan highlight diri sendiri -->
+                            @foreach($peserta as $key => $p)
+                            <tr @if($p->user->user_id == auth()->user()->user_id) class="table-info" @endif>
+                                <td>{{ $key + 1 }}</td>
+                                <td>{{ $p->user->nip ?? 'NIP tidak tersedia' }}</td>
+                                <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
+                                <td>
+                                    @if($p->user->user_id == auth()->user()->user_id)
+                                        <span class="badge badge-info">Anda</span>
+                                    @else
+                                        <span class="badge badge-secondary">Peserta Lain</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Kembali</button>
+            </div>
+        </div>
+    </div>
+@endif
