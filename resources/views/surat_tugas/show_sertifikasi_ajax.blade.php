@@ -61,35 +61,32 @@
                 <!-- Informasi Peserta -->
                 <h6 class="mt-4">Daftar Peserta</h6>
                 <table class="table table-bordered table-striped table-hover table-sm">
-                    @if(auth()->user()->level_id == 1)
-                        <!-- Jika Admin: Tampilkan semua peserta -->
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NIP</th>
-                                <th>Nama Peserta</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NIP</th>
+                            <th>Nama Peserta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(auth()->user()->level_id == 1)
+                            <!-- Untuk Admin: Tampilkan semua peserta -->
                             @foreach($peserta as $key => $p)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
-                                <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
                                 <td>{{ $p->user->nip ?? 'NIP tidak tersedia' }}</td>
+                                <td>{{ $p->user->nama ?? 'Nama tidak tersedia' }}</td>
                             </tr>
                             @endforeach
-                        </tbody>
-                    @else
-                        <!-- Jika Dosen: Tampilkan hanya info dirinya -->
-                        <tr>
-                            <th>NIP</th>
-                            <td>{{ $peserta->user->nip ?? 'NIP tidak tersedia' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Nama Peserta</th>
-                            <td>{{ $peserta->user->nama ?? 'Nama tidak tersedia' }}</td>
-                        </tr>
-                    @endif
+                        @else
+                            <!-- Untuk Dosen: Tampilkan data dirinya dalam format yang sama -->
+                            <tr>
+                                <td>1</td>
+                                <td>{{ $peserta->user->nip ?? 'NIP tidak tersedia' }}</td>
+                                <td>{{ $peserta->user->nama ?? 'Nama tidak tersedia' }}</td>
+                            </tr>
+                        @endif
+                    </tbody>
                 </table>
             </div>
             <div class="modal-footer">

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class PesertaSertifikasiModel extends Model
 {
@@ -24,6 +25,16 @@ class PesertaSertifikasiModel extends Model
 
     public function sertifikasi()
     {
-        return $this->belongsTo(SertifikasiModel::class, 'pelatihan_id', 'pelatihan_id');
+        return $this->belongsTo(SertifikasiModel::class, 'sertifikasi_id', 'sertifikasi_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            Log::info('Creating Peserta:', $model->toArray());
+            return $model;
+        });
+    }
+
 }

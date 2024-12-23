@@ -42,146 +42,175 @@ class SuratController extends Controller
     }
 
     public function list(Request $request) 
-    { 
-        try {
-            $user = auth()->user();
-            $isAdmin = $user->level_id == 1;
-            $isDosen = $user->level_id == 3;
+{ 
+    try {
+        $user = auth()->user();
+        $isAdmin = $user->level_id == 1;
+        $isDosen = $user->level_id == 3;
 
-            // Query untuk pelatihan
-            $pelatihan = DB::table('peserta_pelatihan as pp')
-                ->join('m_pelatihan as p', 'pp.pelatihan_id', '=', 'p.pelatihan_id')
-                ->join('m_user as u', 'pp.user_id', '=', 'u.user_id')
-                ->leftJoin('surat_tugas as st', function($join) {
-                    $join->on('pp.peserta_pelatihan_id', '=', 'st.peserta_pelatihan_id');
-                })
-                ->where('pp.status', 'Approved')
-                ->select(
-                    'p.pelatihan_id as id',
-                    'p.nama_pelatihan as nama_kegiatan',
-                    'pp.status',
-                    'pp.peserta_pelatihan_id',
-                    DB::raw("'pelatihan' as jenis_kegiatan"),
-                    'st.surat_tugas_id',
-                    DB::raw('CASE WHEN st.surat_tugas_id IS NOT NULL THEN 1 ELSE 0 END as has_surat')
-                );
+        // Query untuk pelatihan
+        $pelatihan = DB::table('peserta_pelatihan as pp')
+            ->join('m_pelatihan as p', 'pp.pelatihan_id', '=', 'p.pelatihan_id')
+            ->join('m_user as u', 'pp.user_id', '=', 'u.user_id')
+            ->leftJoin('surat_tugas as st', function($join) {
+                $join->on('pp.peserta_pelatihan_id', '=', 'st.peserta_pelatihan_id');
+            })
+            ->whereIn('pp.status', ['Approved', 'Rejected']) // Ubah ini untuk menerima status Approved dan Rejected
+            ->select(
+                'p.pelatihan_id as id',
+                'p.nama_pelatihan as nama_kegiatan',
+                'pp.status', // Tambahkan status ke select
+                'pp.peserta_pelatihan_id',
+                DB::raw("'pelatihan' as jenis_kegiatan"),
+                'st.surat_tugas_id',
+                DB::raw('CASE WHEN st.surat_tugas_id IS NOT NULL THEN 1 ELSE 0 END as has_surat')
+            );
 
-            // Query untuk sertifikasi
-            $sertifikasi = DB::table('peserta_sertifikasi as ps')
-                ->join('m_sertifikasi as s', 'ps.sertifikasi_id', '=', 's.sertifikasi_id')
-                ->join('m_user as u', 'ps.user_id', '=', 'u.user_id')
-                ->leftJoin('surat_tugas as st', function($join) {
-                    $join->on('ps.peserta_sertifikasi_id', '=', 'st.peserta_sertifikasi_id');
-                })
-                ->where('ps.status', 'Approved')
-                ->select(
-                    's.sertifikasi_id as id',
-                    's.nama_sertifikasi as nama_kegiatan',
-                    'ps.status',
-                    'ps.peserta_sertifikasi_id',
-                    DB::raw("'sertifikasi' as jenis_kegiatan"),
-                    'st.surat_tugas_id',
-                    DB::raw('CASE WHEN st.surat_tugas_id IS NOT NULL THEN 1 ELSE 0 END as has_surat')
-                );
+        // Query untuk sertifikasi
+        $sertifikasi = DB::table('peserta_sertifikasi as ps')
+            ->join('m_sertifikasi as s', 'ps.sertifikasi_id', '=', 's.sertifikasi_id')
+            ->join('m_user as u', 'ps.user_id', '=', 'u.user_id')
+            ->leftJoin('surat_tugas as st', function($join) {
+                $join->on('ps.peserta_sertifikasi_id', '=', 'st.peserta_sertifikasi_id');
+            })
+            ->whereIn('ps.status', ['Approved', 'Rejected']) // Ubah ini untuk menerima status Approved dan Rejected
+            ->select(
+                's.sertifikasi_id as id',
+                's.nama_sertifikasi as nama_kegiatan',
+                'ps.status', // Tambahkan status ke select
+                'ps.peserta_sertifikasi_id',
+                DB::raw("'sertifikasi' as jenis_kegiatan"),
+                'st.surat_tugas_id',
+                DB::raw('CASE WHEN st.surat_tugas_id IS NOT NULL THEN 1 ELSE 0 END as has_surat')
+            );
 
-            if ($isDosen) {
-                $userId = $user->user_id;
-                $pelatihan->where('pp.user_id', $userId);
-                $sertifikasi->where('ps.user_id', $userId);
-            }
+        if ($isDosen) {
+            $userId = $user->user_id;
+            $pelatihan->where('pp.user_id', $userId);
+            $sertifikasi->where('ps.user_id', $userId);
+        }
 
-            $query = $request->jenis_kegiatan ? 
-                ($request->jenis_kegiatan === 'pelatihan' ? $pelatihan : $sertifikasi) :
-                $pelatihan->union($sertifikasi);
+        $query = $request->jenis_kegiatan ? 
+            ($request->jenis_kegiatan === 'pelatihan' ? $pelatihan : $sertifikasi) :
+            $pelatihan->union($sertifikasi);
 
-                return DataTables::of($query)
-                ->addIndexColumn()
-                ->addColumn('aksi', function($row) use ($isDosen, $isAdmin) {
-                    $buttons = '<div class="btn-group">';
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('aksi', function($row) use ($isDosen, $isAdmin) {
+                $buttons = '<div class="btn-group">';
+                
+                if ($isDosen) {
+                    // Tombol untuk Dosen
+                    $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/' . $row->id . '/show_' . $row->jenis_kegiatan . '_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                     
-                    if ($isDosen) {
-                        // Tombol untuk Dosen
-                        $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/' . $row->id . '/show_' . $row->jenis_kegiatan . '_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                        
-                        // Tombol Download - abu-abu jika belum ada surat
-                        $buttonClass = $row->has_surat ? 'btn-warning' : 'btn-secondary';
-                        $disabled = !$row->has_surat ? 'disabled' : '';
-                        $buttons .= '<a href="' . url('/surat_tugas/export_pdf/' . $row->surat_tugas_id) . '" class="btn ' . $buttonClass . ' btn-sm ml-1" ' . $disabled . '>Download</a>';
-                    }
+                    // Tombol Download - abu-abu jika belum ada surat
+                    $buttonClass = $row->has_surat ? 'btn-warning' : 'btn-secondary';
+                    $disabled = !$row->has_surat ? 'disabled' : '';
+                    $buttons .= '<a href="' . url('/surat_tugas/export_pdf/' . $row->surat_tugas_id) . '" class="btn ' . $buttonClass . ' btn-sm ml-1" ' . $disabled . '>Download</a>';
+                }
 
-                    if ($isAdmin) {
-                        $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/' . $row->id . '/show_' . $row->jenis_kegiatan . '_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                if ($isAdmin) {
+                    $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/' . $row->id . '/show_' . $row->jenis_kegiatan . '_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                    
+                    // Tampilkan tombol upload hanya jika status Approved
+                    if ($row->status === 'Approved') {
                         $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/upload/' . $row->id . '?jenis=' . $row->jenis_kegiatan) . '\')" class="btn btn-success btn-sm ml-1">Upload</button>';
                     }
-                    
-                    $buttons .= '</div>';
-                    return $buttons;
-                })
-                ->rawColumns(['aksi'])
-                ->make(true);
+                }
+                
+                $buttons .= '</div>';
+                return $buttons;
+            })
+            ->addColumn('status_validasi', function($row) {
+                return $row->status;
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
 
-        } catch (\Exception $e) {
-            Log::error('Error in list method: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+    } catch (\Exception $e) {
+        Log::error('Error in list method: ' . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
     public function show_sertifikasi_ajax($id)
-    {
-        try {
-            $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
-            
-            // Cek jika user adalah admin atau dosen
-            if (auth()->user()->level_id == 1) { // Admin
-                $peserta_sertifikasi = PesertaSertifikasiModel::with(['user']) // Pastikan relasi user dimuat
-                    ->where('sertifikasi_id', $id)
-                    ->where('status', 'Approved')
-                    ->get();
-            } else { // Dosen
-                $peserta_sertifikasi = PesertaSertifikasiModel::with(['user']) // Pastikan relasi user dimuat
-                    ->where('sertifikasi_id', $id)
-                    ->where('user_id', auth()->user()->user_id)
-                    ->first();
-            }
-
-            return view('surat_tugas.show_sertifikasi_ajax', [
-                'sertifikasi' => $sertifikasi,
-                'peserta' => $peserta_sertifikasi
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error show sertifikasi: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
+{
+    try {
+        $sertifikasi = SertifikasiModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+        
+        // Cek jika user adalah admin atau dosen
+        if (auth()->user()->level_id == 1) { // Admin
+            $peserta_sertifikasi = PesertaSertifikasiModel::with('user')
+                ->where('sertifikasi_id', $id)
+                ->whereIn('status', ['Approved', 'Rejected']) // Tambahkan ini untuk menampilkan yang approved dan rejected
+                ->get();
+        } else { // Dosen
+            $peserta_sertifikasi = PesertaSertifikasiModel::with('user')
+                ->where('sertifikasi_id', $id)
+                ->where('user_id', auth()->user()->user_id)
+                ->first();
         }
-    }
 
-    public function show_pelatihan_ajax($id)
-    {
-        try {
-            $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+        return view('surat_tugas.show_sertifikasi_ajax', [
+            'sertifikasi' => $sertifikasi,
+            'peserta' => $peserta_sertifikasi
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error show sertifikasi: ' . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+    // public function show_pelatihan_ajax($id)
+    // {
+    //     try {
+    //         $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
             
-            // Cek jika user adalah admin atau dosen
-            if (auth()->user()->level_id == 1) { // Admin
-                $peserta_pelatihan = PesertaPelatihanModel::with(['user']) // Pastikan relasi user dimuat
-                    ->where('pelatihan_id', $id)
-                    ->where('status', 'Approved')
-                    ->get();
-            } else { // Dosen
-                $peserta_pelatihan = PesertaPelatihanModel::with(['user']) // Pastikan relasi user dimuat
-                    ->where('pelatihan_id', $id)
-                    ->where('user_id', auth()->user()->user_id)
-                    ->first();
-            }
+    //         // Cek jika user adalah admin atau dosen
+    //         if (auth()->user()->level_id == 1) { // Admin
+    //             $peserta_pelatihan = PesertaPelatihanModel::with(['user']) // Pastikan relasi user dimuat
+    //                 ->where('pelatihan_id', $id)
+    //                 ->where('status', 'Approved')
+    //                 ->get();
+    //         } else { // Dosen
+    //             $peserta_pelatihan = PesertaPelatihanModel::with(['user']) // Pastikan relasi user dimuat
+    //                 ->where('pelatihan_id', $id)
+    //                 ->where('user_id', auth()->user()->user_id)
+    //                 ->first();
+    //         }
 
-            return view('surat_tugas.show_pelatihan_ajax', [
-                'pelatihan' => $pelatihan,
-                'peserta' => $peserta_pelatihan
-            ]);
+    //         return view('surat_tugas.show_pelatihan_ajax', [
+    //             'pelatihan' => $pelatihan,
+    //             'peserta' => $peserta_pelatihan
+    //         ]);
 
-        } catch (\Exception $e) {
-            Log::error('Error show pelatihan: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+    //     } catch (\Exception $e) {
+    //         Log::error('Error show pelatihan: ' . $e->getMessage());
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
+public function show_pelatihan_ajax($id)
+{
+    try {
+        $pelatihan = PelatihanModel::with(['vendor', 'jenis', 'mata_kuliah', 'periode'])->findOrFail($id);
+        
+        // Get all participants regardless of user level
+        $peserta_pelatihan = PesertaPelatihanModel::with(['user'])
+            ->where('pelatihan_id', $id)
+            ->where('status', 'Approved')
+            ->get();
+
+        return view('surat_tugas.show_pelatihan_ajax', [
+            'pelatihan' => $pelatihan,
+            'peserta' => $peserta_pelatihan
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Error show pelatihan: ' . $e->getMessage());
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
 
     public function upload($id)
     {

@@ -159,89 +159,88 @@ class ValidasiController extends Controller
     }
 
     public function validasi(Request $request, string $id)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            try {
-                DB::beginTransaction();
+{
+    if ($request->ajax() || $request->wantsJson()) {
+        try {
+            DB::beginTransaction();
 
-                $kegiatan = $request->input('kegiatan', 'pelatihan');
-                $status = $request->status;
+            $kegiatan = $request->input('kegiatan', 'pelatihan');
+            $status = $request->status;
 
-                if ($kegiatan === 'pelatihan') {
-                    $pelatihan = PelatihanModel::findOrFail($id);
-                    
-                    if ($status === 'Rejected') {
-                        // Kembalikan nilai peserta dengan mengupdate status jadi Rejected
-                        $pelatihan->peserta_pelatihan()
-                            ->where('status', 'Pending')
-                            ->update([
-                                'status' => 'Rejected',
-                                'updated_at' => now()
-                            ]);
-    
-                    } else {
-                        // Jika disetujui, update status
-                        $pelatihan->peserta_pelatihan()
-                            ->where('status', 'Pending')
-                            ->update([
-                                'status' => $status,
-                                'updated_at' => now()
-                            ]);
-                    }
-    
-                    // Update jumlah peserta di tabel pelatihan
-                    $jumlahPesertaApproved = $pelatihan->peserta_pelatihan()
-                        ->where('status', 'Approved')
-                        ->count();
-    
-                    $pelatihan->update([
-                        'sisa_kuota' => $pelatihan->kuota - $jumlahPesertaApproved
+            if ($kegiatan === 'pelatihan') {
+                $pelatihan = PelatihanModel::findOrFail($id);
+                $existingStatus = $pelatihan->peserta_pelatihan()->where('status', '!=', 'Pending')->first();
+
+                // Cek jika status sudah diperbarui
+                if ($existingStatus) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Validasi sudah diproses sebelumnya.'
                     ]);
-    
-                } else { // Sertifikasi
-                    $sertifikasi = SertifikasiModel::findOrFail($id);
-                    
-                    if ($status === 'Rejected') {
-                        // Kembalikan nilai peserta dengan mengupdate status jadi Rejected
-                        $sertifikasi->peserta_sertifikasi()
-                            ->where('status', 'Pending')
-                            ->update([
-                                'status' => 'Rejected',
-                                'updated_at' => now()
-                            ]);
-    
-                    } else {
-                        // Jika disetujui, update status
-                        $sertifikasi->peserta_sertifikasi()
-                            ->where('status', 'Pending')
-                            ->update([
-                                'status' => $status,
-                                'updated_at' => now()
-                            ]);
-                    }
                 }
 
-                DB::commit();
+                if ($status === 'Rejected') {
+                    $pelatihan->peserta_pelatihan()
+                        ->where('status', 'Pending')
+                        ->update(['status' => 'Rejected', 'updated_at' => now()]);
+                } else {
+                    $pelatihan->peserta_pelatihan()
+                        ->where('status', 'Pending')
+                        ->update(['status' => $status, 'updated_at' => now()]);
+                }
 
-                return response()->json([
-                    'status' => true,
-                    'message' => $request->status === 'Approved' ? 
-                        ($kegiatan === 'pelatihan' ? 'Pelatihan berhasil disetujui' : 'Sertifikasi berhasil disetujui') : 
-                        ($kegiatan === 'pelatihan' ? 'Pelatihan ditolak' : 'Sertifikasi ditolak')
+                $jumlahPesertaApproved = $pelatihan->peserta_pelatihan()
+                    ->where('status', 'Approved')
+                    ->count();
+
+                $pelatihan->update([
+                    'sisa_kuota' => $pelatihan->kuota - $jumlahPesertaApproved
                 ]);
 
-            } catch (\Exception $e) {
-                DB::rollBack();
-                Log::error('Validasi Error: ' . $e->getMessage());
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-                ]);
+            } else { // Sertifikasi
+                $sertifikasi = SertifikasiModel::findOrFail($id);
+                $existingStatus = $sertifikasi->peserta_sertifikasi()->where('status', '!=', 'Pending')->first();
+
+                // Cek jika status sudah diperbarui
+                if ($existingStatus) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Validasi sudah diproses sebelumnya.'
+                    ]);
+                }
+
+                if ($status === 'Rejected') {
+                    $sertifikasi->peserta_sertifikasi()
+                        ->where('status', 'Pending')
+                        ->update(['status' => 'Rejected', 'updated_at' => now()]);
+                } else {
+                    $sertifikasi->peserta_sertifikasi()
+                        ->where('status', 'Pending')
+                        ->update(['status' => $status, 'updated_at' => now()]);
+                }
             }
-        }
 
-        return redirect('/');
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => $status === 'Approved' ? 
+                    ($kegiatan === 'pelatihan' ? 'Pelatihan berhasil disetujui' : 'Sertifikasi berhasil disetujui') : 
+                    ($kegiatan === 'pelatihan' ? 'Pelatihan ditolak' : 'Sertifikasi ditolak')
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Validasi Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
+        }
     }
+
+    return redirect('/');
+}
 }
 
 // Yang sebelumnya (tapi aku ubah dikit)
