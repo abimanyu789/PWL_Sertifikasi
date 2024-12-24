@@ -522,54 +522,62 @@ public function show_pelatihan_ajax($id)
     public function upload_sertif($id)
     {
         try {
-            $pesertaSertifikasi = PesertaSertifikasiModel::findOrFail($id);
-            $sertifikasi = $pesertaSertifikasi->sertifikasi;
+            $surat = SuratModel::findOrFail($id);
             
-            if (!$sertifikasi) {
-                throw new \Exception('Data sertifikasi tidak ditemukan');
+            if ($surat->peserta_sertifikasi_id) {
+                $peserta = PesertaSertifikasiModel::findOrFail($surat->peserta_sertifikasi_id);
+                $kegiatan = $peserta->sertifikasi;
+                $jenis = 'sertifikasi';
+                $nama_kegiatan = $kegiatan->nama_sertifikasi;
+                // Ambil vendor dari relasi
+                $nama_vendor = $kegiatan->vendor ? $kegiatan->vendor->nama_vendor : '';
+            } else {
+                $peserta = PesertaPelatihanModel::findOrFail($surat->peserta_pelatihan_id);
+                $kegiatan = $peserta->pelatihan;
+                $jenis = 'pelatihan';
+                $nama_kegiatan = $kegiatan->nama_pelatihan;
+                // Ambil vendor dari relasi
+                $nama_vendor = $kegiatan->vendor ? $kegiatan->vendor->nama_vendor : '';
             }
-            
-            $nama_kegiatan = $sertifikasi->nama_sertifikasi;
-            
+    
             return view('surat_tugas.upload_sertif', [
                 'kegiatan_id' => $id,
-                'jenis' => 'sertifikasi',
-                'nama_kegiatan' => $nama_kegiatan
+                'jenis' => $jenis,
+                'jenis_id' => $jenis,
+                'nama_kegiatan' => $nama_kegiatan,
+                'nama_vendor' => $nama_vendor,
+                'kegiatan' => $kegiatan
             ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data peserta tidak ditemukan'
-            ], 404);
+    
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage()
-            ], 500);
+                'message' => 'Data tidak ditemukan: ' . $e->getMessage()
+            ], 404);
         }
     }
 
     public function sertif_ajax($id, Request $request)
     {
         try {
+            Log::info('Data yang diterima:', $request->all());
             $validator = Validator::make($request->all(), [
                 'bukti' => 'required|mimes:pdf,doc,docx|max:2048',
-                'kegiatan_id' => 'required',
-                'jenis' => 'required|in:pelatihan,sertifikasi',
                 'nama_sertif' => 'required|string|max:255',
                 'no_sertif' => 'required|string|max:100',
                 'tanggal' => 'required|date',
                 'masa_berlaku' => 'required|date',
-                'jenis_id' => 'required|exists:jenis,jenis_id',
+                'jenis_id' => 'required|string', // Ubah validasi
                 'nama_vendor' => 'required|string|max:255'
             ]);
     
             if ($validator->fails()) {
+                Log::error('Validation errors:', $validator->errors()->toArray());
                 return response()->json([
                     'status' => false,
                     'message' => 'Validasi gagal',
                     'errors' => $validator->errors()
-                ]);
+                ], 422);  // Ubah status code ke 422
             }
     
             DB::beginTransaction();
@@ -582,34 +590,32 @@ public function show_pelatihan_ajax($id)
     
             // Simpan file
             $file = $request->file('bukti');
-            $file_name = time() . '_' . $file->getClientOriginalName();
-            $file_path = $file->storeAs('public/sertifikat', $file_name);
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move($uploadPath, $fileName);
     
-            // Data yang akan disimpan
+            // Ambil data surat
+            $surat = SuratModel::findOrFail($id);
+    
+            // Data untuk upload
             $uploadData = [
-                'user_id' => auth()->id(),
                 'nama_sertif' => $request->nama_sertif,
                 'no_sertif' => $request->no_sertif,
                 'tanggal' => $request->tanggal,
                 'masa_berlaku' => $request->masa_berlaku,
                 'jenis_id' => $request->jenis_id,
                 'nama_vendor' => $request->nama_vendor,
-                'bukti' => $file_name
+                'bukti' => $fileName,
             ];
     
             // Simpan ke database berdasarkan jenis
-            if ($request->jenis == 'pelatihan') {
-                $pesertaPelatihan = PesertaPelatihanModel::findOrFail($id);
-                $pesertaPelatihan->upload_pelatihan()->create([
-                    'bukti' => $file_name,
-                    // Kolom lainnya sesuai kebutuhan
-                ]);
+            if ($surat->peserta_pelatihan_id) {
+                $peserta = PesertaPelatihanModel::findOrFail($surat->peserta_pelatihan_id);
+                $uploadData['user_id'] = $peserta->user_id;
+                UploadPelatihanModel::create($uploadData);
             } else {
-                $pesertaSertifikasi = PesertaSertifikasiModel::findOrFail($id);
-                $pesertaSertifikasi->upload_sertifikasi()->create([
-                    'bukti' => $file_name,
-                    // Kolom lainnya sesuai kebutuhan
-                ]);
+                $peserta = PesertaSertifikasiModel::findOrFail($surat->peserta_sertifikasi_id);
+                $uploadData['user_id'] = $peserta->user_id;
+                UploadSertifikasiModel::create($uploadData);
             }
     
             DB::commit();
@@ -618,13 +624,18 @@ public function show_pelatihan_ajax($id)
                 'status' => true,
                 'message' => 'Sertifikat berhasil diunggah'
             ]);
-
+    
         } catch (\Exception $e) {
             DB::rollBack();
             
+            // Hapus file jika terjadi error
+            if (isset($fileName) && file_exists($uploadPath . '/' . $fileName)) {
+                unlink($uploadPath . '/' . $fileName);
+            }
+            
             return response()->json([
-            'status' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                'status' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }
