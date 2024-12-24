@@ -28,6 +28,11 @@ class PesertaPelatihanModel extends Model
         return $this->belongsTo(PelatihanModel::class, 'pelatihan_id', 'pelatihan_id');
     }
 
+    public function upload_pelatihan()
+    {
+        return $this->hasOne(UploadPelatihanModel::class, 'peserta_id', 'peserta_pelatihan_id');
+    }
+
     protected static function boot()
     {
         parent::boot();

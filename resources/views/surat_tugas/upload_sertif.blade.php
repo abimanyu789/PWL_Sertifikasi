@@ -40,7 +40,7 @@ $(document).ready(function() {
         var formData = new FormData(this);
         
         $.ajax({
-            url: '{{ url("/surat_tugas/upload_ajax/" . $kegiatan_id) }}',
+            url: '{{ url("/surat_tugas/sertif_ajax/" . $kegiatan_id) }}',
             type: 'POST',
             data: formData,
             processData: false,

@@ -28,6 +28,11 @@ class PesertaSertifikasiModel extends Model
         return $this->belongsTo(SertifikasiModel::class, 'sertifikasi_id', 'sertifikasi_id');
     }
 
+    public function upload_sertifikasi()
+    {
+        return $this->hasOne(UploadSertifikasiModel::class, 'peserta_id', 'peserta_sertifikasi_id');
+    }
+
     protected static function boot()
     {
         parent::boot();

@@ -6,6 +6,8 @@ use App\Models\SuratModel;
 use App\Models\PelatihanModel;
 use App\Models\SertifikasiModel;
 use App\Models\PesertaPelatihanModel;
+use App\Models\UploadPelatihanModel;
+use App\Models\UploadSertifikasiModel;
 use App\Models\NotifikasiModel;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\SimpleType\Jc;
@@ -520,24 +522,30 @@ public function show_pelatihan_ajax($id)
     public function upload_sertif($id)
     {
         try {
-            if (request('jenis') == 'pelatihan') {
-                $data = PelatihanModel::findOrFail($id);
-                $nama_kegiatan = $data->nama_pelatihan;
-            } else {
-                $data = SertifikasiModel::findOrFail($id);
-                $nama_kegiatan = $data->nama_sertifikasi;
+            $pesertaSertifikasi = PesertaSertifikasiModel::findOrFail($id);
+            $sertifikasi = $pesertaSertifikasi->sertifikasi;
+            
+            if (!$sertifikasi) {
+                throw new \Exception('Data sertifikasi tidak ditemukan');
             }
-    
+            
+            $nama_kegiatan = $sertifikasi->nama_sertifikasi;
+            
             return view('surat_tugas.upload_sertif', [
                 'kegiatan_id' => $id,
-                'jenis' => request('jenis'),
+                'jenis' => 'sertifikasi',
                 'nama_kegiatan' => $nama_kegiatan
             ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data peserta tidak ditemukan'
+            ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Data tidak ditemukan'
-            ], 404);
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -547,7 +555,13 @@ public function show_pelatihan_ajax($id)
             $validator = Validator::make($request->all(), [
                 'bukti' => 'required|mimes:pdf,doc,docx|max:2048',
                 'kegiatan_id' => 'required',
-                'jenis' => 'required|in:pelatihan,sertifikasi'
+                'jenis' => 'required|in:pelatihan,sertifikasi',
+                'nama_sertif' => 'required|string|max:255',
+                'no_sertif' => 'required|string|max:100',
+                'tanggal' => 'required|date',
+                'masa_berlaku' => 'required|date',
+                'jenis_id' => 'required|exists:jenis,jenis_id',
+                'nama_vendor' => 'required|string|max:255'
             ]);
     
             if ($validator->fails()) {
@@ -561,69 +575,56 @@ public function show_pelatihan_ajax($id)
             DB::beginTransaction();
     
             // Buat direktori jika belum ada
-            $uploadPath = public_path('uploads_sertif/surat');
+            $uploadPath = public_path('uploads_sertif');
             if (!file_exists($uploadPath)) {
                 mkdir($uploadPath, 0777, true);
             }
     
             // Simpan file
             $file = $request->file('bukti');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move($uploadPath, $fileName);
+            $file_name = time() . '_' . $file->getClientOriginalName();
+            $file_path = $file->storeAs('public/sertifikat', $file_name);
     
-            // Simpan ke database
+            // Data yang akan disimpan
+            $uploadData = [
+                'user_id' => auth()->id(),
+                'nama_sertif' => $request->nama_sertif,
+                'no_sertif' => $request->no_sertif,
+                'tanggal' => $request->tanggal,
+                'masa_berlaku' => $request->masa_berlaku,
+                'jenis_id' => $request->jenis_id,
+                'nama_vendor' => $request->nama_vendor,
+                'bukti' => $file_name
+            ];
+    
+            // Simpan ke database berdasarkan jenis
             if ($request->jenis == 'pelatihan') {
-                $peserta = PesertaPelatihanModel::where('pelatihan_id', $request->kegiatan_id)
-                    ->where('status', 'Approved')
-                    ->first();
-    
-                if (!$peserta) {
-                    throw new \Exception('Data peserta pelatihan tidak ditemukan');
-                }
-    
-                $surat = new SuratModel;
-                $surat->peserta_pelatihan_id = $peserta->peserta_pelatihan_id;
-                $surat->user_id = $peserta->user_id;
-                $surat->bukti = $fileName;
-                $surat->save();
-    
+                $pesertaPelatihan = PesertaPelatihanModel::findOrFail($id);
+                $pesertaPelatihan->upload_pelatihan()->create([
+                    'bukti' => $file_name,
+                    // Kolom lainnya sesuai kebutuhan
+                ]);
             } else {
-                $peserta = PesertaSertifikasiModel::where('sertifikasi_id', $request->kegiatan_id)
-                    ->where('status', 'Approved')
-                    ->first();
-    
-                if (!$peserta) {
-                    throw new \Exception('Data peserta sertifikasi tidak ditemukan');
-                }
-    
-                $surat = new SuratModel;
-                $surat->peserta_sertifikasi_id = $peserta->peserta_sertifikasi_id;
-                $surat->user_id = $peserta->user_id;
-                $surat->bukti = $fileName;
-                $surat->save();
+                $pesertaSertifikasi = PesertaSertifikasiModel::findOrFail($id);
+                $pesertaSertifikasi->upload_sertifikasi()->create([
+                    'bukti' => $file_name,
+                    // Kolom lainnya sesuai kebutuhan
+                ]);
             }
-    
-            // Kirim notifikasi ke peserta
-            // NotifikasiModel::create([
-            //     'user_id' => $peserta->user_id,
-            //     'title' => 'Surat Tugas',
-            //     'message' => 'Surat tugas telah diunggah untuk kegiatan ' . 
-            //                 ($request->jenis == 'pelatihan' ? 'pelatihan' : 'sertifikasi'),
-            //     'type' => 'surat_tugas'
-            // ]);
     
             DB::commit();
     
             return response()->json([
                 'status' => true,
-                'message' => 'Surat berhasil diupload'
+                'message' => 'Sertifikat berhasil diunggah'
             ]);
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
+            
             return response()->json([
-                'status' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            'status' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }
