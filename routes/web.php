@@ -209,9 +209,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [DaftarDosenController::class, 'export_pdf']);
         Route::get('/export_template', [DaftarDosenController::class, 'exportTemplate']);
         Route::get('/{user_id}/sertifikasi', [DaftarDosenController::class, 'sertifikasi']);
-Route::get('/sertifikasi/{id}/detail', [DaftarDosenController::class, 'detail_sertifikasi']);
-Route::get('/{user_id}/pelatihan', [DaftarDosenController::class, 'pelatihan']);
-Route::get('/pelatihan/{id}/detail', [DaftarDosenController::class, 'detail_pelatihan']);
+        Route::get('/sertifikasi/{id}/detail', [DaftarDosenController::class, 'detail_sertifikasi']);
+        Route::get('/{user_id}/pelatihan', [DaftarDosenController::class, 'pelatihan']);
+        Route::get('/pelatihan/{id}/detail', [DaftarDosenController::class, 'detail_pelatihan']);
     });
 
 
@@ -258,6 +258,8 @@ Route::delete('/{id}/delete_ajax', [UploadSertifikasiController::class, 'delete_
         // Route::get('/template', [SuratController::class, 'export_template']);      
         // Route::post('/upload_template', [SuratController::class, 'upload_template']);         
         Route::get('/export_pdf/{if}', [SuratController::class, 'export_pdf']);
+        Route::get('/upload_sertif/{id}', [SuratController::class, 'upload_sertif']);
+        Route::post('/sertif_ajax/{id}', [SuratController::class, 'sertif_ajax']);
     });
 
 
