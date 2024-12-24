@@ -250,6 +250,8 @@ Route::delete('/{id}/delete_ajax', [UploadSertifikasiController::class, 'delete_
     Route::group(['prefix' => 'surat_tugas', 'middleware'=> 'authorize:ADM,DSN'], function(){
         Route::get('/', [SuratController::class, 'index']);
         Route::get('/list', [SuratController::class, 'list']);
+        Route::get('/upload_bukti/{id}/{jenis}', [SuratController::class, 'upload_bukti']);
+        Route::post('/ajax', [SuratController::class, 'store_bukti']);
         Route::get('/{id}/show_pelatihan_ajax', [SuratController::class, 'show_pelatihan_ajax']);
         Route::get('/{id}/show_sertifikasi_ajax', [SuratController::class, 'show_sertifikasi_ajax']);
         Route::get('/upload/{id}', [SuratController::class, 'upload']); // ajax form upload excel

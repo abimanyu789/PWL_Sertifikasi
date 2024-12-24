@@ -207,9 +207,22 @@ $.ajaxSetup({
     }
 });
 
+// function modalAction(url = '') {
+//     $('#myModal').load(url, function() {
+//         $('#myModal').modal('show');
+//     });
+// }
 function modalAction(url = '') {
-    $('#myModal').load(url, function() {
-        $('#myModal').modal('show');
+    $.ajax({
+        url: url,
+        method: 'GET',
+        success: function(response) {
+            $('#myModal').html(response).modal('show');
+        },
+        error: function(xhr) {
+            console.error(xhr);
+            Swal.fire('Error', 'Gagal memuat form', 'error');
+        }
     });
 }
 

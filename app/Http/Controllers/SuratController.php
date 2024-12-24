@@ -3,9 +3,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SuratModel;
+use App\Models\JenisModel;
 use App\Models\PelatihanModel;
 use App\Models\SertifikasiModel;
 use App\Models\PesertaPelatihanModel;
+use App\Models\UploadPelatihanModel;
+use App\Models\UploadSertifikasiModel;
 use App\Models\NotifikasiModel;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\SimpleType\Jc;
@@ -18,6 +21,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class SuratController extends Controller 
 {
@@ -192,7 +196,7 @@ public function list(Request $request)
             ($request->jenis_kegiatan === 'pelatihan' ? $pelatihan : $sertifikasi) :
             $pelatihan->union($sertifikasi);
 
-            return DataTables::of($query)
+        return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('aksi', function($row) use ($isDosen, $isAdmin) {
                 $buttons = '<div class="btn-group">';
@@ -200,13 +204,15 @@ public function list(Request $request)
                 if ($isDosen) {
                     $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/' . $row->id . '/show_' . $row->jenis_kegiatan . '_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                     
+                    // Tambahkan tombol upload bukti jika status Approved
+                    if ($row->status === 'Approved') {
+                        $buttons .= '<button onclick="modalAction(\'' . url('/surat_tugas/upload_bukti/' . $row->id . '/' . $row->jenis_kegiatan) . '\')" class="btn btn-success btn-sm ml-1">Upload Bukti</button>';
+                    }
+                    
                     $downloadClass = $row->has_surat ? 'btn-warning' : 'btn-secondary';
-                    $uploadClass = ($row->status === 'Approved') ? 'btn-primary' : 'btn-secondary';
                     $downloadDisabled = !$row->has_surat ? 'disabled' : '';
-                    $uploadDisabled = ($row->status !== 'Approved') ? 'disabled' : '';
                     
                     $buttons .= '<a href="' . url('/surat_tugas/export_pdf/' . $row->surat_tugas_id) . '" class="btn ' . $downloadClass . ' btn-sm ml-1" ' . $downloadDisabled . '>Download</a>';
-                    $buttons .= '<a href="' . url('/surat_tugas/upload_sertif/' . $row->surat_tugas_id) . '" class="btn ' . $uploadClass . ' btn-sm ml-1" ' . $uploadDisabled . '>Upload</a>';
                 }
 
                 if ($isAdmin) {
@@ -222,9 +228,14 @@ public function list(Request $request)
                 return $buttons;
             })
             ->addColumn('status_validasi', function($row) {
-                return $row->status;
+                if ($row->status === 'Approved') {
+                    return '<span class="badge badge-success">Approved</span>';
+                } else if ($row->status === 'Rejected') {
+                    return '<span class="badge badge-danger">Rejected</span>';
+                }
+                return '<span class="badge badge-warning">Pending</span>';
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['aksi', 'status_validasi'])
             ->make(true);
 
     } catch (\Exception $e) {
@@ -517,29 +528,133 @@ public function show_pelatihan_ajax($id)
     }
 }
 
-    public function upload_sertif($id)
-    {
-        try {
-            if (request('jenis') == 'pelatihan') {
-                $data = PelatihanModel::findOrFail($id);
-                $nama_kegiatan = $data->nama_pelatihan;
-            } else {
-                $data = SertifikasiModel::findOrFail($id);
-                $nama_kegiatan = $data->nama_sertifikasi;
-            }
-    
-            return view('surat_tugas.upload_sertif', [
-                'kegiatan_id' => $id,
-                'jenis' => request('jenis'),
-                'nama_kegiatan' => $nama_kegiatan
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tidak ditemukan'
-            ], 404);
+public function upload_bukti($id, $jenis_kegiatan)
+{
+    try {
+        if ($jenis_kegiatan == 'pelatihan') {
+            $data = PelatihanModel::findOrFail($id);
+            $nama_kegiatan = $data->nama_pelatihan;
+        } else {
+            $data = SertifikasiModel::findOrFail($id);
+            $nama_kegiatan = $data->nama_sertifikasi;
         }
+
+        $data = [
+            'kegiatan_id' => $id,
+            'jenis_kegiatan' => $jenis_kegiatan,
+            'nama_kegiatan' => $nama_kegiatan,
+            'jenis' => JenisModel::all()
+        ];
+        
+        return view('surat_tugas.upload_bukti_ajax', $data);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Data tidak ditemukan'
+        ], 404);
     }
+}
+
+public function store_bukti(Request $request)
+{
+    if (!$request->ajax()) {
+        return redirect('/');
+    }
+
+    $validator = Validator::make($request->all(), [
+        'nama_sertif' => 'required|string|max:255',
+        'no_sertif' => 'required|string|max:255',
+        'tanggal' => 'required|date',
+        'masa_berlaku' => 'required|date|after:tanggal',
+        'jenis_id' => 'required|exists:m_jenis,jenis_id',
+        'nama_vendor' => 'required|string|max:255',
+        'bukti' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Validasi gagal.',
+            'msgField' => $validator->errors()
+        ]);
+    }
+
+    try {
+        DB::beginTransaction();
+
+        // Handle file upload
+        $bukti = null;
+        if ($request->hasFile('bukti')) {
+            $file = $request->file('bukti');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            
+            if ($request->jenis_kegiatan == 'pelatihan') {
+                $file->move(storage_path('app/public/pelatihan'), $fileName);
+                
+                UploadPelatihanModel::create([
+                    'user_id' => Auth::id(),
+                    'nama_sertif' => $request->nama_sertif,
+                    'no_sertif' => $request->no_sertif,
+                    'tanggal' => $request->tanggal,
+                    'masa_berlaku' => $request->masa_berlaku,
+                    'jenis_id' => $request->jenis_id,
+                    'nama_vendor' => $request->nama_vendor,
+                    'bukti' => $fileName
+                ]);
+            } else {
+                $file->move(storage_path('app/public/sertifikasi'), $fileName);
+                
+                UploadSertifikasiModel::create([
+                    'user_id' => Auth::id(),
+                    'nama_sertif' => $request->nama_sertif,
+                    'no_sertif' => $request->no_sertif,
+                    'tanggal' => $request->tanggal,
+                    'masa_berlaku' => $request->masa_berlaku,
+                    'jenis_id' => $request->jenis_id,
+                    'nama_vendor' => $request->nama_vendor,
+                    'bukti' => $fileName
+                ]);
+            }
+
+            DB::commit();
+            
+            return response()->json([
+                'status' => true,
+                'message' => 'Bukti berhasil diupload.'
+            ]);
+        }
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return response()->json([
+            'status' => false,
+            'message' => 'Gagal mengupload bukti: ' . $e->getMessage()
+        ]);
+    }
+}
+    // public function upload_sertif($id)
+    // {
+    //     try {
+    //         if (request('jenis') == 'pelatihan') {
+    //             $data = PelatihanModel::findOrFail($id);
+    //             $nama_kegiatan = $data->nama_pelatihan;
+    //         } else {
+    //             $data = SertifikasiModel::findOrFail($id);
+    //             $nama_kegiatan = $data->nama_sertifikasi;
+    //         }
+    
+    //         return view('surat_tugas.upload_sertif', [
+    //             'kegiatan_id' => $id,
+    //             'jenis' => request('jenis'),
+    //             'nama_kegiatan' => $nama_kegiatan
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Data tidak ditemukan'
+    //         ], 404);
+    //     }
+    // }
 
     public function sertif_ajax($id, Request $request)
     {
